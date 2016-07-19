@@ -6,7 +6,7 @@ var debug = require('debug')('sniffer:mongo');
 debug = ()=>{};
 
 var LVL = require('./login').LVL;
-
+                            // test
 var url = process.env.DB_URL || 'mongodb://localhost:27017/alr';
 
 var db = mongoose.connection;
