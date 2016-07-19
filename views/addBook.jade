@@ -1,0 +1,32 @@
+doctype html
+html(lang="en")
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/addBook.css')
+    body
+        div.outer
+            div.inner
+                form.form(action="/book/add/", method="POST", enctype="multipart/form-data")
+                    ul
+                        li
+                            h2
+                                = 'Add book (User: ' + name + ')'
+                        li
+                            label Title
+                            input(name="title", type="text")
+                        li
+                            label Author
+                            input(name="author", type="text")
+                        li
+                            label File
+                            input(name="book", type="file")
+                        li
+                            button(type="submit", class="submit")
+                                = 'Submit'
+
+
+        script(src='/js/debug.js', defer)
+        script(src='/js/jquery.js', defer)
+        script(src='/js/jquery-ui.min.js', defer)
+        script(src='/js/jquery.switch_btn.js', defer)
+        script(src='/js/addBook.js', defer)

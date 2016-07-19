@@ -1,0 +1,44 @@
+doctype html
+html(lang="en")
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel='stylesheet', href='/stylesheets/btn.css')
+        link(rel='stylesheet', href='/stylesheets/switch-btn.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.theme.min.css')
+    body
+        #menu
+            div#menuLine1
+                div.item-menu(data-id='navigate')
+                    a.btn-menu.css-center-1-line navigate
+                div.item-menu.css-center-1-line(data-id='bookmarks')
+                    a.btn-menu.css-center-1-line bookmarks
+                div.item-menu(data-id='addBookmark')
+                    a.btn-menu.css-center-1-line  add bookmark
+
+            div#menuLine2
+                div.item-menu(data-id='file')
+                    a.btn-menu.css-center-1-line file
+                div.item-menu(data-id='#book')
+                    a.btn-menu.css-center-1-line add book
+                div.item-menu#btnExit(data-id='')
+                    a.btn-menu.css-center-1-line exit
+            #msgCont
+                #msg.css-center-1-line
+                #time.css-center-1-line
+                #loading.css-center-1-line
+
+        block content
+
+        script(src='/js/debug.js' defer)
+        script(src='/js/jquery.js' defer)
+        script(src='/js/jquery-ui.min.js' defer)
+        script(src='/js/jquery.viewport.js' defer)
+        script(src='/js/jquery.switch_btn.js' defer)
+
+        script(src='/js/jsFile/filejs.js' defer)
+        script(src='/js/jsFile/filejs-fb.js' defer)
+        script(src='/js/login.js' defer)
+        script(src='/js/book.js' defer)
+        script(src='/js/init.js' defer)

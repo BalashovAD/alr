@@ -1,0 +1,10 @@
+doctype html
+html(lang="en")
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+
+        form(action="./upload", method="POST", enctype="multipart/form-data")
+            input(type="file", name="fl")
+            input(type="submit", value="upload")

@@ -1,0 +1,285 @@
+body {
+  /*padding: 50px;*/
+  overflow: hidden;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: #7892c2;
+}
+.css-center-1-line {
+  text-align: center;
+}
+.hide {
+  display: none;
+}
+hr {
+  border: 0;
+  border-bottom: 1px solid black;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+#msg {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 5%;
+  font-size: 150%;
+  opacity: 0.8;
+  text-align: center;
+  z-index: 100;
+  vertical-align: middle;
+  background: #7892c2;
+}
+#time {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 5%;
+  font-size: 300%;
+  opacity: 1;
+  text-align: center;
+  z-index: 90;
+  border-left: 1px solid grey;
+  display: table-cell;
+  vertical-align: middle;
+  background: #7892c2;
+}
+#time:before {
+  content: 'Time: ';
+}
+#loading {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 5%;
+  font-size: 300%;
+  opacity: 1;
+  text-align: center;
+  z-index: 105;
+  background: #7B68EE;
+}
+#loading:before {
+  content: 'Loading ...';
+}
+#book {
+  box-sizing: border-box;
+  padding: 0 10px;
+}
+#book,
+#hidden_book {
+  position: absolute;
+  top: 5%;
+  left: 20%;
+  width: 78%;
+  /*height: 100%;*/
+  font-size: 20px;
+  line-height: 1.3;
+  z-index: 0;
+  background: #F7EACE;
+}
+#hidden_book {
+  position: fixed;
+  display: none;
+  height: 95%;
+}
+#book.night {
+  color: #A4F7BD;
+  background: black;
+}
+#book > div > div {
+  text-align: center;
+  color: purple;
+}
+#book * {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+#book * {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+#book div {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+#book .h-l {
+  display: none;
+}
+.left {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  width: 20%;
+  height: 95%;
+  opacity: 0.8;
+  z-index: 50;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border-right: 1px solid grey;
+  padding: 0 5px;
+  background: inherit;
+}
+.left.hide {
+  display: none;
+}
+div.fs {
+  width: 100%;
+  font-size: 150%;
+}
+.right {
+  width: 2%;
+  height: 94.9%;
+  position: fixed;
+  top: 5%;
+  right: 0;
+  z-index: 50;
+  border-left: 1px solid grey;
+  background: #7892c2;
+}
+#slider {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+#slider_btn {
+  content: ' ';
+  width: 100%;
+  height: 20px;
+  z-index: 80;
+  background: red;
+}
+.mark-div {
+  content: ' ';
+  position: absolute;
+  width: 50%;
+  height: 4px;
+  z-index: 90;
+  left: 50%;
+  background: #0000CD;
+}
+.mark-user {
+  content: ' ';
+  position: absolute;
+  width: 50%;
+  height: 4px;
+  z-index: 90;
+  left: 0;
+  background: #B22222;
+}
+.back_btn {
+  width: 2%;
+  height: 0.1%;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 50;
+  background: #20911e;
+}
+#menu {
+  min-height: 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5%;
+  font-size: 100%;
+  z-index: 80;
+  border-bottom: 1px solid grey;
+}
+#menu div.item-menu {
+  display: inline-block;
+  width: 20%;
+  height: 100%;
+  text-align: center;
+}
+#menuLine1 {
+  width: 100%;
+  height: 50%;
+}
+#menuLine2 {
+  width: 100%;
+  height: 50%;
+}
+#msg.error {
+  color: red;
+}
+#listOfBookmarks {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.bookmark {
+  border-bottom: 1px solid black;
+  word-break: break-all;
+}
+.bookmark:last-child {
+  border-bottom: 0;
+}
+.bookmark-title:before {
+  content: 'Title: ';
+  font-size: 150%;
+}
+.bookmark-text:before {
+  content: 'Text: ';
+  font-size: 150%;
+}
+div#btnsUp div {
+  display: inline-block;
+  width: 50%;
+  height: 80px;
+}
+div#btnsDown div {
+  display: inline-block;
+  width: 50%;
+  height: 28px;
+}
+div.footnote {
+  font-size: 150%;
+}
+#posOnMouseBookmark {
+  display: none;
+}
+.addBookmark div.form-add-bookmark {
+  border-bottom: 1px solid #b3b1b1;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+.addBookmark label {
+  display: block;
+  font-size: 150%;
+  width: 100%;
+}
+.addBookmark textarea {
+  width: 90%;
+  height: 100px;
+}
+.addBookmark input {
+  width: 90%;
+}
+#login {
+  /*display: none;*/
+  position: absolute;
+  width: 100%;
+  height: 40px;
+  bottom: 40px;
+}
+.login input {
+  width: 32%;
+}
+.exit input {
+  width: 32%;
+}
+.login > .error {
+  color: red;
+}
+#save {
+  font-size: 150%;
+}
+.icon {
+  font-size: 150%;
+}
+.offline {
+  text-decoration: line-through;
+  opacity: 0.3;
+}

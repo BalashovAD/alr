@@ -1,0 +1,168 @@
+"use strict";
+var app = require('express')();
+var cookieParser = require('cookie-parser');
+
+var debug = require('debug')('sniffer:login');
+
+app.use(cookieParser());
+
+var checkUser = require('./mongo').checkUser;
+var getUser = require('./mongo').getUser;
+
+var __log = [];
+
+const LVL = {
+    MAX_LVL: 1000,
+    GUEST: 5,
+    USER: 4,
+    MOD: 2,
+    ADM: 0
+};
+
+const ACCESS_LVL = {
+    registration: LVL['ADM'],
+    addBook: LVL['USER'],
+    user: LVL['USER'],
+    moder: LVL['MOD']
+};
+
+function checkAccess (lvl, str)
+{
+    return (lvl <= ACCESS_LVL[str]);
+}
+
+var addUser = require('./mongo').addUser;
+
+// Login
+// user/psw
+// TODO: psw -> hash(psw)
+app.get('/_:user/_(:psw)?', function(req, res, next){
+    var name = req.params.user;
+    var psw = req.params.psw;
+
+    checkUser(name, function (err, u) {
+        if (!err && u && u.name == name && u.prop.psw == psw)
+        {
+            debug('Login (user = ' + name + ')');
+
+            res.cookie('user', u.prop.secret);
+
+            res.status(200).end();
+        }
+        else
+        {
+            debug('Tried to login (user = ' + name + ', ip = ' + req.userIp + ' )');
+            debug(err);
+
+            res.status(402).end();
+        }
+    });
+});
+
+// exit
+//
+app.get('/exit/_:user/', function(req, res, next){
+    var name = req.params.user;
+
+    if (req.userName != '0' || checkAccess(req.lvl, 'moder'))
+    {
+        debug('Exit (user = ' + name + ')');
+
+        res.clearCookie('user', {
+            path: '/'
+        });
+
+        res.status(200).end();
+    }
+    else
+    {
+        debug('Tried to exit (user = ' + name + ', ip = ' + req.userIp + ' )');
+
+        res.status(402).end();
+    }
+});
+
+// Registration
+// now access only for adm
+app.get('/add/*', (req, res, next) => {
+    if (checkAccess(req.lvl, 'registration') || 1)
+    {
+        next();
+    }
+    else
+    {
+        res.status(402).json({
+            err: -1,
+            errmsg: 'No access'
+        });
+
+        res.end();
+    }
+});
+
+// TODO: psw -> hash(psw)
+// TODO: regExp(user)
+app.get('/add/_:user/_:psw', (req, res, next) => {
+    var user = req.params.user;
+    var psw = req.params.psw;
+
+    debug('User ' + req.userName + ' create user;');
+
+    {
+        addUser(user, psw, (err, t) => {
+
+            if (err)
+            {
+                console.log(err);
+
+                res.status(403).json({
+                    err: err.code,
+                    errmsg: err.errmsg
+                }).end();
+
+                next();
+
+                return false;
+            }
+            else
+            {
+                res.json({
+                    name: t.name,
+                    lvl: t.lvl
+                }).end();
+
+                next();
+            }
+
+            return true;
+        });
+    }
+});
+
+// Get db document
+// :user - only u
+app.get('/info', function (req, res, next) {
+    if (req.userName != 0)
+    {
+        getUser(req.userName, function(err, t) {
+            if (err)
+            {
+                res.status(402).end();
+            }
+            else
+            {
+                res.json(t).end();
+            }
+        });
+    }
+    else
+    {
+        res.status(401).end();
+    }
+});
+
+module.exports.app = app;
+module.exports.__log = __log;
+module.exports.LVL = LVL;
+module.exports.checkAccess = checkAccess;
+module.exports.ACCESS_LVL = ACCESS_LVL;
