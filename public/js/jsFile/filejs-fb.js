@@ -747,7 +747,21 @@
                     } else if (localName === 'poem') {
                         this.parsePages(node, documentData, list);
                     } else if (localName === 'stanza') {
-                        this.parsePages(node, documentData, list);
+                        let res = this.parseBlockElement({
+                            node: node,
+                            documentData: documentData
+                        });
+                        res.properties.className = 'stanza';
+
+                        list.push(res);
+                    } else if (localName === 'cite') {
+                        let res = this.parseBlockElement({
+                            node: node,
+                            documentData: documentData
+                        });
+                        res.properties.className = 'cite';
+
+                        list.push(res);
                     } else if (localName) {
                         list.push(this.parseBlockElement({
                             node: node,
@@ -808,6 +822,8 @@
                 switch (localName) {
                     case 'p':
                         result = this.parseParagraph({ node: node });
+                        //result.properties.class = 'tag-p';
+
                         break;
                     case 'empty-line':
                         result = Document.elementPrototype;
@@ -930,6 +946,7 @@
                         element = Document.elementPrototype;
                         element.properties.tagName = 'SPAN';
                         element.properties.textContent = textContent;
+                        element.properties.className = 'tag-span';
 
                         if (localName === 'strong') {
                             element.style.fontWeight = 'bold';

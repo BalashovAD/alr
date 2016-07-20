@@ -531,8 +531,9 @@ var __book = function(idElem, interfaceFunc) {
                                     // book
                                     $('.jf-page > *').each(function (i) {
                                         var tt = $(this);
+
                                         tt.attr('id', 'p_' + i);
-                                        tt.attr('class', 'h-l');
+                                        tt.addClass('h-l');
                                         tt.data('id', i);
 
                                         __[i] = tt;
@@ -563,16 +564,19 @@ var __book = function(idElem, interfaceFunc) {
                                         }
                                         else
                                         {
-                                            if (id > 10)
+                                            if ($(this).attr('class').length <= 'h-l'.length)
                                             {
-                                                var el = $('<div></div>')
-                                                    .addClass('mark-div')
-                                                    .css('top', id / maxPos * sliderHeight)
-                                                    .click(function () {
-                                                        thus.scrollEl(id);
-                                                    });
+                                                if (id > 10)
+                                                {
+                                                    var el = $('<div></div>')
+                                                        .addClass('mark-div')
+                                                        .css('top', id / maxPos * sliderHeight)
+                                                        .click(function () {
+                                                            thus.scrollEl(id);
+                                                        });
 
-                                                sliderMarks.append(el);
+                                                    sliderMarks.append(el);
+                                                }
                                             }
                                         }
                                     });
