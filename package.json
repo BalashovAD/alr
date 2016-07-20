@@ -16,6 +16,7 @@
     "formidable": "~1.0.17",
     "fs-extra": "^0.22.1",
     "mongoose": "~4.4.10",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+	"jade": "^1.11.0"
   }
 }
