@@ -1,0 +1,34 @@
+doctype html
+html(lang="en")
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/addBook.css')
+    body
+        div.outer
+            div.inner
+                div.form#login
+                    ul
+                        li
+                            h2
+                                = 'Sign up'
+                            h5.error
+                        li
+                            label User
+                            input(name="user", type="text")
+                        li
+                            label Password
+                            input(name="psw", type="password")
+                        li
+                            label Confirm password
+                            input(name="cnfPsw", type="password")
+                        li
+                            button(type="submit", class="submit", id="btnSignUp")
+                                = 'Sign up'
+        div#failReg
+
+        div#okReg
+
+        script(src='/js/debug.js', defer)
+        script(src='/js/jquery.js', defer)
+        script(src='/js/jquery-ui.min.js', defer)
+        script(src='/js/registration.js', defer)

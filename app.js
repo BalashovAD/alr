@@ -17,6 +17,8 @@ var cookieParser = require('cookie-parser');
 
 var LVL = require('./login').LVL;
 
+var checkAccess = require('./login').checkAccess;
+
 app.use(cookieParser());
 
 app.use(require('body-parser').json());
@@ -99,6 +101,25 @@ app.get('/login.jade', function (req, res, next) {
 
         res.render('login.jade', {
             title: 'Login'
+        });
+    }
+    else
+    {
+        res.set('Location', '/');
+
+        res.status(302).end();
+
+        next();
+    }
+});
+
+app.get('/registration.jade', function (req, res, next) {
+    if (checkAccess(req.lvl, 'registration'))
+    {
+        res.set('Content-Type', 'text/html');
+
+        res.render('registration.jade', {
+            title: 'Registration'
         });
     }
     else

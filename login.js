@@ -33,6 +33,8 @@ function checkAccess (lvl, str)
 
 var addUser = require('./mongo').addUser;
 
+app.use(require('body-parser').json());
+
 // Login
 // user/psw
 // TODO: psw -> hash(psw)
@@ -84,8 +86,8 @@ app.get('/exit/_:user/', function(req, res, next){
 
 // Registration
 // now access only for adm
-app.get('/add/*', (req, res, next) => {
-    if (checkAccess(req.lvl, 'registration') || 1)
+app.post('/add/*', (req, res, next) => {
+    if (checkAccess(req.lvl, 'registration'))
     {
         next();
     }
@@ -102,25 +104,25 @@ app.get('/add/*', (req, res, next) => {
 
 // TODO: psw -> hash(psw)
 // TODO: regExp(user)
-app.get('/add/_:user/_:psw', (req, res, next) => {
-    var user = req.params.user;
-    var psw = req.params.psw;
+app.post('/add/', (req, res, next) => {
+    var user = req.body.name;
+    var psw = req.body.psw;
 
     debug('User ' + req.userName + ' create user;');
+    debug('user = %s, psw = %s', user, psw);
 
+    if (checkAccess(req.lvl, 'registration'))
     {
         addUser(user, psw, (err, t) => {
 
             if (err)
             {
-                console.log(err);
+                debug(err);
 
                 res.status(403).json({
                     err: err.code,
                     errmsg: err.errmsg
                 }).end();
-
-                next();
 
                 return false;
             }
@@ -128,14 +130,21 @@ app.get('/add/_:user/_:psw', (req, res, next) => {
             {
                 res.json({
                     name: t.name,
-                    lvl: t.lvl
+                    lvl: t.prop.lvl
                 }).end();
 
-                next();
             }
 
             return true;
         });
+    }
+    else
+    {
+        res.status(403).json({
+            errmsg: 'U must be admin'
+        }).end();
+
+        return false;
     }
 });
 

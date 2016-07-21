@@ -6,7 +6,7 @@ var debug = require('debug')('sniffer:mongo');
 debug = ()=>{};
 
 var LVL = require('./login').LVL;
-                            // test
+
 var url = process.env.DB_URL || 'mongodb://localhost:27017/alr';
 
 var db = mongoose.connection;
@@ -74,7 +74,24 @@ function addUser(name, psw, cb)
         lastBook: 0
     });
 
-    u.save(cb);
+    User.findOne({name: name}).select('_id').exec(function(err, t) {
+        if (err)
+        {
+            cb(err);
+        }
+        else
+        {
+            if (t && t._id)
+            {
+                cb('This user name {' + name + '} already exist');
+            }
+            else
+            {
+                u.save(cb);
+            }
+        }
+    });
+
 }
 
 function checkUser(name, cb)
