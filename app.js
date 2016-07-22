@@ -4,7 +4,6 @@ var path = require('path');
 var store = require('./store');
 
 
-
 var checkUser = require('./mongo').checkUser;
 
 var routes = require('./routes/index');

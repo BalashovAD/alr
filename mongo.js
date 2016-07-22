@@ -156,7 +156,9 @@ function deleteBook(id, name, cb, anyway)
                                     {
                                         let filePath = path.join(__dirname, 'files', book.link);
 
-                                        fs.unlink(filePath, cb);
+                                        fs.unlink(filePath, function(err, t) {
+                                            cb();
+                                        });
                                     }
                                 });
                             }

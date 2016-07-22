@@ -2,6 +2,7 @@
 var app = require('express')();
 var cookieParser = require('cookie-parser');
 var path = require('path');
+var fs = require('fs');
 
 var debug = require('debug')('sniffer:book');
 
@@ -13,6 +14,65 @@ var saveBook = require('./mongo').saveBook;
 var getBook = require('./mongo').getBook;
 var deleteBookmark = require('./mongo').deleteBookmark;
 var editBookmark = require('./mongo').editBookmark;
+
+
+/**
+ * Check existence of a folder{pp}
+ * if not exist then create
+ * It's async version
+ * @param pp - string, path of folder
+ * @param next - cb
+ * @throw err if can not create directory or fs error
+ */
+function checkFolder(pp, next)
+{
+    if (arguments.length < 2)
+    {
+        next = ()=>{};
+    }
+
+    fs.stat(pp, function(err, stat) {
+        if (err)
+        {// try create dir
+            fs.mkdir(pp, function(err, folder) {
+                if (err)
+                {
+                    //TODO: emmit system error
+                    throw new Error('System error{fs.mkdir}. path = ' + pp);
+                }
+                else
+                {
+                    debug('Create folder: path = ' + pp);
+                    next();
+                }
+            });
+        }
+        else
+        {
+            if (stat.isDirectory())
+            {
+                next();
+            }
+            else
+            {// try create dir
+                fs.mkdir(pp, function(err, folder) {
+                    if (err)
+                    {
+                        //TODO: emmit system error
+                        throw new Error('System error{fs.mkdir}. path = ' + pp);
+                    }
+                    else
+                    {
+                        debug('Create folder: path = ' + pp);
+                        next();
+                    }
+                });
+            }
+        }
+    });
+}
+
+checkFolder('./files');
 
 app.use(require('body-parser').json());
 
@@ -43,6 +103,18 @@ app.get('/', (req, res, next) => {
 var fileCounter = 0;
 
 app.use(require('./fileupload')());
+
+
+app.post('/add/*', function(req, res, next){
+    if (req.userName && req.userName != '0')
+    {
+        checkFolder('./files/' + req.userName, next);
+    }
+    else
+    {
+        res.status(400).end();
+    }
+});
 
 // Add book
 // :title - title in list
@@ -155,6 +227,10 @@ app.post('/save/_:id', (req, res, next) => {
         }
     });
 });
+
+/** Bookmark
+ *  @param :id - book id
+ */
 
 app.post('/bookmark/delete/_:id', function(req, res, next){
     let id = req.params.id;
