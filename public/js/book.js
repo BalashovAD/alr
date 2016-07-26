@@ -51,6 +51,12 @@ var __book = function(idElem, interfaceFunc) {
         night: false
     };
 
+    var jump = {
+        list: [],
+        it: 0,
+        timer: 0
+    };
+
 
     var __bookmarks = [];
     var notSaved = 0;
@@ -60,6 +66,7 @@ var __book = function(idElem, interfaceFunc) {
 // no ajax
     this['__int__bookmark'] = interfaceFunc['bookmark'](thus);
     this['__int__loading'] = interfaceFunc['loading'](thus);
+    this['__int__controllerLeft'] = interfaceFunc['controllerLeft'](thus);
 // set settings
     this['__int__ajaxSettings'] = interfaceFunc['ajaxSettings'](thus);
 // ajax part
@@ -564,7 +571,7 @@ var __book = function(idElem, interfaceFunc) {
                                         }
                                         else
                                         {
-                                            if ($(this).attr('class').length <= 'h-l'.length)
+                                            if ($(this).attr('class').indexOf('title') >= 0)
                                             {
                                                 if (id > 10)
                                                 {
@@ -572,7 +579,7 @@ var __book = function(idElem, interfaceFunc) {
                                                         .addClass('mark-div')
                                                         .css('top', id / maxPos * sliderHeight)
                                                         .click(function () {
-                                                            thus.scrollEl(id);
+                                                            thus.jmp(id);
                                                         });
 
                                                     sliderMarks.append(el);
@@ -585,7 +592,14 @@ var __book = function(idElem, interfaceFunc) {
                                     $('.jf-page a').click(function(e){
                                         var id = $(this).attr('href').substr(1);
                                         var num = $(this).html();
-                                        var text = $('a[name=' + id + ']').closest('p.h-l').html();
+                                        var text = '';
+
+                                        $('#book a[name=' + id + ']').each(function () {
+                                            text += $(this).closest('p.h-l').html();
+                                            text += '<br>';
+                                        });
+
+                                        thus.__int__controllerLeft('navigate');
 
                                         footnote.empty();
                                         var el = $(`<div class="footnote">
@@ -597,6 +611,17 @@ var __book = function(idElem, interfaceFunc) {
 
                                         return false;
                                     });
+
+                                    $('.jf-page a').dblclick(function() {
+                                        var id = $(this).attr('href').substr(1);
+                                        var pos = $('a[name=' + id + ']').closest('p.h-l').data('id');
+
+                                        thus.jmp(pos);
+                                    });
+
+                                    jump.list.length = 0;
+                                    jump.list.push(info.pos);
+                                    jump.it = 1;
 
                                     screen.pos = info.pos;
                                     screen.now = 0;
@@ -712,12 +737,92 @@ var __book = function(idElem, interfaceFunc) {
         }
     };
 */
-/** System function
- *  @param id - first element
- *  @param coef > 1 - over view
- *  @param scroll - body{scrollTop} before movement
- *  @set book.pos = id, over view = coef
-*/
+    /**
+     * scrollEl(id) + save jmp pos
+     * @param id - scroll pos
+     */
+    this.jmp = function(id) {
+        if (Math.abs(jump.list[jump.it - 1] - screen.pos) > 3)
+        {
+            jump.list.push(screen.pos);
+            ++jump.it;
+        }
+
+        this.scrollEl(id);
+    };
+
+    /**
+     * go to undo position
+     * @return how long to finish jumping
+     */
+    this.jmpUndo = function () {
+        if (jump.it == jump.list.length)
+        {
+            if (jump.list[jump.it - 1] && jump.list[jump.it - 1] != screen.pos)
+            {
+                jump.list.push(screen.pos);
+            }
+        }
+
+        if (jump.it > 0)
+        {
+            --jump.it;
+            if (jump.list[jump.it] == screen.pos)
+            {
+                return this.jmpUndo();
+            }
+            thus.scrollEl(jump.list[jump.it]);
+
+            if (jump.timer)
+            {
+                clearTimeout(jump.timer);
+            }
+
+            jump.timer = setTimeout(function() {
+                jump.list.length = jump.it;
+            }, 60 * 1000);
+
+        }
+
+        return jump.it;
+    };
+
+    /**
+     * go to redo position
+     * @return how long to finish jumping
+     */
+    this.jmpRedo = function () {
+        if (jump.it < jump.list.length)
+        {
+            if (jump.list[jump.it] == screen.pos)
+            {
+                ++jump.it;
+                return this.jmpRedo();
+            }
+            thus.scrollEl(jump.list[jump.it]);
+
+            ++jump.it;
+
+            if (jump.timer)
+            {
+                clearTimeout(jump.timer);
+            }
+
+            jump.timer = setTimeout(function() {
+                jump.list.length = jump.it;
+            }, 60 * 1000);
+
+        }
+
+        return jump.it - jump.list.length;
+    };
+
+    /** System function
+     *  @param id - first element
+     *  @param coef > 1 - over view
+     *  @param scroll - body{scrollTop} before movement
+     *  @set book.pos = id, over view = coef
+    */
     this.scrollEl = function(id, coef, scroll) {
         $(document).scrollTop(0);
 
@@ -910,12 +1015,12 @@ var __book = function(idElem, interfaceFunc) {
     this.scrollSlider = function(Y) {
         if (arguments.length)
         {// slider <- id
-            thus.scrollEl(sliderPos(Y));
+            thus.jmp(sliderPos(Y));
             //scrollTop(screen.pos);
         }
         else
         {// id <- slider
-            thus.scrollEl(sliderPos(slider.cssInt('top')));
+            thus.jmp(sliderPos(slider.cssInt('top')));
             sliderTop(screen.pos);
         }
     };

@@ -596,9 +596,15 @@
                     result.properties.src = documentData.binaryItems[imageName];
                 }
 
+                if (node.attributes && node.attributes['l:href'] && node.attributes['l:href'].value)
+                {
+                    attrValue = node.attributes['l:href'].value;
+                    result.properties.src = documentData.binaryItems[attrValue.replace('#', '')];
+                }
+
                 result.properties.tagName = 'IMG';
                 result.properties.src = result.properties.src || '';
-                result.properties.alt = '';
+                result.properties.alt = attrValue || '';
 
                 return result;
             }
@@ -741,7 +747,10 @@
                     var localName = node.localName;
 
                     if (localName === 'title') {
-                        list.push(this.parseBlock(node, documentData));
+                        let res = this.parseBlock(node, documentData);
+                        res.properties.className = 'title';
+
+                        list.push(res);
                     } else if (localName === 'section') {
                         this.parsePages(node, documentData, list);
                     } else if (localName === 'poem') {
@@ -762,6 +771,14 @@
                         res.properties.className = 'cite';
 
                         list.push(res);
+                    } else if (localName === 'epigraph') {
+                        let res = this.parseBlockElement({
+                            node: node,
+                            documentData: documentData
+                        });
+                        res.properties.className = 'epigraph';
+
+                        list.push(res);
                     } else if (localName) {
                         list.push(this.parseBlockElement({
                             node: node,
@@ -775,8 +792,12 @@
                     el.properties.tagName = 'A';
                     el.properties.name = attributes.id.value;
 
-
-                    list[list.length - 1].children.unshift(el);
+                    let it = list.length - 1;
+                    while (it >= 0 && list[it].properties.tagName != 'DIV')
+                    {
+                        list[it].children.unshift(el);
+                        --it;
+                    }
                 }
             }
 
@@ -845,6 +866,11 @@
                         result.style.textAlign = 'center';
                         result.style.fontStyle  = 'italic';
                         result.style.color = 'purple';
+
+                        break;
+                    case 'text-author':
+                        result = this.parseParagraph({ node: node });
+                        result.properties.className = 'text-author';
 
                         break;
                     default:

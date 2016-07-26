@@ -236,6 +236,47 @@ var clock = new (function (){
     return this;
 })();
 
+function __controllerLeft(book) {
+    let now = 'files';
+
+    function controllerLeft(id) {
+
+        if (now == id)
+        {
+            // do nothing
+        }
+        else
+        {
+            now = id;
+
+            if (id[0] == '#')
+            {
+                id = id.substring(1);
+
+                book.save(true);
+
+                document.location.assign(id);
+
+                return true;
+            }
+
+            $('.left').hide();
+            var elms = $('#' + id);
+
+            if (elms && elms.length != 0)
+            {
+                elms.eq(0).show();
+            }
+            else
+            {
+                $('#file').show();
+            }
+        }
+    }
+
+    return controllerLeft;
+}
+
 
 $(document).ready(function() {
 // INIT JsFILE
@@ -289,7 +330,8 @@ $(document).ready(function() {
     var book = new __book('book', {
         bookmark: __initBookmark,
         loading: __loading,
-        ajaxSettings: __ajaxSettings
+        ajaxSettings: __ajaxSettings,
+        controllerLeft: __controllerLeft
     });
 // DEBUG
     __DEBUG__book = book;
@@ -308,26 +350,7 @@ $(document).ready(function() {
         $('.item-menu').click(function(e) {
             var id = $(this).data('id');
 
-            if (id[0] == '#')
-            {
-                id = id.substring(1);
-
-                book.save(true);
-
-                document.location.assign(id);
-            }
-
-            $('.left').hide();
-            var elms = $('#' + id);
-
-            if (elms && elms.length != 0)
-            {
-                elms.eq(0).show();
-            }
-            else
-            {
-                $('#file').show();
-            }
+            book.__int__controllerLeft(id);
         });
 // SLIDER
 
@@ -370,6 +393,20 @@ $(document).ready(function() {
             book.scroll(true);
         });
 
+        $('#btnNavUndo').click(function () {
+            if (book.jmpUndo() == false)
+            {
+                msg('Can not jump');
+            }
+        });
+
+        $('#btnNavRedo').click(function () {
+            if (book.jmpRedo() == false)
+            {
+                msg('Can not jump');
+            }
+        });
+
         $('#save').click(()=>{
             book.save();
         });
@@ -380,10 +417,18 @@ $(document).ready(function() {
             cssCenter1Line();
         }, time_resize));
 // MOUSE WHEEL
-        $('body').on('wheel.book', function(e) {
+        $('#book').on('wheel.book', function(e) {
             var del = e.originalEvent.deltaY;
 
             book.scroll((del > 0 ? false : true), 1, Math.abs(del));
+
+            return false;
+        });
+
+        $('#slider').on('wheel.book', function(e) {
+            var del = e.originalEvent.deltaY;
+
+            book.scroll((del > 0 ? false : true));
 
             return false;
         });
