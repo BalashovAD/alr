@@ -20,10 +20,11 @@ const LVL = {
 };
 
 const ACCESS_LVL = {
-    registration: LVL['ADM'],
+    registration: LVL['GUEST'],
     addBook: LVL['USER'],
     user: LVL['USER'],
-    moder: LVL['MOD']
+    moder: LVL['MOD'],
+    admin: LVL['ADM']
 };
 
 function checkAccess (lvl, str)
@@ -102,6 +103,41 @@ app.post('/add/*', (req, res, next) => {
     }
 });
 
+var checkInvite = require('./mongo').checkInvite;
+var decInvite = require('./mongo').decInvite;
+
+/**
+ * Check invite value
+ */
+app.post('/add/', (req, res, next) => {
+    let invite = req.body.invite;
+
+    debug('invitation.value = ' + invite);
+
+    checkInvite(invite, (err, t) => {
+        if (err)
+        {
+            debug(err);
+
+            res.status(403).json({
+                err: err.code,
+                errmsg: err.errmsg
+            }).end();
+
+            return false;
+        }
+        else
+        {
+            debug('inv = ' + t);
+
+            if (t.counter > 0)
+            {
+                next();
+            }
+        }
+    });
+});
+
 // TODO: psw -> hash(psw)
 // TODO: regExp(user)
 app.post('/add/', (req, res, next) => {
@@ -129,10 +165,13 @@ app.post('/add/', (req, res, next) => {
             else
             {
                 res.json({
+                    id: t._id,
                     name: t.name,
                     lvl: t.prop.lvl
                 }).end();
 
+                req.regUserId = t._id;
+                next();
             }
 
             return true;
@@ -146,6 +185,27 @@ app.post('/add/', (req, res, next) => {
 
         return false;
     }
+});
+
+/**
+ * Decrement invite.counter
+ * Add user in invites
+ */
+app.post('/add/', (req, res, next) => {
+    let invite = req.body.invite;
+
+    decInvite(invite, req.regUserId, (err, t) => {
+        if (err)
+        {
+            debug(err);
+
+            return false;
+        }
+        else
+        {
+
+        }
+    })
 });
 
 // Get db document

@@ -19,9 +19,10 @@ db.on('error', (err) => {
 
 var Book;
 var User;
+var Invite;
 
 db.once('open', function() {
-    var user = new mongoose.Schema({
+    let user = new mongoose.Schema({
         name: String,
         prop: {
             psw: String,
@@ -36,7 +37,7 @@ db.once('open', function() {
         lastBook: String
     }, {collection: 'users'});
 
-    var book = new mongoose.Schema({
+    let book = new mongoose.Schema({
         title: String,
         author: String,
         link: String,
@@ -49,9 +50,17 @@ db.once('open', function() {
         pos: Number
     }, {collection: 'books'});
 
+    let invite = new mongoose.Schema({
+        value: String,
+        counter: Number,
+        users: [{
+            id: String
+        }]
+    });
+
     Book = mongoose.model('book', book);
     User = mongoose.model('user', user);
-
+    Invite = mongoose.model('invite', invite);
 });
 
 mongoose.connect(url);
@@ -83,7 +92,7 @@ function addUser(name, psw, cb)
         {
             if (t && t._id)
             {
-                cb('This user name {' + name + '} already exist');
+                cb({code: 111, errmsg: 'This user name {' + name + '} already exist'});
             }
             else
             {
@@ -98,9 +107,67 @@ function checkUser(name, cb)
 {
     let u = User.findOne({name: name});
 
-    let q = u.select('name prop');
+    let q = u.select('_id name prop');
 
     q.exec(cb);
+}
+
+function checkInvite(inv, cb)
+{
+    let i = Invite.findOne({value: inv});
+
+    let q = i.select('value counter');
+
+    q.exec(function(err, t) {
+        if (err)
+        {
+            cb(err);
+        }
+        else
+        {
+            if (t && t.counter && t.counter > 0)
+            {
+                cb(err, t);
+            }
+            else
+            {
+                cb({code: 111, errmsg: 'Invitation is spoiled'});
+            }
+        }
+    });
+}
+
+function decInvite(inv, id, cb)
+{
+    let i = Invite.findOne({value: inv});
+
+    let q = i.select('value counter');
+
+    q.exec(function(err, t) {
+        if (err)
+        {
+            cb(err);
+        }
+        else
+        {
+            if (t && t.counter && t.counter > 0)
+            {
+                Invite.findOneAndUpdate({value: inv}, {
+                    counter: t.counter - 1,
+                    $push: {
+                        users: {
+                            id: id
+                        }
+                    }
+                }, cb);
+            }
+            else
+            {
+                // delete user._id = id
+                cb({code: 111, errmsg: 'Invitation is spoiled'});
+            }
+        }
+    });
 }
 
 function getUser(name, cb)
@@ -355,6 +422,8 @@ module.exports.deleteBook = deleteBook;
 module.exports.saveBook = saveBook;
 module.exports.deleteBookmark = deleteBookmark;
 module.exports.editBookmark = editBookmark;
+module.exports.checkInvite = checkInvite;
+module.exports.decInvite = decInvite;
 
 
 

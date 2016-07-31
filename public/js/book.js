@@ -19,7 +19,7 @@ var __book = function(idElem, interfaceFunc) {
     var lineCnt;
     var json;
     var shift = 0;
-    var fs = $('#listOfBooks');
+    var fs = $('#listOfBooks ol');
     var thus = this;
     var offsetBook = 0;
     var height = 0;
@@ -294,6 +294,11 @@ var __book = function(idElem, interfaceFunc) {
         });
     };
 
+    /**
+     *
+     * @param anyway - save if load.save is true
+     * @returns {Promise}
+     */
     this.save = function(anyway) {
         return new Promise(function(resolve, reject){
 
@@ -406,6 +411,11 @@ var __book = function(idElem, interfaceFunc) {
         return (saved == screen.pos);
     };
 
+    /**
+     * Switch online <-> offline
+     * Add class offline for all el.online
+     * Emmit when checkConnect false
+     */
     this.swapOnlineMode = function () {
         mode['online'] = !mode['online'];
         if (mode['online'])
@@ -424,6 +434,10 @@ var __book = function(idElem, interfaceFunc) {
         }
     };
 
+    /**
+     * Switch day <-> night
+     * Add or remove class night on #book
+     */
     this.swapNightMode = function () {
         mode['night'] = !mode['night'];
         if (mode['night'])
@@ -436,6 +450,12 @@ var __book = function(idElem, interfaceFunc) {
         }
     };
 
+    /**
+     * Write array of bookmarks in VAR lb = #listOfBookmarks
+     * Add bookmarks in slider
+     * sync
+     * @param bm - array of bookmarks
+     */
     function loadBookmarks(bm)
     {
         var lb = $('#listOfBookmarks');
@@ -488,6 +508,15 @@ var __book = function(idElem, interfaceFunc) {
         thus.__int__bookmark.reset();
     }
 
+    /**
+     * Write book{bookId} in #book
+     * async: get info about book{/book/info/_:id}
+     * get fb2 file{/store/book/get/_:info.id}
+     * parse book
+     * add id, mark, slider, footnote
+     * @param id - bookId
+     * @returns {Promise}
+     */
     this.getBook = function(id) {
         return new Promise(function(resolve, reject)
         {
@@ -1107,6 +1136,7 @@ var __book = function(idElem, interfaceFunc) {
     this.getFiles = function() {
         thus.ready(function() {
             fs.empty();
+            fs.append($('<ol>'));
 
             for (let t in user.books)
             {
@@ -1116,15 +1146,20 @@ var __book = function(idElem, interfaceFunc) {
                                 .addClass('fs')
                                 .addClass('online');
 
-                appEl.append($('<span>')
-                                .html('X')
-                                .addClass('fs-del')
-                                .addClass('online')
-                                .data('id', user.books[t].id)
-                                .data('title', user.books[t].title)
-                );
+                var iconDel = $('<span>')
+                    .html('X')
+                    .addClass('fs-del')
+                    .addClass('online')
+                    .data('id', user.books[t].id)
+                    .data('title', user.books[t].title);
 
-                fs.append(appEl);
+
+                let li = $('<li>').append(appEl);
+                let divControl = $('<div>').addClass('fs-control').append(iconDel);
+
+
+                li.append(divControl);
+                fs.append(li);
             }
 
             $('.fs').click(function (e) {

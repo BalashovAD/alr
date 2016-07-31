@@ -47,21 +47,6 @@ hr {
 #time:before {
   content: 'Time: ';
 }
-#loading {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 40%;
-  height: 5%;
-  font-size: 300%;
-  opacity: 1;
-  text-align: center;
-  z-index: 105;
-  background: #7B68EE;
-}
-#loading:before {
-  content: 'Loading ...';
-}
 #book {
   box-sizing: border-box;
   padding: 0 10px;
@@ -133,9 +118,32 @@ hr {
 .left.hide {
   display: none;
 }
-div.fs {
+#listOfBooks {
   width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  word-wrap: break-word;
+}
+#listOfBooks ol {
+  list-style-type: none;
+  padding: inherit;
+}
+#listOfBooks div.fs {
+  width: 90%;
+  display: inline-block;
   font-size: 150%;
+}
+#listOfBooks div.fs-control {
+  width: 10%;
+  height: 100%;
+  display: inline-block;
+  text-align: right;
+}
+#listOfBooks li {
+  border-bottom: 1px solid grey;
+}
+#listOfBooks li:last-child {
+  border-bottom: 0;
 }
 .right {
   width: 2%;
@@ -295,4 +303,16 @@ div.footnote {
 }
 .closed {
   opacity: 0.3;
+}
+#loading {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 40%;
+  height: 5%;
+  font-size: 300%;
+  opacity: 1;
+  text-align: center;
+  z-index: 105;
+  background: #7892c2;
 }

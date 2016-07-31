@@ -6,11 +6,13 @@ $(document).ready(function() {
         $('#failReg').attr('class', 'hide');
         var name = $('#login input[name=user]').val().split('/')[0];
         var psw = $('#login input[name=psw]').val().split('/')[0];
+        var invite = $('#login input[name=invite]').val().split('/')[0];
         var cnf = $('#login input[name=cnfPsw]').val().split('/')[0];
 
         var data = {
             name: name,
-            psw: psw
+            psw: psw,
+            invite: invite
         };
 
         if (psw === cnf)
@@ -24,8 +26,8 @@ $(document).ready(function() {
                 $('#okReg').html(JSON.stringify(d));
                 $('#okReg').attr('class', '');
                 $('#failReg').attr('class', 'hide');
-            }).fail(() => {
-                $('#failReg').html('Fail');
+            }).fail((d) => {
+                $('#failReg').html('Fail <br>' + d.responseJSON.errmsg);
                 $('#failReg').attr('class', '');
                 $('#okReg').attr('class', 'hide');
             });

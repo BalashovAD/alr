@@ -11,6 +11,7 @@
 @borderColor: grey;
 @borderFormColor: #b3b1b1;
 @mainBackgroundColor: #7892c2;
+@fsWidth: 90%;
 
 body {
     /*padding: 50px;*/
@@ -81,26 +82,6 @@ hr {
 
 #time:before {
     content: 'Time: ';
-}
-
-#loading {
-    position: fixed;
-    top: 0;
-    right: 0;
-
-    width: @msg_width;
-    height: @menu_size;
-    font-size: 300%;
-
-    opacity: 1;
-    text-align: center;
-    z-index: 105;
-
-    background: #7B68EE;
-}
-
-#loading:before {
-    content: 'Loading ...';
 }
 
 // BOOK
@@ -209,10 +190,42 @@ hr {
     display: none;
 }
 
-div.fs {
+#listOfBooks {
     width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    word-wrap: break-word;
+}
+
+#listOfBooks ol {
+    list-style-type: none;
+    padding: inherit;
+}
+
+#listOfBooks div.fs {
+    width: @fsWidth;
+    display: inline-block;
+
 
     font-size: 150%;
+}
+
+#listOfBooks div.fs-control {
+    width: 100% - @fsWidth;
+    height: 100%;
+    display: inline-block;
+
+    text-align: right;
+
+}
+
+#listOfBooks li {
+    border-bottom: 1px solid @borderColor;
+}
+
+#listOfBooks li:last-child {
+    border-bottom: 0;
 }
 
 .fs-del {
@@ -474,4 +487,22 @@ div.footnote {
     //text-decoration: line-through;
 
     opacity: 0.3;
+}
+
+// loading
+
+#loading {
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    width: @msg_width;
+    height: @menu_size;
+    font-size: 300%;
+
+    opacity: 1;
+    text-align: center;
+    z-index: 105;
+
+    background: @mainBackgroundColor;
 }

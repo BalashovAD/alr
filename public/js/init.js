@@ -34,6 +34,8 @@ var __loading = function() {
 
         if (cnt <= 0)
         {
+            cnt = 0;
+
             el.hide();
         }
     };

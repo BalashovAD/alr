@@ -35,6 +35,7 @@ app.use(function(req, res, next){
         if (err)
         {
             req.userName = 0;
+            req.userId = '';
             req.lvl = LVL['GUEST'];
 
             return;
@@ -43,6 +44,7 @@ app.use(function(req, res, next){
         if (u && u.prop.secret == req.cookies.user)
         {
             req.userName = u.name;
+            req.userId = u._id;
             req.lvl = u.prop.lvl;
         }
         else
@@ -50,6 +52,7 @@ app.use(function(req, res, next){
             res.clearCookie('user', {path: '/'});
 
             req.userName = 0;
+            req.userId = '';
             req.lvl = LVL['MAX_LVL'];
 
             //debug('user {name: %s, lvl: %d} was load;', req.nameofuser, req.lvl)
@@ -130,6 +133,7 @@ app.get('/registration.jade', function (req, res, next) {
         next();
     }
 });
+
 
 // LOGIN
 app.use('/login', require('./login').app);
