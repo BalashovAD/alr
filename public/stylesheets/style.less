@@ -21,6 +21,13 @@ body {
     background: @mainBackgroundColor;
 }
 
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
 
 // MAIN CLASS
 .css-center-1-line {
@@ -42,6 +49,10 @@ hr {
 
 // END MAIN CLASS
 
+#msgCont {
+    border-bottom: 1px solid @borderColor;
+}
+
 #msg {
     position: fixed;
     top: 0;
@@ -57,6 +68,8 @@ hr {
 
     vertical-align: middle;
     background: @mainBackgroundColor;
+
+    border-bottom: 1px solid @borderColor;
 }
 
 #time {
@@ -78,6 +91,8 @@ hr {
     vertical-align: middle;
 
     background: @mainBackgroundColor;
+
+    border-bottom: 1px solid @borderColor;
 }
 
 #time:before {
@@ -505,4 +520,6 @@ div.footnote {
     z-index: 105;
 
     background: @mainBackgroundColor;
+
+    border-bottom: 1px solid @borderColor;
 }

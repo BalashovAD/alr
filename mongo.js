@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var assert = require('assert');
 var path = require('path');
 var debug = require('debug')('sniffer:mongo');
-debug = ()=>{};
+// debug = ()=>{};
 
 var LVL = require('./login').LVL;
 
@@ -21,46 +21,110 @@ var Book;
 var User;
 var Invite;
 
-db.once('open', function() {
-    let user = new mongoose.Schema({
-        name: String,
-        prop: {
-            psw: String,
-            secret: String,
-            lvl: Number
-        },
-        books: [{
-            id: String,
-            title: String,
-            author: String
-        }],
-        lastBook: String
-    }, {collection: 'users'});
+var COL;
 
-    let book = new mongoose.Schema({
+var schemaUser = {
+    name: {
+        type: String,
+        unique: true
+    },
+    prop: {
+        psw: String,
+        secret: String,
+        lvl: Number
+    },
+    books: [{
+        id: String,
         title: String,
-        author: String,
-        link: String,
-        bookmarks: [{
-            title: String,
-            text: String,
-            pos: Number
-        }],
-        owner: String,
-        pos: Number
-    }, {collection: 'books'});
+        author: String
+    }],
+    lastBook: {
+        type: String,
+        default: 0
+    }
+};
 
-    let invite = new mongoose.Schema({
-        value: String,
-        counter: Number,
-        users: [{
-            id: String
-        }]
-    });
+function jsonPrep(obj)
+{
+    let r = {};
+    for (let key in obj)
+    {
+        if (obj.hasOwnProperty(key))
+        {
+            if (typeof obj[key] === 'function')
+            {
+                r[key] = obj[key].name;
+            }
+            else if (typeof obj[key] === 'object' && obj[key][0])
+            {// when it's array
+                r[key] = jsonPrep(obj[key][0]);
+                r['__' + key] = 'array';
+            }
+            else if (typeof obj[key] === 'object' && obj[key].type)
+            {// when type is .type and other r settings
+                r[key] = obj[key].type.name;
+                if (obj[key].default)
+                    r['__' + key] = obj[key].default;
+            }
+            else if (typeof obj[key] === 'object')
+            {// type is obj
+                r[key] = jsonPrep(obj[key]);
+            }
+        }
+    }
+
+    return r;
+}
+
+var schemaBook = {
+    title: String,
+    author: String,
+    link: String,
+    bookmarks: [{
+        title: String,
+        text: String,
+        pos: Number
+    }],
+    owner: String,
+    pos: Number
+};
+
+var schemaInvite = {
+    value: {
+        type: String,
+        unique: true
+    },
+    counter: {
+        type: Number,
+        default: 5,
+        min: 0
+    },
+    users: [{
+        id: String
+    }]
+};
+
+db.once('open', function() {
+    let user = new mongoose.Schema(schemaUser, {collection: 'users'});
+
+    let book = new mongoose.Schema(schemaBook, {collection: 'books'});
+
+    let invite = new mongoose.Schema(schemaInvite, {collection: 'invites'});
+
+    invite.statics.findAndModify = function (query, doc, callback) {
+        return this.collection.findAndModify(query, [], doc, true, callback);
+    };
 
     Book = mongoose.model('book', book);
     User = mongoose.model('user', user);
     Invite = mongoose.model('invite', invite);
+
+
+    COL = {
+        'user': User,
+        'book': Book,
+        'invite': Invite
+    };
 });
 
 mongoose.connect(url);
@@ -188,7 +252,12 @@ function deleteBook(id, name, cb, anyway)
     b.select('owner link').exec(function(err, book) {
         if (err)
         {
-            cb(err);
+            User.update({name: book.owner}, {$pull: {
+                books: {
+                    id: id
+                }
+            }
+            }, cb);
         }
         else
         {
@@ -237,11 +306,60 @@ function deleteBook(id, name, cb, anyway)
             {
                 if (!book)
                 {
-                    cb();
+                    User.update({name: name}, {$pull: {
+                        books: {
+                            id: id
+                        }
+                    }
+                    }, cb);
                 }
             }
         }
     })
+}
+
+function deleteUser(id, name, cb, anyway)
+{
+    let nowReady = 0;
+
+    function checkCb(err, t)
+    {
+        if (nowReady >= 2) // magic number
+        {
+            cb(err, t);
+        }
+        else
+        {
+            ++nowReady;
+        }
+    }
+
+    User.findOne({_id: id}).exec((err, t) => {
+        if (err)
+        {
+            cb(err);
+        }
+        else
+        {
+            if (anyway || t && t.name && t.name == name)
+            {
+                // delete all books
+                Book.remove({owner: t.name}).exec(checkCb);
+                // remove this user from invite
+                Invite.findAndModify({user: {
+                    $elemMatch: {
+                        id: t.id
+                    }
+                }}, {user: {
+                    $pullAll: {
+                        id: t.id
+                    }
+                }}, checkCb);
+                // delete this user
+                User.remove({_id: id}).exec(checkCb);
+            }
+        }
+    });
 }
 
 function addBook(info, cb)
@@ -311,12 +429,8 @@ function saveBook(id, name, ss, cb, anyway)
     debug('saveBook: nq = ' + nq);
 
     Book.findOneAndUpdate(q, nq, (err, t) => {
-        debug(err, t, name);
-
         if (!err && t && name == t.owner)
         {
-            debug(err, t);
-
             User.update({name: name}, {$set: {lastBook: id}}, cb);
         }
         else
@@ -413,6 +527,44 @@ function getBook(id, name, cb, anyway)
     })
 }
 
+
+function getColById(col, id, cb)
+{
+    let qq = COL[col].findOne({_id: id}).select('-__v');
+
+    qq.exec(cb);
+}
+
+function getCol(col, cb)
+{
+    let qq = COL[col].find().select('-__v');
+
+    qq.exec(cb);
+}
+
+function deleteById(col, id, cb)
+{
+    switch(col)
+    {
+        case 'book':
+                     deleteBook(id, false, cb, true);
+                     break;
+        case 'user':
+                     deleteUser(id, false, cb, true);
+                     break;
+        case 'invite':
+                     Invite.remove({_id: id}).exec(cb);
+                     break;
+    }
+}
+
+function addDoc(col, doc, cb)
+{
+    let u = new COL[col](doc);
+
+    u.save(cb);
+}
+
 module.exports.addUser = addUser;
 module.exports.checkUser = checkUser;
 module.exports.addBook = addBook;
@@ -424,8 +576,22 @@ module.exports.deleteBookmark = deleteBookmark;
 module.exports.editBookmark = editBookmark;
 module.exports.checkInvite = checkInvite;
 module.exports.decInvite = decInvite;
+module.exports.getColById = getColById;
+module.exports.getCol = getCol;
+module.exports.deleteById = deleteById;
+module.exports.deleteUser = deleteUser;
+module.exports.addDoc = addDoc;
 
-
+module.exports.schemas = [{
+    schema: jsonPrep(schemaUser),
+    name: "user"
+}, {
+    schema: jsonPrep(schemaBook),
+    name: "book"
+}, {
+    schema: jsonPrep(schemaInvite),
+    name: "invite"
+}];
 
 
 

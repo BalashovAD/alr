@@ -4,6 +4,14 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background: #7892c2;
 }
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
 .css-center-1-line {
   text-align: center;
 }
@@ -15,6 +23,9 @@ hr {
   border-bottom: 1px solid black;
   padding-top: 5px;
   padding-bottom: 5px;
+}
+#msgCont {
+  border-bottom: 1px solid grey;
 }
 #msg {
   position: fixed;
@@ -28,6 +39,7 @@ hr {
   z-index: 100;
   vertical-align: middle;
   background: #7892c2;
+  border-bottom: 1px solid grey;
 }
 #time {
   position: fixed;
@@ -43,6 +55,7 @@ hr {
   display: table-cell;
   vertical-align: middle;
   background: #7892c2;
+  border-bottom: 1px solid grey;
 }
 #time:before {
   content: 'Time: ';
@@ -315,4 +328,5 @@ div.footnote {
   text-align: center;
   z-index: 105;
   background: #7892c2;
+  border-bottom: 1px solid grey;
 }

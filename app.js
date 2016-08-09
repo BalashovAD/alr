@@ -148,6 +148,9 @@ app.use('/upload', require('./upload').app);
 // BOOK
 app.use('/book', require('./book').app);
 
+// Admin panel
+app.use('/admin', require('./admin').app);
+
 app.all('/echo*', function(req, res, next) {
     res.status(200).end();
 });

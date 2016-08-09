@@ -1,0 +1,118 @@
+body {
+  background: black;
+  color: lightgray;
+}
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+#left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 50%;
+  height: 100%;
+  border-right: 1px double grey;
+}
+#right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: inline-block;
+  width: 50%;
+  height: 100%;
+  border-left: 1px double grey;
+}
+.menu {
+  height: 4.8%;
+  width: 100%;
+  border-bottom: 1px solid grey;
+}
+.btn.left-side {
+  border-top: 1px solid grey;
+  border-left: 1px solid grey;
+  box-sizing: border-box;
+}
+.btn.right-side {
+  border-top: 1px solid grey;
+  border-right: 1px solid grey;
+  box-sizing: border-box;
+}
+.menu-line {
+  width: 100%;
+  height: 50%;
+}
+.menu div.item-menu {
+  display: inline-block;
+  width: 33.33333333%;
+  height: 100%;
+  text-align: center;
+}
+.menu div.item-menu.select {
+  color: green;
+}
+.main {
+  font-size: 100%;
+  width: 100%;
+  height: 67.2%;
+  font-family: "Courier New";
+  border-bottom: 1px solid grey;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.main-container span.object-value:after {
+  content: ';';
+}
+.object-value {
+  user-select: contain;
+}
+#cmdLine {
+  z-index: 150;
+  height: 3%;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: green;
+}
+.single {
+  font-size: 100%;
+  width: 100%;
+  height: 25%;
+  font-family: "Courier New";
+  border-bottom: 1px solid grey;
+  overflow-y: auto;
+  overflow-x: hidden;
+  text-wrap: normal;
+  word-wrap: break-word;
+}
+.single span {
+  font-size: 100%;
+}
+.object-name {
+  font-style: oblique;
+  font-weight: bold;
+  color: #a6af30;
+}
+.single ol {
+  list-style-type: none;
+}
+.open-bracket {
+  text-align: right;
+}
+.open-bracket:after {
+  content: '{';
+}
+.close-bracket:before {
+  content: '}';
+}
+.invisibility {
+  display: none;
+}

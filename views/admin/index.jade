@@ -1,0 +1,54 @@
+doctype html
+html(lang="en")
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/btn.css')
+        link(rel='stylesheet', href='/stylesheets/admin-panel.css')
+        link(rel='stylesheet', href='/stylesheets/switch-btn.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.min.css')
+        link(rel='stylesheet', href='/stylesheets/jquery-ui.theme.min.css')
+    body
+        #left
+            .menu
+                .menu-line
+                    each val in schemas
+                        div.btn.item-menu.left-side.side(data-id=val.name, data-select=val.name, data-side="left")
+                            a.css-center-1-line= val.name
+                .menu-line
+                    div.btn.item-menu.left-side(data-id="schema", data-side="left")
+                        a.css-center-1-line= "schema"
+                    div.btn.item-menu.left-side(data-id="Add", data-side="left")
+                        a.css-center-1-line= "Add"
+                    div.btn.item-menu.left-side(data-id="Delete", data-side="left")
+                        a.css-center-1-line= "Delete"
+
+            #leftSingleContainer.single.left-side.side(data-side="left")
+
+            #leftMainContainer.main.left-side.side(data-side="left")
+
+        #right
+            .menu
+                .menu-line
+                    each val in schemas
+                        div.btn.item-menu.right-side.side(data-id=val.name, data-select=val.name, data-side="right")
+                            a.css-center-1-line= val.name
+                .menu-line
+                    div.btn.item-menu.right-side(data-id="schema", data-side="right")
+                        a.css-center-1-line= "schema"
+                    div.btn.item-menu.right-side(data-id="Add", data-side="right")
+                        a.css-center-1-line= "Add"
+                    div.btn.item-menu.right-side(data-id="Delete", data-side="right")
+                        a.css-center-1-line= "Delete"
+
+            #rightSingleContainer.single.right-side.side(data-side="right")
+
+            #rightMainContainer.main.right-side.side(data-side="right")
+
+        #cmdLine
+
+        script(src='/js/debug.js' defer)
+        script(src='/js/jquery.js' defer)
+        script(src='/js/jquery-ui.min.js' defer)
+        script(src='/js/jquery.viewport.js' defer)
+        script(src='/js/jquery.switch_btn.js' defer)
+        script(src='/js/adminPanel.js' defer)
