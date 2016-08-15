@@ -152,7 +152,13 @@ app.use('/book', require('./book').app);
 app.use('/admin', require('./admin').app);
 
 app.all('/echo*', function(req, res, next) {
-    res.status(200).end();
+    let MB = 1000 * 1000;
+    let echo = process.memoryUsage(); echo.heapTotal /= MB; echo.heapUsed /= MB; echo.rss /= MB;
+    echo.freemem = require('os').freemem() / MB;
+    echo.totalmem = require('os').totalmem() / MB;
+    echo.sum = echo.heapTotal + echo.heapUsed + echo.rss;
+
+    res.status(200).json(echo).end();
 });
 
 

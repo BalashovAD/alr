@@ -23,27 +23,6 @@ var Invite;
 
 var COL;
 
-var schemaUser = {
-    name: {
-        type: String,
-        unique: true
-    },
-    prop: {
-        psw: String,
-        secret: String,
-        lvl: Number
-    },
-    books: [{
-        id: String,
-        title: String,
-        author: String
-    }],
-    lastBook: {
-        type: String,
-        default: 0
-    }
-};
-
 function jsonPrep(obj)
 {
     let r = {};
@@ -75,6 +54,27 @@ function jsonPrep(obj)
 
     return r;
 }
+
+var schemaUser = {
+    name: {
+        type: String,
+        unique: true
+    },
+    prop: {
+        psw: String,
+        secret: String,
+        lvl: Number
+    },
+    books: [{
+        id: String,
+        title: String,
+        author: String
+    }],
+    lastBook: {
+        type: String,
+        default: 0
+    }
+};
 
 var schemaBook = {
     title: String,

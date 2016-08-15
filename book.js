@@ -102,8 +102,6 @@ app.get('/', (req, res, next) => {
 
 var fileCounter = 0;
 
-app.use(require('./fileupload')());
-
 
 app.post('/add/*', function(req, res, next){
     if (req.userName && req.userName != '0')
@@ -116,39 +114,107 @@ app.post('/add/*', function(req, res, next){
     }
 });
 
-// Add book
-// :title - title in list
-app.post('/add/', function(req, res, next) {
-    let title = req.body.title;
-    let author = req.body.author || "";
-// TODO: form upload
-    let fileBook;
+var Busboy = require('busboy');
+var inspect = require('util').inspect;
+var MAX_FILE_SIZE = 2.4 * 1000 * 1000;
 
-    if (!req.files)
-    {
-        res.send('No files were uploaded.');
-        return;
-    }
-
-    fileBook = req.files.book;
-
-    if (!fileBook)
-    {
-        res.redirect('/book/');
-
-        return ;
-    }
+function getFile(req, res, next)
+{
 
     let date = Date.now();
 
-    let pp = path.join(__dirname, '/files/', req.userName,req.userName + '__' + date + '_' + fileCounter + ".fb2");
-
-    debug('Path = ' + pp);
 
     let lnk = path.join(req.userName, req.userName + '__' + date + '_' + fileCounter + ".fb2");
 
-    fileCounter++;
+    let pp = path.join(__dirname, '/files/', lnk);
 
+    req.lnkBook = lnk;
+
+    ++fileCounter;
+
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            fileSize: MAX_FILE_SIZE,
+            files: 1
+        }
+    });
+
+    // if true - delete loaded file
+    let isDelete = false;
+
+    busboy.on('file', function(fieldName, file, filename, encoding, mimetype) {
+
+        debug(JSON.stringify({fieldName, filename, encoding, mimetype}));
+
+        let len = 0;
+        if (fieldName == 'book')
+        {/*
+            file.on('data', function(data) {
+                len += data.length;
+                if (len > MAX_FILE_SIZE)
+                {
+                    busboy.abort();
+                }
+            });*/
+
+
+            file.on('limit', function() {
+                debug('Out of limits. FIle = ' + filename);
+
+                isDelete = true;
+            });
+
+
+            file.pipe(fs.createWriteStream(pp));
+        }
+    });
+
+    busboy.on('field', function(field, val) {
+        debug('Field [' + field + ']: value: ' + inspect(val));
+
+        req.body[field] = val;
+    });
+
+    busboy.on('aborted', function() {
+        req.status(403).end();
+    });
+
+    busboy.on('finish', function() {
+        if (isDelete)
+        {
+            fs.unlink(pp);
+
+            res.status(500).redirect('/book/');
+        }
+        else
+        {
+            next();
+        }
+    });
+
+
+    return req.pipe(busboy);
+}
+
+// Add book
+// :title - title in list
+app.post('/add/', getFile, function(req, res, next) {
+    let title = req.body.title || "";
+    let author = req.body.author || "";
+// TODO: form upload
+
+    debug('Path = ' + req.lnkBook);
+
+
+    addBook({
+        title: title,
+        author: author,
+        owner: req.userName,
+        lnk: req.lnkBook
+    }, db_cb);
+
+/*
     fileBook.mv(pp, function(err) {
         if (err)
         {
@@ -165,7 +231,7 @@ app.post('/add/', function(req, res, next) {
         }
     });
 // TODO: convert files to fb2
-
+*/
     function db_cb(err, t)
     {
         if (err)
