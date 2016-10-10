@@ -116,7 +116,7 @@ app.post('/add/*', function(req, res, next){
 
 var Busboy = require('busboy');
 var inspect = require('util').inspect;
-var MAX_FILE_SIZE = 2.4 * 1000 * 1000;
+var MAX_FILE_SIZE = 2.4 * 1024 * 1024;
 
 function getFile(req, res, next)
 {

@@ -4,9 +4,7 @@ html(lang="en")
         title= title
         link(rel='stylesheet', href='/stylesheets/style.css')
         link(rel='stylesheet', href='/stylesheets/btn.css')
-        link(rel='stylesheet', href='/stylesheets/switch-btn.css')
-        link(rel='stylesheet', href='/stylesheets/jquery-ui.min.css')
-        link(rel='stylesheet', href='/stylesheets/jquery-ui.theme.min.css')
+
     body
         #menu
             div#menuLine1
@@ -31,14 +29,5 @@ html(lang="en")
                     ='Loading...'
         block content
 
-        script(src='/js/debug.js' defer)
-        script(src='/js/jquery.js' defer)
-        script(src='/js/jquery-ui.min.js' defer)
-        script(src='/js/jquery.viewport.js' defer)
-        script(src='/js/jquery.switch_btn.js' defer)
 
-        script(src='/js/jsFile/filejs.js' defer)
-        script(src='/js/jsFile/filejs-fb.js' defer)
-        script(src='/js/login.js' defer)
-        script(src='/js/book.js' defer)
-        script(src='/js/init.js' defer)
+        script(src='/js/build/bookReader.js' defer)

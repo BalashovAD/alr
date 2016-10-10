@@ -1,12 +1,7 @@
 (function webpackUniversalModuleDefinition(root, factory) {
     if(typeof exports === 'object' && typeof module === 'object')
-        module.exports = factory(require("JsFile"));
-    else if(typeof define === 'function' && define.amd)
-        define(["JsFile"], factory);
-    else if(typeof exports === 'object')
-        exports["JsFileFb"] = factory(require("JsFile"));
-    else
-        root["JsFileFb"] = factory(root["JsFile"]);
+        module.exports = factory(require("./filejs"));
+
 })(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
     return /******/ (function(modules) { // webpackBootstrap
         /******/ 	// The module cache

@@ -1,4 +1,3 @@
-
 function getCookie(name)
 {
     var matches = document.cookie.match(new RegExp(
@@ -16,9 +15,9 @@ getCookie.part1 = function(n){
 };
 
 
+let __NAME__, __IS_LOGIN__;
 
-
-var __login = new function()
+var __login = function()
 {
     var login = $('#login');
     var sh_login = $('#login .login');
@@ -95,8 +94,6 @@ var __login = new function()
     };
 
     return this;
-}();
+};
 
-var login = __login.login;
-var exit = __login.exit;
-
+export {__login};

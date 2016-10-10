@@ -37,6 +37,8 @@
  *
  */
 
+import {jQuery} from 'jquery';
+
 (function($) {
 
     $.widget("sylightsUI.switchButton", {

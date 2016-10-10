@@ -5,9 +5,10 @@
 var file;
 var JsFile;
 
-localStorage.debug = 'app:book';
+let debug = require('debug')('app:init');
+import {__book} from './book';
 
-var debugInit = debug('app:init');
+localStorage.debug = 'app:book';
 
 // GLOBAL VARIABLE
 var __IS_LOGIN__ = false;
@@ -113,6 +114,8 @@ var msg = __msg.msg;
 
 
 function __initBookmark(book) {
+
+	let ttt = 1;
 
     var submit = $('#submitBookmark');
     var choose = $('#chooseAnotherPosBookmark');
@@ -281,19 +284,6 @@ function __controllerLeft(book) {
 
 
 $(document).ready(function() {
-// INIT JsFILE
-// only fb2 now
-    if (typeof JsFile === 'object')
-    {
-        JsFile = JsFile.default;
-        JsFile.defineEngine(JsFileFb.default);
-
-        msg('JsFile was load.');
-    }
-    else
-    {
-        error('JsFile didn`t load.');
-    }
 // .css-center-1-line
     function cssCenter1Line() {
         $('.css-center-1-line').each(function () {
@@ -307,25 +297,6 @@ $(document).ready(function() {
     clock.play();
 
 //
-// SWITCH BUTTON
-    $('#onlineMode.switch-button').switchButton({
-        on_label: 'ONLINE',
-        off_label: 'OFFLINE',
-        labels_placement: "right",
-        width: 100,
-        height: 40,
-        button_width: 40
-    });
-
-    $('#nightMode.switch-button').switchButton({
-        on_label: 'DAY',
-        off_label: 'NIGHT',
-        labels_placement: "right",
-        width: 100,
-        height: 40,
-        button_width: 40
-    });
-
 
 // BOOK
 
@@ -333,7 +304,9 @@ $(document).ready(function() {
         bookmark: __initBookmark,
         loading: __loading,
         ajaxSettings: __ajaxSettings,
-        controllerLeft: __controllerLeft
+        controllerLeft: __controllerLeft,
+	    error: error,
+	    msg: msg
     });
 // DEBUG
     __DEBUG__book = book;
@@ -355,16 +328,6 @@ $(document).ready(function() {
             book.__int__controllerLeft(id);
         });
 // SLIDER
-
-        $('#slider_btn').draggable({
-            containment: "parent",
-            axis: "y",
-            scroll: false,
-            stop: function() {
-                book.scrollSlider();
-            }
-        });
-
         $('#slider').click(function (e) {
             if ($(e.target).attr('id') == 'slider')
             {

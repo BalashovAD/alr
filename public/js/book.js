@@ -1,13 +1,23 @@
 "use strict";
+
+let debug = require('debug');
+import JsFile from './jsFile/filejs';
+import JsFileFb from './jsFile/filejs-fb';
+
+JsFile.defineEngine(JsFileFb);
+
 jQuery.fn.cssInt = function(n) {
     return parseInt($(this[0]).css(n), 10);
 };
 
-debug.enable();
-var debug = debug('app:book');
+var doNothing = ()=>{};
+
 var __book = function(idElem, interfaceFunc) {
     var info = {};
     var user = undefined;
+
+	let error = interfaceFunc['error'];
+	let msg = interfaceFunc['msg'];
 
     var bookDoc;
     var bookEl = $('#' + idElem);
@@ -122,7 +132,7 @@ var __book = function(idElem, interfaceFunc) {
     };
 
     this.editBookmark = function(id, pos, title, text) {
-        return new Promise(function(resolve, reject){
+        let prom = new Promise(function(resolve, reject){
 
             let dd = {
                 mark: {
@@ -176,10 +186,12 @@ var __book = function(idElem, interfaceFunc) {
                 }
             }
         });
+
+        return prom.then(doNothing, error);
     };
 
     this.deleteBookmark = function(id) {
-        return new Promise(function(resolve, reject){
+        let prom = new Promise(function(resolve, reject){
             let dd = {
                 markId: id
             };
@@ -232,10 +244,12 @@ var __book = function(idElem, interfaceFunc) {
                 }
             }
         });
+
+        return prom.then(doNothing, error);
     };
 
     this.reloadBookmark = function() {
-        return new Promise(function(resolve, reject){
+        let prom = new Promise(function(resolve, reject){
             if (mode['online'])
             {
                 if (bookId)
@@ -292,6 +306,8 @@ var __book = function(idElem, interfaceFunc) {
                 }
             }
         });
+
+        return prom.then(doNothing, error);
     };
 
     /**
@@ -300,7 +316,7 @@ var __book = function(idElem, interfaceFunc) {
      * @returns {Promise}
      */
     this.save = function(anyway) {
-        return new Promise(function(resolve, reject){
+        let prom = new Promise(function(resolve, reject){
 
             if (mode['online'])
             {
@@ -405,6 +421,8 @@ var __book = function(idElem, interfaceFunc) {
                 }
             }
         });
+
+        return prom.then(doNothing, error);
     };
 
     this.isSavedPos = function () {
@@ -518,7 +536,7 @@ var __book = function(idElem, interfaceFunc) {
      * @returns {Promise}
      */
     this.getBook = function(id) {
-        return new Promise(function(resolve, reject)
+        let prom = new Promise(function(resolve, reject)
         {
 
             if (mode['online'])
@@ -547,6 +565,9 @@ var __book = function(idElem, interfaceFunc) {
                                 var blobb = new Blob([fl], {
                                     type: 'application/x-fictionbook+xml'
                                 });
+
+	                            window.blobb = blobb;
+
 
                                 var fb2 = new JsFile(blobb, {
                                     type: 'application/x-fictionbook+xml',
@@ -714,6 +735,8 @@ var __book = function(idElem, interfaceFunc) {
                 }
             }
         });
+
+        return prom.then(doNothing, error);
     };
 
     this.deleteBook = function (id, title) {
@@ -1045,6 +1068,7 @@ var __book = function(idElem, interfaceFunc) {
         if (arguments.length)
         {// slider <- id
             thus.jmp(sliderPos(Y));
+
             //scrollTop(screen.pos);
         }
         else
@@ -1072,7 +1096,7 @@ var __book = function(idElem, interfaceFunc) {
     setTimeout(checkConnect, 1000 * 60);
 
     this.getUserInfo = function() {
-        return new Promise(function(resolve, reject) {
+        let prom = new Promise(function(resolve, reject) {
             if (mode['online'])
             {
                 if (!load.user)
@@ -1105,6 +1129,8 @@ var __book = function(idElem, interfaceFunc) {
                 }
             }
         });
+
+        return prom.then(doNothing, error);
     };
 
     this.ready = function (cb) {
@@ -1218,3 +1244,5 @@ var __book = function(idElem, interfaceFunc) {
 
     return this;
 };
+
+export {__book};
