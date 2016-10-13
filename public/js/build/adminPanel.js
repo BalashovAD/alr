@@ -107,7 +107,7 @@ var _ =
 	
 	    var mainFiends = {
 	        user: ['name', 'prop'],
-	        book: ['title', 'author'],
+	        book: ['title', 'author', 'owner'],
 	        invite: ['value', 'counter']
 	    };
 	
@@ -134,7 +134,7 @@ var _ =
 	        var col = $(this).data('col');
 	        var side = $(this).closest('.side').data('side');
 	
-	        thus.load(side, id, col);
+	        loadInSingleContainer(side, id, col);
 	    }
 	
 	    function deleteById() {
@@ -151,11 +151,14 @@ var _ =
 	            url: '/admin/delete/_' + col + '/_' + id,
 	            data: JSON.stringify(data)
 	        }).done(function () {
-	            thus.reload();
+	            thus.reloadDataOnPage();
 	        });
 	    }
 	
-	    function addElem() {
+	    /**
+	     * @this  $(SingleContainer)
+	     */
+	    function addDataFromSingleContainerInDB() {
 	        var elms = $(this).closest('.single').find('input');
 	        var data = {};
 	        var col = $(this).data('col');
@@ -170,13 +173,19 @@ var _ =
 	            data: JSON.stringify(data),
 	            contentType: "application/json; charset=utf-8"
 	        }).done(function () {
-	            thus.reload();
+	            thus.reloadDataOnPage();
 	        }).fail(function () {
 	            console.error('Error');
 	        });
 	    }
 	
-	    function parseObj(data, sel, lvl) {
+	    /**
+	     * Recursion function
+	     * @param data - enter data
+	     * @param lvl - depth of recursion
+	     * @returns {*|jQuery}
+	     */
+	    function parseObjectToHTML(data, lvl) {
 	        if (typeof lvl == 'undefined') {
 	            lvl = 0;
 	        }
@@ -195,7 +204,7 @@ var _ =
 	                        break;
 	
 	                    case 'object':
-	                        li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name')).append($('<span>').addClass('open-bracket')).append(parseObj(data[i], sel, lvl + 1));
+	                        li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name')).append($('<span>').addClass('open-bracket')).append(parseObjectToHTML(data[i], lvl + 1));
 	                        txt.append(li);
 	
 	                        txt.append($('<span>').addClass('close-bracket'));
@@ -210,7 +219,7 @@ var _ =
 	        return txt;
 	    }
 	
-	    function parseAll(d, sel) {
+	    function parseArrayOfObjectToHTML(d, sel) {
 	        /*
 	        User - name, prop
 	        Book - title, author, ?owner?
@@ -263,7 +272,7 @@ var _ =
 	            if (data.hasOwnProperty(i) && i[0] != '_') {
 	                switch (_typeof(data[i])) {
 	                    case 'number':
-	
+	                    // number as string
 	                    case 'string':
 	                        var def = '';
 	
@@ -281,7 +290,8 @@ var _ =
 	                            txt.append(li);
 	                        }
 	                        break;
-	
+	                    case 'array':
+	                    // all arrays is object
 	                    case 'object':
 	                        if (data.hasOwnProperty('__' + i) && typeof data['__' + i] != 'undefined' && data['__' + i] === 'array') {} else {
 	                            li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name')).append($('<span>').addClass('open-bracket')).append(parseSchema(data[i], lvl + 1, pref + i + '.'));
@@ -291,8 +301,7 @@ var _ =
 	                        }
 	
 	                        break;
-	                    case 'array':
-	                        break;
+	
 	                }
 	            }
 	        }
@@ -300,64 +309,63 @@ var _ =
 	        return txt;
 	    }
 	
-	    this.reload = function () {
-	        thus.load('left', 0, select['left']);
-	        thus.load('right', 0, select['right']);
+	    this.reloadDataOnPage = function () {
+	        loadInMainContainer('left');
+	        loadInMainContainer('right');
 	
 	        if (singleSel['left'].id && singleSel['left'].col) {
-	            thus.load('left', singleSel['left'].id, singleSel['left'].col);
+	            loadInSingleContainer('left', singleSel['left'].id, singleSel['left'].col);
 	        }
 	        if (singleSel['right'].id && singleSel['right'].col) {
-	            thus.load('right', singleSel['right'].id, singleSel['right'].col);
+	            loadInSingleContainer('right', singleSel['right'].id, singleSel['right'].col);
 	        }
 	    };
 	
-	    function load(side, _id, col) {
-	        if (arguments.length < 3 || typeof col == 'undefined') {
-	            col = select[side];
-	        }
+	    function addDataInSingleContainer(data, el, nowSelect) {
+	        emptySingleContainer(el);
+	        var delEl = $('<span>').html('[del]').data('id', data._id).data('col', nowSelect).click(deleteById);
 	
-	        if (_id) {
-	            (function () {
-	                // load select[side] WHERE id = _id
-	                var nowSelect = col;
-	                $.ajax({
-	                    method: 'GET',
-	                    url: '/admin/get/_' + nowSelect + '/_' + _id
-	                }).done(function (d) {
-	                    singleContainer[side].empty();
-	                    var delEl = $('<span>').html('[del]').data('id', d._id).data('col', nowSelect).click(deleteById);
+	        el.append($('<span>').html(nowSelect + ' = ').addClass('object-name')).append(delEl).append($('<span>').addClass('open-bracket'));
+	        el.append(parseObjectToHTML(data)).attr('class', 'single-' + nowSelect + ' single').append($('<span>').addClass('close-bracket'));
+	    }
 	
-	                    singleContainer[side].append($('<span>').html(nowSelect + ' = ').addClass('object-name')).append(delEl).append($('<span>').addClass('open-bracket'));
-	                    singleContainer[side].append(parseObj(d, nowSelect)).attr('class', 'single-' + nowSelect + ' single').append($('<span>').addClass('close-bracket'));
+	    function emptySingleContainer(el) {
+	        el.empty();
+	    }
 	
-	                    singleSel[side] = {
-	                        id: _id,
-	                        col: nowSelect
-	                    };
-	                }).fail(function () {
-	                    console.error('Error');
+	    function loadInSingleContainer(side, _id, col) {
+	        var nowSelect = col;
+	        $.ajax({
+	            method: 'GET',
+	            url: '/admin/get/_' + nowSelect + '/_' + _id
+	        }).done(function (data) {
 	
-	                    singleContainer[side].empty();
-	                    singleSel[side].id = 0;
-	                    singleSel[side].col = 0;
-	                });
-	            })();
-	        } else {
-	            (function () {
-	                // load all doc col = select[side]
-	                var nowSelect = col;
-	                $.ajax({
-	                    method: 'GET',
-	                    url: '/admin/get/_' + nowSelect + '/all/'
-	                }).done(function (d) {
-	                    mainContainer[side].empty();
-	                    mainContainer[side].append(parseAll(d, nowSelect));
-	                }).fail(function () {
-	                    console.error('Error');
-	                });
-	            })();
-	        }
+	            addDataInSingleContainer(data, singleContainer[side], nowSelect);
+	
+	            singleSel[side] = {
+	                id: _id,
+	                col: nowSelect
+	            };
+	        }).fail(function () {
+	            console.error('Error');
+	
+	            emptySingleContainer(singleContainer[side]);
+	            singleSel[side].id = 0;
+	            singleSel[side].col = 0;
+	        });
+	    }
+	
+	    function loadInMainContainer(side) {
+	        var nowSelect = select[side];
+	        $.ajax({
+	            method: 'GET',
+	            url: '/admin/get/_' + nowSelect + '/all/'
+	        }).done(function (d) {
+	            emptySingleContainer(mainContainer[side]);
+	            mainContainer[side].append(parseArrayOfObjectToHTML(d, nowSelect));
+	        }).fail(function () {
+	            console.error('Error');
+	        });
 	    }
 	
 	    this.show = function (id, side, sel) {
@@ -367,12 +375,13 @@ var _ =
 	
 	            select[side] = sel;
 	
-	            load(side);
+	            loadInMainContainer(side);
 	        } else {
 	            switch (id) {
 	                case 'Add':
 	                    thus.add(side);
 	                    break;
+	
 	            }
 	        }
 	    };
@@ -396,7 +405,7 @@ var _ =
 	        }).done(function (d) {
 	            singleContainer[side].empty();
 	
-	            var addEl = $('<span>').html('[add]').data('id', d._id).data('col', col).click(addElem);
+	            var addEl = $('<span>').html('[add]').data('id', d._id).data('col', col).click(addDataFromSingleContainerInDB);
 	
 	            singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name')).append(addEl).append($('<span>').addClass('open-bracket'));
 	            singleContainer[side].append(parseSchema(d, col)).attr('class', 'single-' + col + ' single').append($('<span>').addClass('close-bracket'));
@@ -409,8 +418,6 @@ var _ =
 	            console.log('Error');
 	        });
 	    };
-	
-	    this.load = load;
 	}
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 

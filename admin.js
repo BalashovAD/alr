@@ -8,7 +8,7 @@ app.use(cookieParser());
 app.use(require('body-parser').json());
 
 var checkAccess = require('./login').checkAccess;
-var getColById = require('./mongo').getColById;
+var getById = require('./mongo').getById;
 var getCol = require('./mongo').getCol;
 var deleteById = require('./mongo').deleteById;
 var addDoc = require('./mongo').addDoc;
@@ -84,7 +84,7 @@ app.get('/get/_:col/_:id', (req, res) => {
 
     if (['user', 'book', 'invite'].indexOf(col) > -1)
     {
-        getColById(col, id, function(err, t) {
+        getById(col, id, function(err, t) {
             if (err)
             {
                 res.status(403).end();

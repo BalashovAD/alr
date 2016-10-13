@@ -528,7 +528,7 @@ function getBook(id, name, cb, anyway)
 }
 
 
-function getColById(col, id, cb)
+function getById(col, id, cb)
 {
     let qq = COL[col].findOne({_id: id}).select('-__v');
 
@@ -576,7 +576,7 @@ module.exports.deleteBookmark = deleteBookmark;
 module.exports.editBookmark = editBookmark;
 module.exports.checkInvite = checkInvite;
 module.exports.decInvite = decInvite;
-module.exports.getColById = getColById;
+module.exports.getById = getById;
 module.exports.getCol = getCol;
 module.exports.deleteById = deleteById;
 module.exports.deleteUser = deleteUser;

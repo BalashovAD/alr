@@ -59,7 +59,7 @@ function Adm()
 
     let mainFiends = {
         user: ['name', 'prop'],
-        book: ['title', 'author'],
+        book: ['title', 'author', 'owner'],
         invite: ['value', 'counter']
     };
 
@@ -88,7 +88,7 @@ function Adm()
         let side = $(this).closest('.side').data('side');
 
 
-        thus.load(side, id, col);
+	    loadInSingleContainer(side, id, col);
     }
 
     function deleteById()
@@ -106,11 +106,14 @@ function Adm()
             url: '/admin/delete/_' + col + '/_' + id,
             data: JSON.stringify(data)
         }).done(function() {
-            thus.reload();
+            thus.reloadDataOnPage();
         });
     }
 
-    function addElem()
+	/**
+	 * @this  $(SingleContainer)
+	 */
+    function addDataFromSingleContainerInDB()
     {
         let elms = $(this).closest('.single').find('input');
         let data = {};
@@ -126,13 +129,19 @@ function Adm()
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8"
         }).done(function() {
-            thus.reload();
+            thus.reloadDataOnPage();
         }).fail(function() {
             console.error('Error');
         });
     }
 
-    function parseObj(data, sel, lvl)
+	/**
+	 * Recursion function
+	 * @param data - enter data
+	 * @param lvl - depth of recursion
+	 * @returns {*|jQuery}
+	 */
+    function parseObjectToHTML(data, lvl)
     {
         if (typeof lvl == 'undefined')
         {
@@ -158,7 +167,7 @@ function Adm()
                     case 'object' :
                                     li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
                                                 .append($('<span>').addClass('open-bracket'))
-                                                .append(parseObj(data[i], sel, lvl + 1));
+                                                .append(parseObjectToHTML(data[i], lvl + 1));
                                     txt.append(li);
 
                                     txt.append($('<span>').addClass('close-bracket'));
@@ -173,7 +182,7 @@ function Adm()
         return txt;
     }
 
-    function parseAll(d, sel)
+    function parseArrayOfObjectToHTML(d, sel)
     {
         /*
         User - name, prop
@@ -241,7 +250,7 @@ function Adm()
                 switch (typeof data[i])
                 {
                     case 'number' :
-
+						// number as string
                     case 'string' :
                         let def = '';
 
@@ -264,7 +273,8 @@ function Adm()
                             txt.append(li);
                         }
                         break;
-
+	                case 'array' :
+		                // all arrays is object
                     case 'object' :
                         if (data.hasOwnProperty('__' + i) && typeof data['__' + i] != 'undefined' && data['__' + i] === 'array')
                         {
@@ -281,8 +291,7 @@ function Adm()
                         }
 
                         break;
-                    case 'array' :
-                        break;
+
                 }
             }
         }
@@ -290,71 +299,77 @@ function Adm()
         return txt;
     }
 
-    this.reload = function ()
+    this.reloadDataOnPage = function ()
     {
-        thus.load('left', 0, select['left']);
-        thus.load('right', 0, select['right']);
+        loadInMainContainer('left');
+        loadInMainContainer('right');
 
         if (singleSel['left'].id && singleSel['left'].col)
         {
-            thus.load('left', singleSel['left'].id, singleSel['left'].col);
+            loadInSingleContainer('left', singleSel['left'].id, singleSel['left'].col);
         }
         if (singleSel['right'].id && singleSel['right'].col)
         {
-            thus.load('right', singleSel['right'].id, singleSel['right'].col);
+            loadInSingleContainer('right', singleSel['right'].id, singleSel['right'].col);
         }
     };
 
-    function load(side, _id, col)
-    {
-        if (arguments.length < 3 || typeof col == 'undefined')
-        {
-            col = select[side];
-        }
+	function addDataInSingleContainer(data, el, nowSelect)
+	{
+		emptySingleContainer(el);
+		let delEl = $('<span>').html('[del]').data('id', data._id).data('col', nowSelect)
+			.click(deleteById);
 
-        if (_id)
-        {// load select[side] WHERE id = _id
-            let nowSelect = col;
-            $.ajax({
-                method: 'GET',
-                url: '/admin/get/_' + nowSelect + '/_' + _id
-            }).done(function(d){
-                singleContainer[side].empty();
-                let delEl = $('<span>').html('[del]').data('id', d._id).data('col', nowSelect)
-                        .click(deleteById);
+		el.append($('<span>').html(nowSelect + ' = ').addClass('object-name'))
+			.append(delEl)
+			.append($('<span>').addClass('open-bracket'));
+		el.append(parseObjectToHTML(data)).attr('class', 'single-' + nowSelect + ' single')
+			.append($('<span>').addClass('close-bracket'));
 
-                singleContainer[side].append($('<span>').html(nowSelect + ' = ').addClass('object-name'))
-                                    .append(delEl)
-                                    .append($('<span>').addClass('open-bracket'));
-                singleContainer[side].append(parseObj(d, nowSelect)).attr('class', 'single-' + nowSelect + ' single')
-                                        .append($('<span>').addClass('close-bracket'));
+	}
 
-                singleSel[side] = {
-                    id: _id,
-                    col: nowSelect
-                };
-            }).fail(function() {
-                console.error('Error');
+	function emptySingleContainer(el)
+	{
+		el.empty();
+	}
 
-                singleContainer[side].empty();
-                singleSel[side].id = 0;
-                singleSel[side].col = 0;
-            });
-        }
-        else
-        {// load all doc col = select[side]
-            let nowSelect = col;
-            $.ajax({
-                method: 'GET',
-                url: '/admin/get/_' + nowSelect + '/all/'
-            }).done(function(d){
-                mainContainer[side].empty();
-                mainContainer[side].append(parseAll(d, nowSelect));
-            }).fail(function() {
-                console.error('Error');
-            });
-        }
-    }
+	function loadInSingleContainer (side, _id, col)
+	{
+		let nowSelect = col;
+		$.ajax({
+			method: 'GET',
+			url: '/admin/get/_' + nowSelect + '/_' + _id
+		}).done(function(data){
+
+			addDataInSingleContainer(data, singleContainer[side], nowSelect);
+
+			singleSel[side] = {
+				id: _id,
+				col: nowSelect
+			};
+		}).fail(function() {
+			console.error('Error');
+
+			emptySingleContainer(singleContainer[side]);
+			singleSel[side].id = 0;
+			singleSel[side].col = 0;
+		});
+	}
+
+	function loadInMainContainer(side)
+	{
+		let nowSelect = select[side];
+		$.ajax({
+			method: 'GET',
+			url: '/admin/get/_' + nowSelect + '/all/'
+		}).done(function(d){
+			emptySingleContainer(mainContainer[side]);
+			mainContainer[side].append(parseArrayOfObjectToHTML(d, nowSelect));
+		}).fail(function() {
+			console.error('Error');
+		});
+	}
+
 
     this.show = function (id, side, sel) {
         if (sel)
@@ -364,7 +379,7 @@ function Adm()
 
             select[side] = sel;
 
-            load(side);
+            loadInMainContainer(side);
         }
         else
         {
@@ -373,6 +388,7 @@ function Adm()
                 case 'Add':
                             thus.add(side);
                             break;
+
             }
         }
 
@@ -399,7 +415,7 @@ function Adm()
             singleContainer[side].empty();
 
             let addEl = $('<span>').html('[add]').data('id', d._id).data('col', col)
-                .click(addElem);
+                .click(addDataFromSingleContainerInDB);
 
             singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name'))
                 .append(addEl)
@@ -416,5 +432,4 @@ function Adm()
         });
     };
 
-    this.load = load;
 }
