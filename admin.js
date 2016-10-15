@@ -56,11 +56,37 @@ app.get('/get/schema/_:col', (req, res) => {
 app.post('/add/_:col', (req, res) => {
     let col = req.params.col;
 
+	let value = req.body;
+
     switch (col)
     {
-        case 'invite':
-                        let value = req.body;
+	    case 'user':
+		                addDoc('user', value, (err, t) => {
+			                if (err)
+			                {
+				                res.status(403).end();
+			                }
+			                else
+			                {
+				                res.end();
+			                }
+		                });
 
+		                break;
+	    case 'book':
+		                addDoc('book', value, (err, t) => {
+			                if (err)
+			                {
+				                res.status(403).end();
+			                }
+			                else
+			                {
+				                res.end();
+			                }
+		                });
+
+		                break;
+        case 'invite':
                         addDoc('invite', value, (err, t) => {
                             if (err)
                             {

@@ -6,7 +6,7 @@ var debug = require('debug')('sniffer:login');
 
 app.use(cookieParser());
 
-var checkUser = require('./mongo').checkUser;
+var checkUserNameAndPsw = require('./mongo').checkUserNameAndPsw;
 var getUser = require('./mongo').getUser;
 
 var __log = [];
@@ -43,12 +43,10 @@ app.get('/_:user/_(:psw)?', function(req, res, next){
     var name = req.params.user;
     var psw = req.params.psw;
 
-    checkUser(name, function (err, u) {
-        if (!err && u && u.name == name && u.prop.psw == psw)
+    checkUserNameAndPsw(name, psw, function (err, data) {
+        if (!err && data)
         {
-            debug('Login (user = ' + name + ')');
-
-            res.cookie('user', u.prop.secret);
+            res.cookie('user', data.prop.secret);
 
             res.status(200).end();
         }

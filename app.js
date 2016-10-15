@@ -4,7 +4,7 @@ var path = require('path');
 var store = require('./store');
 
 
-var checkUser = require('./mongo').checkUser;
+var checkUserNameAndSecret = require('./mongo').checkUserNameAndSecret;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -30,7 +30,7 @@ app.use(function(req, res, next){
 
     req.userIp = req.connection.remoteAddress;
 
-    checkUser(nm, function (err, u) {
+	checkUserNameAndSecret(nm, req.cookies.user, function (err, data) {
 
         if (err)
         {
@@ -41,11 +41,11 @@ app.use(function(req, res, next){
             return;
         }
 
-        if (u && u.prop.secret == req.cookies.user)
+        if (data)
         {
-            req.userName = u.name;
-            req.userId = u._id;
-            req.lvl = u.prop.lvl;
+            req.userName = data.name;
+            req.userId = data._id;
+            req.lvl = data.prop.lvl;
         }
         else
         {

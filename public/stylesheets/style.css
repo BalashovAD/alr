@@ -103,6 +103,7 @@ hr {
 }
 #book .h-l {
   display: none;
+  border-bottom: 1px solid black;
 }
 #book .epigraph {
   text-align: right;

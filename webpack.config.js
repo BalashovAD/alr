@@ -13,7 +13,7 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, 'public', 'js', 'build'),
 		filename: '[name].js',
-		"library": "_" // TODO: _ -> tictactoe
+		library: "__" // TODO: _ -> tictactoe
 	},
 	watch: true,
 	watchOptions: {

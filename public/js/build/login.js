@@ -1,4 +1,4 @@
-var _ =
+var __ =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -47,7 +47,7 @@ var _ =
 
 	'use strict';
 	
-	var _login = __webpack_require__(10);
+	var _login = __webpack_require__(7);
 	
 	var loginObj = new _login.__login();
 
@@ -74,10 +74,7 @@ var _ =
 /* 4 */,
 /* 5 */,
 /* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {"use strict";

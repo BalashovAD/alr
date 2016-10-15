@@ -5,7 +5,7 @@ var path = require('path');
 var debug = require('debug')('sniffer:mongo');
 // debug = ()=>{};
 
-var LVL = require('./login').LVL;
+const LVL = require('./login').LVL;
 
 var url = process.env.DB_URL || 'mongodb://localhost:27017/alr';
 
@@ -62,8 +62,14 @@ var schemaUser = {
     },
     prop: {
         psw: String,
-        secret: String,
-        lvl: Number
+        secret: {
+	        type: String,
+	        default: 0
+        },
+        lvl: {
+	        type: Number,
+	        default: 4
+        }
     },
     books: [{
         id: String,
@@ -127,24 +133,28 @@ db.once('open', function() {
     };
 });
 
+
+function getSecret(name, psw)
+{
+	psw = psw || '';
+	let sha256 = require('crypto').createHash('sha256');
+	sha256.update(psw);
+
+
+	return name + '_' + sha256.digest('hex');
+}
+
 mongoose.connect(url);
 
 function addUser(name, psw, cb)
 {
-    let sha256 = require('crypto').createHash('sha256');
-    sha256.update(psw);
-
-    var LVL = require('./login').LVL;
-
     let u = new User({
         name: name,
         prop: {
             psw: psw,
-            secret: name + '_' + sha256.digest('hex'),
-            lvl: LVL['USER']
+            secret: getSecret(name,  psw)
         },
-        bookmark: [],
-        lastBook: 0
+        bookmark: []
     });
 
     User.findOne({name: name}).select('_id').exec(function(err, t) {
@@ -167,13 +177,50 @@ function addUser(name, psw, cb)
 
 }
 
-function checkUser(name, cb)
+function setSecret(name, psw)
+{
+	User.findOneAndUpdate({name: name}, {
+		$set: {
+			"prop.secret": getSecret(name, psw)
+		}
+	}, {multi: false}).exec();
+}
+
+function checkUserNameAndSecret(name, secret, cb)
 {
     let u = User.findOne({name: name});
 
     let q = u.select('_id name prop');
 
-    q.exec(cb);
+    q.exec(function(err, data) {
+	    if (err)
+	    {
+		    cb(err);
+	    }
+	    else
+	    {
+		    if (data && data.prop && (data.prop.secret == secret || data.prop.secret == 0))
+		    {
+			    if (data.prop.secret == 0)
+			    {
+				    setSecret(data.name, data.prop.psw);
+
+				    data.prop.secret = getSecret(name, data.psw);
+			    }
+
+			    cb(err, data);
+		    }
+		    else
+		    {
+			    cb(err);
+		    }
+	    }
+    });
+}
+
+function checkUserNameAndPsw(name, psw, cb)
+{
+	checkUserNameAndSecret(name, getSecret(name, psw), cb);
 }
 
 function checkInvite(inv, cb)
@@ -566,7 +613,8 @@ function addDoc(col, doc, cb)
 }
 
 module.exports.addUser = addUser;
-module.exports.checkUser = checkUser;
+module.exports.checkUserNameAndPsw = checkUserNameAndPsw;
+module.exports.checkUserNameAndSecret = checkUserNameAndSecret;
 module.exports.addBook = addBook;
 module.exports.getBook = getBook;
 module.exports.getUser = getUser;

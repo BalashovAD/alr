@@ -1,12 +1,10 @@
 "use strict";
-/**
- * Created by adm on 09.03.2016.
- */
 var file;
 var JsFile;
 
 let debug = require('debug')('app:init');
 import {__book} from './book';
+import {__login} from './login';
 
 localStorage.debug = 'app:book';
 
@@ -16,6 +14,11 @@ var __NAME__ = '0';
 
 // CONSTS
 const time_resize = 1000;
+const BUTTON_ARROW_UP = 38;
+const BUTTON_ARROW_DOWN = 40;
+const BUTTON_ARROW_RIGHT = 39;
+const BUTTON_ARROW_LEFT = 37;
+const EPSILON = 0.001;
 
 var __loading = function() {
     var cnt = 1;
@@ -113,10 +116,8 @@ var error = __msg.error;
 var msg = __msg.msg;
 
 
-function __initBookmark(book) {
-
-	let ttt = 1;
-
+function __initBookmark(book)
+{
     var submit = $('#submitBookmark');
     var choose = $('#chooseAnotherPosBookmark');
     var title = $('#titleOfBookmark');
@@ -151,6 +152,10 @@ function __initBookmark(book) {
 
             pos.val(''); title.val(''); text.val('');
         }
+	    else
+        {
+	        error('Choose position');
+        }
     });
 
     reload.click(function() {
@@ -170,7 +175,7 @@ function __initBookmark(book) {
 
             if (!isNaN(pos))
             {
-                book.scrollEl(pos);
+                book.jmp(pos);
             }
         });
 
@@ -246,7 +251,7 @@ function __controllerLeft(book) {
 
     function controllerLeft(id) {
 
-        if (now == id)
+        if (now == id || id == '')
         {
             // do nothing
         }
@@ -284,6 +289,9 @@ function __controllerLeft(book) {
 
 
 $(document).ready(function() {
+//
+	let login = new __login();
+
 // .css-center-1-line
     function cssCenter1Line() {
         $('.css-center-1-line').each(function () {
@@ -397,8 +405,22 @@ $(document).ready(function() {
 
             return false;
         });
+// KEYBOARD
+	    $(document).on('keydown.bookScroll', function(e) {
+		    if (e.keyCode == BUTTON_ARROW_UP || e.keyCode == BUTTON_ARROW_DOWN)
+		    {
+			    book.scroll((e.keyCode == BUTTON_ARROW_DOWN ? false : true), EPSILON);
+		    }
+		    if (e.keyCode == BUTTON_ARROW_LEFT || e.keyCode == BUTTON_ARROW_RIGHT)
+		    {
+			    book.scroll((e.keyCode == BUTTON_ARROW_RIGHT ? false : true), 1);
+		    }
 
+	    })
     });
 
 
 });
+
+
+module.exports = __DEBUG__book;

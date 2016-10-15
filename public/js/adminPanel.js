@@ -120,7 +120,7 @@ function Adm()
         let col = $(this).data('col');
 
         elms.each(function () {
-            data[$(this).attr('name')] = $(this).val();
+            data[$(this).attr('name')] = $(this).val().length > 0 ? $(this).val() : undefined;
         });
 
         $.ajax({

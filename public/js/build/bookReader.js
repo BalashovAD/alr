@@ -1,4 +1,4 @@
-var _ =
+var __ =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -46,16 +46,15 @@ var _ =
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {"use strict";
-	/**
-	 * Created by adm on 09.03.2016.
-	 */
 	
 	var _book = __webpack_require__(3);
+	
+	var _login = __webpack_require__(7);
 	
 	var file;
 	var JsFile;
 	
-	var debug = __webpack_require__(7)('app:init');
+	var debug = __webpack_require__(8)('app:init');
 	
 	
 	localStorage.debug = 'app:book';
@@ -66,6 +65,11 @@ var _ =
 	
 	// CONSTS
 	var time_resize = 1000;
+	var BUTTON_ARROW_UP = 38;
+	var BUTTON_ARROW_DOWN = 40;
+	var BUTTON_ARROW_RIGHT = 39;
+	var BUTTON_ARROW_LEFT = 37;
+	var EPSILON = 0.001;
 	
 	var __loading = function __loading() {
 	    var cnt = 1;
@@ -158,9 +162,6 @@ var _ =
 	var msg = __msg.msg;
 	
 	function __initBookmark(book) {
-	
-	    var ttt = 1;
-	
 	    var submit = $('#submitBookmark');
 	    var choose = $('#chooseAnotherPosBookmark');
 	    var title = $('#titleOfBookmark');
@@ -193,6 +194,8 @@ var _ =
 	            book.addBookmark(pos.val(), title.val(), text.val());
 	
 	            pos.val('');title.val('');text.val('');
+	        } else {
+	            error('Choose position');
 	        }
 	    });
 	
@@ -211,7 +214,7 @@ var _ =
 	            var pos = $(this).closest('.bookmark').data('pos');
 	
 	            if (!isNaN(pos)) {
-	                book.scrollEl(pos);
+	                book.jmp(pos);
 	            }
 	        });
 	
@@ -281,7 +284,7 @@ var _ =
 	
 	    function controllerLeft(id) {
 	
-	        if (now == id) {
+	        if (now == id || id == '') {
 	            // do nothing
 	        } else {
 	            now = id;
@@ -311,6 +314,9 @@ var _ =
 	}
 	
 	$(document).ready(function () {
+	    //
+	    var login = new _login.__login();
+	
 	    // .css-center-1-line
 	    function cssCenter1Line() {
 	        $('.css-center-1-line').each(function () {
@@ -419,8 +425,19 @@ var _ =
 	
 	            return false;
 	        });
+	        // KEYBOARD
+	        $(document).on('keydown.bookScroll', function (e) {
+	            if (e.keyCode == BUTTON_ARROW_UP || e.keyCode == BUTTON_ARROW_DOWN) {
+	                book.scroll(e.keyCode == BUTTON_ARROW_DOWN ? false : true, EPSILON);
+	            }
+	            if (e.keyCode == BUTTON_ARROW_LEFT || e.keyCode == BUTTON_ARROW_RIGHT) {
+	                book.scroll(e.keyCode == BUTTON_ARROW_RIGHT ? false : true, 1);
+	            }
+	        });
 	    });
 	});
+	
+	module.exports = __DEBUG__book;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -447,6 +464,8 @@ var _ =
 
 	/* WEBPACK VAR INJECTION */(function($, jQuery) {"use strict";
 	
+	//let debug = require('debug')('book');
+	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
@@ -462,7 +481,7 @@ var _ =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var debug = __webpack_require__(7);
+	var debug = console.log.bind(console);
 	
 	
 	_filejs2.default.defineEngine(_filejsFb2.default);
@@ -853,7 +872,7 @@ var _ =
 	    function loadBookmarks(bm) {
 	        var lb = $('#listOfBookmarks');
 	
-	        debug(bm);
+	        //debug(bm);
 	
 	        // bm and slider clear
 	        lb.empty();
@@ -873,7 +892,7 @@ var _ =
 	                lb.append(tmp);
 	
 	                var el = $('<div></div>').addClass('mark-user').css('top', bm[k].pos / maxPos * sliderHeight).data('pos', bm[k].pos).click(function () {
-	                    thus.scrollEl($(this).data('pos'));
+	                    thus.jmp($(this).data('pos'));
 	                });
 	
 	                sliderBookMarks.append(el);
@@ -953,7 +972,7 @@ var _ =
 	                                    sliderMarks.empty();
 	
 	                                    var el0 = $('<div></div>').addClass('mark-div').click(function () {
-	                                        thus.scrollEl(0);
+	                                        thus.jmp(0);
 	                                    });
 	
 	                                    sliderMarks.append(el0);
@@ -991,7 +1010,7 @@ var _ =
 	                                        thus.__int__controllerLeft('navigate');
 	
 	                                        footnote.empty();
-	                                        var el = $('<div class="footnote">\n                                                    <p style="text-align: center">' + (num || '') + '</p>\n                                                    <p>' + (text || '') + '</p>\n                                                </div>\n                                        ');
+	                                        var el = $('<div class="footnote">\n\t                                                    <p style="text-align: center">' + (num || '') + '</p>\n\t                                                    <p>' + (text || '') + '</p>\n\t                                                </div>\n                                        ');
 	                                        footnote.append(el);
 	
 	                                        return false;
@@ -1011,7 +1030,7 @@ var _ =
 	                                    screen.pos = info.pos;
 	                                    screen.now = 0;
 	
-	                                    thus.scrollEl(info.pos);
+	                                    scrollEl(info.pos);
 	
 	                                    loadBookmarks(info.bookmarks);
 	
@@ -1114,12 +1133,16 @@ var _ =
 	     * @param id - scroll pos
 	     */
 	    this.jmp = function (id) {
+	        if (arguments.length == 0) {
+	            id = screen.pos;
+	        }
+	
 	        if (Math.abs(jump.list[jump.it - 1] - screen.pos) > 3) {
 	            jump.list.push(screen.pos);
 	            ++jump.it;
 	        }
 	
-	        this.scrollEl(id);
+	        scrollEl(id);
 	    };
 	
 	    /**
@@ -1138,7 +1161,7 @@ var _ =
 	            if (jump.list[jump.it] == screen.pos) {
 	                return this.jmpUndo();
 	            }
-	            thus.scrollEl(jump.list[jump.it]);
+	            scrollEl(jump.list[jump.it]);
 	
 	            if (jump.timer) {
 	                clearTimeout(jump.timer);
@@ -1162,7 +1185,7 @@ var _ =
 	                ++jump.it;
 	                return this.jmpRedo();
 	            }
-	            thus.scrollEl(jump.list[jump.it]);
+	            scrollEl(jump.list[jump.it]);
 	
 	            ++jump.it;
 	
@@ -1184,10 +1207,9 @@ var _ =
 	     *  @param scroll - body{scrollTop} before movement
 	     *  @set book.pos = id, over view = coef
 	    */
-	    this.scrollEl = function (id, coef, scroll) {
+	    function scrollEl(id, scroll) {
 	        $(document).scrollTop(0);
 	
-	        coef = coef || 1;
 	        if (typeof scroll == 'undefined') {
 	            scroll = 0;
 	        }
@@ -1197,12 +1219,12 @@ var _ =
 	        }
 	
 	        if (id < 0) {
-	            thus.scrollEl(0, coef);
+	            scrollEl(0);
 	
 	            return;
 	        }
 	        if (id >= maxPos) {
-	            thus.scrollEl(maxPos - 1, coef);
+	            scrollEl(maxPos - 1);
 	
 	            return;
 	        }
@@ -1212,7 +1234,7 @@ var _ =
 	        var shH = screen.now;
 	
 	        if (isNaN(id) || id < 0 || id >= maxPos) {
-	            thus.scrollEl(0);debug(id);
+	            scrollEl(0); //debug(id);
 	
 	            return;
 	        }
@@ -1223,7 +1245,7 @@ var _ =
 	            ++shV;
 	
 	            //debug(shV, hV, height);
-	        } while (hV < height * coef + scroll && id + shV < maxPos);
+	        } while (hV < height + scroll && id + shV < maxPos);
 	
 	        // pos + now -> hide
 	        for (var k = 0; k < shH; ++k) {
@@ -1244,8 +1266,8 @@ var _ =
 	
 	        sliderTop(screen.pos);
 	
-	        debug('New pos = %d, now show %d elems', screen.pos, screen.now);
-	    };
+	        //debug('New pos = %d, now show %d elems', screen.pos, screen.now);
+	    }
 	    /**
 	     *
 	     * @param isUp - direction for movement, isUp == true if Up, isUp == false if Down
@@ -1257,6 +1279,8 @@ var _ =
 	        coef = coef || 1;
 	        if (deltaY) {
 	            coef = 3 * lineSize / height * deltaY / 100;
+	        } else if (coef < 1 / 8) {
+	            coef = getPerOfLineSize();
 	        }
 	
 	        var _coef = coef;
@@ -1264,43 +1288,50 @@ var _ =
 	        $(document).scrollTop(0);
 	
 	        if (!isUp) {
+	            // down
 	            {
 	                // all cases
 	                var id = screen.pos;
 	                var hV = 0;
 	                var shV = 0;
 	
-	                coef -= 1;
-	
 	                //debug(' POS = ' + id); debug('!!!!' + (maxPos == __.length));
 	
 	                // how much i must show
-	                while (shV <= 1 && id + shV <= maxPos) {
-	                    coef += 1;
-	                    //debug('coef = ' + coef); debug('shV = ' + shV);
 	
-	                    do {
-	                        debug('curr = ' + (id + shV));debug('H = ' + hV);
-	                        hV += __[id + shV].innerHeight();
-	                        ++shV;
-	                    } while (hV < height * coef + scroll && id + shV < maxPos);
-	                }
+	                do {
+	                    //debug('curr = ' + (id + shV)); debug('H = ' + hV);
+	                    hV += __[id + shV].innerHeight();
+	                    ++shV;
+	                } while (hV < height * _coef + scroll && id + shV < maxPos);
+	                --shV;
 	
 	                if (id + shV == maxPos) {
-	                    thus.scrollEl(maxPos - 1);
+	                    scrollEl(maxPos - 1);
 	                } else {
-	                    if (Math.abs(_coef - coef) > 0.129) // 0.129 - magic number
-	                        {
-	                            // now == 1
-	                            thus.scrollEl(id, coef, scroll);
+	                    if (shV > 0) {
+	                        var elapsed = height * _coef + scroll - hV + __[id + shV].innerHeight();
+	                        if (elapsed >= 0) {
+	                            scrollEl(id + shV, elapsed);
 	
-	                            $(document).scrollTop(height * _coef + scroll);
+	                            $(document).scrollTop(elapsed);
 	                        } else {
-	                        thus.scrollEl(id + shV - 1);
+	                            alert(elapsed);
+	                        }
+	                    } else {
+	                        var _elapsed = height * _coef + scroll;
+	                        if (_elapsed >= 0) {
+	                            scrollEl(id, _elapsed);
+	
+	                            $(document).scrollTop(_elapsed);
+	                        } else {
+	                            alert(_elapsed);
+	                        }
 	                    }
 	                }
 	            }
 	        } else {
+	            // up
 	            if (screen.pos == 0) {
 	                return 1;
 	            } else {
@@ -1309,33 +1340,33 @@ var _ =
 	                var _hV = 0;
 	                var _shV = 0;
 	
-	                coef -= 1;
-	
-	                debug(' POS = ' + _id);debug('Check MaxPos === __.length ' + (maxPos == __.length));
-	
-	                // how much i must show
-	                while (_shV <= 1 && _id - _shV >= 0) {
-	                    coef += 1;
-	                    debug('coef = ' + coef);debug('shV = ' + _shV);
-	
-	                    do {
-	                        debug('curr = ' + (_id - _shV));debug('H = ' + _hV);
-	                        _hV += __[_id - _shV].innerHeight();
-	                        ++_shV;
-	                    } while (_hV < height * coef + scroll && _id - _shV > 0);
+	                while (_hV < height * _coef - scroll && _id - _shV > 0) {
+	                    ++_shV;
+	                    _hV += __[_id - _shV].innerHeight();
 	                }
 	
 	                if (_id - _shV == 0) {
-	                    thus.scrollEl(0);
+	                    scrollEl(0);
 	                } else {
-	                    if (Math.abs(_coef - coef) > 0.129) // 0.129 - magic number
-	                        {
-	                            // now == 1
-	                            thus.scrollEl(_id - 1, coef, scroll);
+	                    if (_shV > 0) {
+	                        var _elapsed2 = _hV - height * _coef + scroll;debug('-------NEW elapsed. scroll = ' + _elapsed2);
 	
-	                            $(document).scrollTop(height * (1 - _coef) + scroll);
+	                        if (_elapsed2 >= 0) {
+	                            scrollEl(_id - _shV, _elapsed2);
+	
+	                            $(document).scrollTop(_elapsed2);
 	                        } else {
-	                        thus.scrollEl(_id - _shV + 1);
+	                            alert(_elapsed2);
+	                        }
+	                    } else {
+	                        var _elapsed3 = scroll - height * _coef;debug(_elapsed3);
+	                        if (_elapsed3 >= 0) {
+	                            scrollEl(_id, _elapsed3);
+	
+	                            $(document).scrollTop(_elapsed3);
+	                        } else {
+	                            alert(_elapsed3);
+	                        }
 	                    }
 	                }
 	            }
@@ -1461,6 +1492,10 @@ var _ =
 	        lineCnt = Math.floor(hiddenEl.height() / lineSize);
 	        offsetBook = bookEl.offset().top;
 	    };
+	
+	    function getPerOfLineSize() {
+	        return lineSize / height;
+	    }
 	
 	    this.recalc();
 	    this.getUserInfo().then(function () {
@@ -2803,6 +2838,104 @@ var _ =
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* WEBPACK VAR INJECTION */(function($) {"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	function getCookie(name) {
+	    var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+	
+	    return matches ? decodeURIComponent(matches[1]) : undefined;
+	}
+	
+	getCookie.part1 = function (n) {
+	    var val = getCookie(n) || '0';
+	    var tmp = val.split('_');
+	
+	    return tmp[0];
+	};
+	
+	var __NAME__ = void 0,
+	    __IS_LOGIN__ = void 0;
+	
+	var __login = function __login() {
+	    var login = $('#login');
+	    var sh_login = $('#login .login');
+	    var sh_exit = $('#login .exit');
+	    var err = $('#login .error');
+	    var thus = this;
+	
+	    this.resolve = function () {
+	        __NAME__ = getCookie.part1('user');
+	        __IS_LOGIN__ = !(__NAME__ == '0');
+	
+	        if (__IS_LOGIN__) {
+	            sh_exit.show();
+	            sh_login.hide();
+	        } else {
+	            sh_login.show();
+	            sh_exit.hide();
+	        }
+	    };
+	
+	    this.deleteCookie = function (c_name) {
+	        document.cookie = encodeURIComponent(c_name) + "=; expires=" + new Date(0).toUTCString();
+	    };
+	
+	    thus.resolve();
+	
+	    $('#btnLogin').click(function () {
+	        var name = $('#login input[name=user]').val().split('/')[0];
+	        var psw = $('#login input[name=psw]').val().split('/')[0];
+	
+	        $.get('/login/_' + name + '/_' + psw).always(function () {
+	            login.hide();
+	        }).fail(function () {
+	            thus.login('Login and/or psw are wrong');
+	        }).done(function () {
+	            //msg('You were login.');
+	
+	            location.assign('/');
+	        });
+	    });
+	
+	    $('#btnExit').click(function () {
+	        thus.exit();
+	    });
+	
+	    this.login = function (error) {
+	        login.show();
+	
+	        if (error) {
+	            err.html(error);
+	            err.show();
+	        } else {
+	            err.html('');
+	            err.hide();
+	        }
+	    };
+	
+	    this.exit = function () {
+	        $.get('/login/exit/_' + getCookie.part1('user')).done(function () {
+	            thus.deleteCookie('user');
+	
+	            location.reload();
+	        }).fail(function (e) {
+	            error(e);
+	        });
+	    };
+	
+	    return this;
+	};
+	
+	exports.__login = __login;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
 	
 	/**
 	 * This is the web browser implementation of `debug()`.
@@ -2810,7 +2943,7 @@ var _ =
 	 * Expose `debug()` as the module.
 	 */
 	
-	exports = module.exports = __webpack_require__(8);
+	exports = module.exports = __webpack_require__(9);
 	exports.log = log;
 	exports.formatArgs = formatArgs;
 	exports.save = save;
@@ -2974,7 +3107,7 @@ var _ =
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -2990,7 +3123,7 @@ var _ =
 	exports.disable = disable;
 	exports.enable = enable;
 	exports.enabled = enabled;
-	exports.humanize = __webpack_require__(9);
+	exports.humanize = __webpack_require__(10);
 	
 	/**
 	 * The currently active debug mode names, and names to skip.
@@ -3177,7 +3310,7 @@ var _ =
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/**

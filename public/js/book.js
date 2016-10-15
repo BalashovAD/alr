@@ -1,6 +1,7 @@
 "use strict";
 
-let debug = require('debug');
+//let debug = require('debug')('book');
+let debug = console.log.bind(console);
 import JsFile from './jsFile/filejs';
 import JsFileFb from './jsFile/filejs-fb';
 
@@ -479,7 +480,7 @@ var __book = function(idElem, interfaceFunc) {
         var lb = $('#listOfBookmarks');
 
 
-        debug(bm);
+        //debug(bm);
 
         // bm and slider clear
         lb.empty();
@@ -515,7 +516,7 @@ var __book = function(idElem, interfaceFunc) {
                     .css('top', bm[k].pos / maxPos * sliderHeight)
                     .data('pos', bm[k].pos)
                     .click(function() {
-                        thus.scrollEl($(this).data('pos'));
+                        thus.jmp($(this).data('pos'));
                     });
 
                 sliderBookMarks.append(el);
@@ -603,7 +604,7 @@ var __book = function(idElem, interfaceFunc) {
                                     var el0 = $('<div></div>')
                                         .addClass('mark-div')
                                         .click(function () {
-                                            thus.scrollEl(0)
+                                            thus.jmp(0)
                                         });
 
                                     sliderMarks.append(el0);
@@ -653,9 +654,9 @@ var __book = function(idElem, interfaceFunc) {
 
                                         footnote.empty();
                                         var el = $(`<div class="footnote">
-                                                    <p style="text-align: center">${num || ''}</p>
-                                                    <p>${text || ''}</p>
-                                                </div>
+	                                                    <p style="text-align: center">${num || ''}</p>
+	                                                    <p>${text || ''}</p>
+	                                                </div>
                                         `);
                                         footnote.append(el);
 
@@ -676,7 +677,7 @@ var __book = function(idElem, interfaceFunc) {
                                     screen.pos = info.pos;
                                     screen.now = 0;
 
-                                    thus.scrollEl(info.pos);
+                                    scrollEl(info.pos);
 
                                     loadBookmarks(info.bookmarks);
 
@@ -794,13 +795,18 @@ var __book = function(idElem, interfaceFunc) {
      * @param id - scroll pos
      */
     this.jmp = function(id) {
+	    if (arguments.length == 0)
+	    {
+		    id = screen.pos;
+	    }
+
         if (Math.abs(jump.list[jump.it - 1] - screen.pos) > 3)
         {
             jump.list.push(screen.pos);
             ++jump.it;
         }
 
-        this.scrollEl(id);
+        scrollEl(id);
     };
 
     /**
@@ -823,7 +829,7 @@ var __book = function(idElem, interfaceFunc) {
             {
                 return this.jmpUndo();
             }
-            thus.scrollEl(jump.list[jump.it]);
+            scrollEl(jump.list[jump.it]);
 
             if (jump.timer)
             {
@@ -851,7 +857,7 @@ var __book = function(idElem, interfaceFunc) {
                 ++jump.it;
                 return this.jmpRedo();
             }
-            thus.scrollEl(jump.list[jump.it]);
+            scrollEl(jump.list[jump.it]);
 
             ++jump.it;
 
@@ -875,10 +881,9 @@ var __book = function(idElem, interfaceFunc) {
      *  @param scroll - body{scrollTop} before movement
      *  @set book.pos = id, over view = coef
     */
-    this.scrollEl = function(id, coef, scroll) {
+    function scrollEl(id, scroll) {
         $(document).scrollTop(0);
 
-        coef = coef || 1;
         if (typeof scroll == 'undefined')
         {
             scroll = 0;
@@ -891,14 +896,14 @@ var __book = function(idElem, interfaceFunc) {
 
         if (id < 0)
         {
-            thus.scrollEl(0, coef);
+            scrollEl(0);
 
 
             return ;
         }
         if (id >= maxPos)
         {
-            thus.scrollEl(maxPos - 1, coef);
+            scrollEl(maxPos - 1);
 
             return ;
         }
@@ -910,7 +915,7 @@ var __book = function(idElem, interfaceFunc) {
 
         if(isNaN(id) || id < 0 || id >= maxPos)
         {
-            thus.scrollEl(0); debug(id);
+            scrollEl(0); //debug(id);
 
             return ;
         }
@@ -921,7 +926,7 @@ var __book = function(idElem, interfaceFunc) {
             ++shV;
 
             //debug(shV, hV, height);
-        } while (hV < height * coef + scroll && id + shV < maxPos);
+        } while (hV < height  + scroll && id + shV < maxPos);
 
         // pos + now -> hide
         for (let k = 0; k < shH; ++k)
@@ -944,8 +949,8 @@ var __book = function(idElem, interfaceFunc) {
 
         sliderTop(screen.pos);
 
-        debug('New pos = %d, now show %d elems', screen.pos, screen.now);
-    };
+        //debug('New pos = %d, now show %d elems', screen.pos, screen.now);
+    }
     /**
      *
      * @param isUp - direction for movement, isUp == true if Up, isUp == false if Down
@@ -957,7 +962,11 @@ var __book = function(idElem, interfaceFunc) {
         coef = coef || 1;
         if (deltaY)
         {
-            coef = 3 * lineSize / height * deltaY / 100
+            coef = 3 * lineSize / height * deltaY / 100;
+        }
+	    else if (coef < 1/8)
+        {
+	        coef = getPerOfLineSize();
         }
 
         let _coef = coef;
@@ -965,52 +974,63 @@ var __book = function(idElem, interfaceFunc) {
         $(document).scrollTop(0);
 
         if (!isUp)
-        {
+        {// down
             {
                 // all cases
                 let id = screen.pos;
                 let hV = 0;
                 let shV = 0;
 
-                coef -= 1;
-
                 //debug(' POS = ' + id); debug('!!!!' + (maxPos == __.length));
 
                 // how much i must show
-                while (shV <= 1 && id + shV <= maxPos)
-                {
-                    coef += 1;
-                    //debug('coef = ' + coef); debug('shV = ' + shV);
 
-                    do { debug('curr = ' + (id + shV)); debug('H = ' + hV);
-                        hV += __[(id + shV)].innerHeight();
-                        ++shV;
-                    } while (hV < height * coef + scroll && id + shV < maxPos);
-
-                }
+	            do {
+		            //debug('curr = ' + (id + shV)); debug('H = ' + hV);
+		            hV += __[(id + shV)].innerHeight();
+		            ++shV;
+	            } while (hV < height * _coef + scroll && id + shV < maxPos);
+				--shV;
 
                 if (id + shV == maxPos)
                 {
-                    thus.scrollEl(maxPos - 1);
+                    scrollEl(maxPos - 1);
                 }
                 else
                 {
-                    if (Math.abs(_coef - coef) > 0.129) // 0.129 - magic number
+                    if (shV > 0)
                     {
-                        // now == 1
-                        thus.scrollEl(id, coef, scroll);
+	                    let elapsed = height * _coef + scroll - hV + __[id + shV].innerHeight();
+	                    if (elapsed >= 0)
+	                    {
+		                    scrollEl(id + shV, elapsed);
 
-                        $(document).scrollTop(height * _coef + scroll);
+		                    $(document).scrollTop(elapsed);
+	                    }
+	                    else
+	                    {
+							alert(elapsed);
+	                    }
                     }
                     else
                     {
-                        thus.scrollEl(id + shV - 1);
+	                    let elapsed = height * _coef + scroll;
+	                    if (elapsed >= 0)
+	                    {
+		                    scrollEl(id, elapsed);
+
+		                    $(document).scrollTop(elapsed);
+	                    }
+	                    else
+	                    {
+		                    alert(elapsed)
+	                    }
                     }
                 }
             }
         }
         else
-        {
+        {// up
             if (screen.pos == 0)
             {
                 return 1;
@@ -1022,39 +1042,46 @@ var __book = function(idElem, interfaceFunc) {
                 let hV = 0;
                 let shV = 0;
 
-                coef -= 1;
-
-                debug(' POS = ' + id); debug('Check MaxPos === __.length ' + (maxPos == __.length));
-
-                // how much i must show
-                while (shV <= 1 && id - shV >= 0)
-                {
-                    coef += 1;
-                    debug('coef = ' + coef); debug('shV = ' + shV);
-
-                    do { debug('curr = ' + (id - shV)); debug('H = ' + hV);
-                        hV += __[(id - shV)].innerHeight();
-                        ++shV;
-                    } while (hV < height * coef + scroll && id - shV > 0);
-
-                }
+	            while (hV < height * _coef - scroll && id - shV > 0)
+	            {
+		            ++shV;
+		            hV += __[(id - shV)].innerHeight();
+	            }
 
                 if (id - shV == 0)
                 {
-                    thus.scrollEl(0);
+                    scrollEl(0);
                 }
                 else
                 {
-                    if (Math.abs(_coef - coef) > 0.129) // 0.129 - magic number
+                    if (shV > 0)
                     {
-                        // now == 1
-                        thus.scrollEl(id - 1, coef, scroll);
+	                    let elapsed = hV - height * _coef + scroll; debug('-------NEW elapsed. scroll = ' + elapsed);
 
-                        $(document).scrollTop(height * (1 - _coef) + scroll);
+	                    if (elapsed >= 0)
+	                    {
+		                    scrollEl(id - shV, elapsed);
+
+		                    $(document).scrollTop(elapsed);
+	                    }
+	                    else
+	                    {
+		                    alert(elapsed);
+	                    }
                     }
                     else
                     {
-                        thus.scrollEl(id - shV + 1);
+	                    let elapsed = scroll - height * _coef; debug(elapsed);
+	                    if (elapsed >= 0)
+	                    {
+		                    scrollEl(id, elapsed);
+
+		                    $(document).scrollTop(elapsed);
+	                    }
+	                    else
+	                    {
+		                    alert(elapsed);
+	                    }
                     }
                 }
             }
@@ -1209,6 +1236,11 @@ var __book = function(idElem, interfaceFunc) {
         lineCnt = Math.floor(hiddenEl.height() / lineSize);
         offsetBook = bookEl.offset().top;
     };
+
+	function getPerOfLineSize()
+	{
+		return lineSize/height;
+	}
 
     this.recalc();
     this.getUserInfo().then(() => {
