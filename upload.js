@@ -1,9 +1,5 @@
 var debug = require('debug')('sniffer:upload');
 
-function isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
 var resolve = [];
 resolve[0] = 'adm';
 
@@ -26,7 +22,7 @@ app.get('/', function(req, res, next){
     }
 });
 
-app.get('/index', function(req, res, next){
+app.get('/index', function(req, res){
     res.set('Content-Type', 'text/html');
 
     res.render('upload.jade', {
@@ -35,7 +31,7 @@ app.get('/index', function(req, res, next){
     });
 });
 
-app.post('/upload/', function(req, res, next){
+app.post('/upload/', function(req, res){
     res.set('Content-Type', 'text/html');
 
     res.render('upload.jade', {

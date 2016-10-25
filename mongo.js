@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var mongoose = require('mongoose');
 var assert = require('assert');
 var path = require('path');
@@ -17,11 +17,146 @@ db.on('error', (err) => {
     throw new Error(err);
 });
 
-var Book;
-var User;
-var Invite;
+var schemaUser = {
+	name: {
+		type: String,
+		unique: true,
+		required: true,
+		get: capitalize,
+		set: capitalize
+	},
+	prop: {
+		psw: String,
+		secret: {
+			type: String,
+			default: 0
+		},
+		lvl: {
+			type: Number,
+			default: 4
+		}
+	},
+	books: [{
+		id: String,
+		title: String,
+		author: String
+	}],
+	lastBook: {
+		type: String,
+		default: 0
+	}
+};
 
-var COL;
+var schemaBook = {
+	title: String,
+	author: String,
+	link: {
+		type: String,
+		default: ''
+	},
+	bookmarks: [{
+		title: String,
+		text: String,
+		pos: Number
+	}],
+	owner: String,
+	pos: Number
+};
+
+var schemaInvite = {
+	value: {
+		type: String,
+		unique: true
+	},
+	counter: {
+		type: Number,
+		default: 5,
+		min: 0
+	},
+	users: [{
+		id: String
+	}]
+};
+
+
+let Models = initModels();
+
+
+let User =      Models.User,
+	Book =      Models.Book,
+	Invite =    Models.Invite,
+	COL =       Models.COL;
+
+function initModels()
+{
+	let User, Book, Invite, COL;
+
+	let user = new mongoose.Schema(schemaUser, {collection: 'users'});
+
+	let book = new mongoose.Schema(schemaBook, {collection: 'books'});
+
+	let invite = new mongoose.Schema(schemaInvite, {collection: 'invites'});
+
+	// statics
+	user.statics.capitalize = capitalize;
+	user.statics.addUser = addUser;
+	user.statics.checkUserNameAndSecret = checkUserNameAndSecret;
+	user.statics.checkUserNameAndPsw = checkUserNameAndPsw;
+	user.statics.getUser = getUser;
+	user.statics.deleteUser = deleteUser;
+
+	book.statics.getBook = getBook;
+	book.statics.deleteBook = deleteBook;
+	book.statics.addBook = addBook;
+	book.statics.saveBook = saveBook;
+	book.statics.deleteBookmark = deleteBookmark;
+	book.statics.editBookmark = editBookmark;
+
+	invite.statics.findAndModify = function (query, doc, callback) {
+		return this.collection.findAndModify(query, [], doc, true, callback);
+	};
+
+	invite.statics.getInvite = function (val, cb) {
+		Invite.findOne({value: val}).exec(cb);
+	};
+
+	// methods
+	user.methods.getSecret = function() {
+		return getSecret(capitalize(this.name), this.prop.psw);
+	};
+	user.methods.setSecret = function() {
+		return setSecret(capitalize(this.name), this.prop.psw);
+	};
+
+
+
+	invite.methods.checkInvite = function () {
+		return checkInvite(this);
+	};
+	invite.methods.dec = function(user) {
+		decInvite(this, user);
+	};
+
+
+
+	Book = mongoose.model('book', book);
+	User = mongoose.model('user', user);
+	Invite = mongoose.model('invite', invite);
+
+	COL = {
+		'user': User,
+		'book': Book,
+		'invite': Invite
+	};
+
+	return {
+		User: User,
+		Book: Book,
+		Invite: Invite,
+		COL: COL
+	};
+}
+
 
 function jsonPrep(obj)
 {
@@ -55,91 +190,29 @@ function jsonPrep(obj)
     return r;
 }
 
-var schemaUser = {
-    name: {
-        type: String,
-        unique: true
-    },
-    prop: {
-        psw: String,
-        secret: {
-	        type: String,
-	        default: 0
-        },
-        lvl: {
-	        type: Number,
-	        default: 4
-        }
-    },
-    books: [{
-        id: String,
-        title: String,
-        author: String
-    }],
-    lastBook: {
-        type: String,
-        default: 0
-    }
-};
-
-var schemaBook = {
-    title: String,
-    author: String,
-    link: String,
-    bookmarks: [{
-        title: String,
-        text: String,
-        pos: Number
-    }],
-    owner: String,
-    pos: Number
-};
-
-var schemaInvite = {
-    value: {
-        type: String,
-        unique: true
-    },
-    counter: {
-        type: Number,
-        default: 5,
-        min: 0
-    },
-    users: [{
-        id: String
-    }]
-};
+function capitalize(name) {
+	if (name != '')
+	{
+		return name[0].toUpperCase() + name.substring(1).toLowerCase();
+	}
+	else
+	{
+		return '';
+	}
+}
 
 db.once('open', function() {
-    let user = new mongoose.Schema(schemaUser, {collection: 'users'});
-
-    let book = new mongoose.Schema(schemaBook, {collection: 'books'});
-
-    let invite = new mongoose.Schema(schemaInvite, {collection: 'invites'});
-
-    invite.statics.findAndModify = function (query, doc, callback) {
-        return this.collection.findAndModify(query, [], doc, true, callback);
-    };
-
-    Book = mongoose.model('book', book);
-    User = mongoose.model('user', user);
-    Invite = mongoose.model('invite', invite);
-
-
-    COL = {
-        'user': User,
-        'book': Book,
-        'invite': Invite
-    };
+	debug('Connection to db open.');
 });
 
 
 function getSecret(name, psw)
 {
+	name = capitalize(name);
+
 	psw = psw || '';
 	let sha256 = require('crypto').createHash('sha256');
 	sha256.update(psw);
-
 
 	return name + '_' + sha256.digest('hex');
 }
@@ -157,7 +230,7 @@ function addUser(name, psw, cb)
         bookmark: []
     });
 
-    User.findOne({name: name}).select('_id').exec(function(err, t) {
+    User.findOne({name: capitalize(name)}).select('_id').exec(function(err, t) {
         if (err)
         {
             cb(err);
@@ -179,7 +252,7 @@ function addUser(name, psw, cb)
 
 function setSecret(name, psw)
 {
-	User.findOneAndUpdate({name: name}, {
+	User.findOneAndUpdate({name: capitalize(name)}, {
 		$set: {
 			"prop.secret": getSecret(name, psw)
 		}
@@ -188,7 +261,7 @@ function setSecret(name, psw)
 
 function checkUserNameAndSecret(name, secret, cb)
 {
-    let u = User.findOne({name: name});
+    let u = User.findOne({name: capitalize(name)});
 
     let q = u.select('_id name prop');
 
@@ -223,67 +296,43 @@ function checkUserNameAndPsw(name, psw, cb)
 	checkUserNameAndSecret(name, getSecret(name, psw), cb);
 }
 
-function checkInvite(inv, cb)
+function checkInvite(inv)
 {
-    let i = Invite.findOne({value: inv});
-
-    let q = i.select('value counter');
-
-    q.exec(function(err, t) {
-        if (err)
-        {
-            cb(err);
-        }
-        else
-        {
-            if (t && t.counter && t.counter > 0)
-            {
-                cb(err, t);
-            }
-            else
-            {
-                cb({code: 111, errmsg: 'Invitation is spoiled'});
-            }
-        }
-    });
+	return (inv && inv.counter && inv.counter > 0);
 }
 
-function decInvite(inv, id, cb)
+function decInvite(inv, user)
 {
-    let i = Invite.findOne({value: inv});
-
-    let q = i.select('value counter');
-
-    q.exec(function(err, t) {
-        if (err)
-        {
-            cb(err);
-        }
-        else
-        {
-            if (t && t.counter && t.counter > 0)
-            {
-                Invite.findOneAndUpdate({value: inv}, {
-                    counter: t.counter - 1,
-                    $push: {
-                        users: {
-                            id: id
-                        }
-                    }
-                }, cb);
-            }
-            else
-            {
-                // delete user._id = id
-                cb({code: 111, errmsg: 'Invitation is spoiled'});
-            }
-        }
-    });
+	if (inv && inv.counter && inv.counter > 0)
+	{
+		Invite.findOneAndUpdate({value: inv.value}, {
+			counter: inv.counter - 1,
+			$push: {
+				users: {
+					id: user.id
+				}
+			}
+		}, function(err, inv) {
+			if (err)
+			{
+				user.delete();
+			}
+			else
+			{
+				// all right
+				debug('Registration {name: ' + user.name + '} finished');
+			}
+		});
+	}
+	else
+	{
+		user.delete();
+	}
 }
 
 function getUser(name, cb)
 {
-    let u = User.findOne({name: name});
+    let u = User.findOne({name: capitalize(name)});
 
     let q = u.select('name prop.lvl books lastBook');
 
@@ -299,7 +348,7 @@ function deleteBook(id, name, cb, anyway)
     b.select('owner link').exec(function(err, book) {
         if (err)
         {
-            User.update({name: book.owner}, {$pull: {
+            User.update({name: capitalize(book.owner)}, {$pull: {
                 books: {
                     id: id
                 }
@@ -308,57 +357,64 @@ function deleteBook(id, name, cb, anyway)
         }
         else
         {
-            if (anyway || book && book.owner && book.owner == name)
+            if (book && (anyway || (book && book.owner && book.owner == name)))
             {
-                User.update({name: book.owner}, {$pull: {
+
+	            Book.find({link: book.link}).exec(function (err, booksWithThisLink) {
+		            if (err)
+		            {
+			            debug(err);
+		            }
+		            else
+		            {
+			            if (booksWithThisLink.length <= 1 && book.link)
+			            {
+				            let filePath = path.join(__dirname, 'files', book.link);
+
+				            fs.unlink(filePath, function (err, t) {
+					            if (err)
+					            {
+						            debug(err);
+					            }
+				            });
+			            }
+
+			            Book.remove({_id: id}).exec(function (err) {
+				            if (err)
+				            {
+					            debug(err);
+				            }
+			            });
+		            }
+	            });
+
+
+
+                User.update({name: capitalize(book.owner)}, {$pull: {
                         books: {
                             id: id
                         }
                     }
-                }, {multi: true}, function (err, t) {
+                }, {multi: true}, cb);
 
-                    User.findOne({books: {$elemMatch: {id: id}}}).select('_id').exec(function(err, s) {
-                        if (err)
-                        {
-                            cb(err);
-                        }
-                        else
-                        {
-                            if(s && s._id)
-                            {
-                                cb(err, s);
-                            }
-                            else
-                            {
-                                Book.findOne({_id: id}).remove(function(err, i) {
-                                    if (err)
-                                    {
-                                        cb(err);
-                                    }
-                                    else
-                                    {
-                                        let filePath = path.join(__dirname, 'files', book.link);
-
-                                        fs.unlink(filePath, function(err, t) {
-                                            cb();
-                                        });
-                                    }
-                                });
-                            }
-                        }
-                    });
-                });
             }
             else
             {
                 if (!book)
                 {
-                    User.update({name: name}, {$pull: {
-                        books: {
-                            id: id
+                    User.update({name: capitalize(name)}, {
+	                    $pull: {
+                            books: {
+                                id: id
+                            }
                         }
-                    }
                     }, cb);
+                }
+	            else
+                {
+	                cb({
+						errmsg: 'Ur not owner this book'
+	                });
                 }
             }
         }
@@ -367,43 +423,40 @@ function deleteBook(id, name, cb, anyway)
 
 function deleteUser(id, name, cb, anyway)
 {
-    let nowReady = 0;
-
-    function checkCb(err, t)
-    {
-        if (nowReady >= 2) // magic number
-        {
-            cb(err, t);
-        }
-        else
-        {
-            ++nowReady;
-        }
-    }
-
-    User.findOne({_id: id}).exec((err, t) => {
+    User.findOne({_id: id}).exec((err, user) => {
         if (err)
         {
             cb(err);
         }
         else
         {
-            if (anyway || t && t.name && t.name == name)
+            if (user && (anyway || user && user.name && user.name == name))
             {
                 // delete all books
-                Book.remove({owner: t.name}).exec(checkCb);
+                user.books.forEach(function (id) {
+	                deleteBook(id, name, cb, true);
+                });
                 // remove this user from invite
                 Invite.findAndModify({user: {
                     $elemMatch: {
-                        id: t.id
+                        id: user.id
                     }
                 }}, {user: {
                     $pullAll: {
-                        id: t.id
+                        id: user.id
                     }
-                }}, checkCb);
+                }}, function (err) {
+	                if (err)
+	                {
+		                debug(err);
+	                }
+                });
                 // delete this user
-                User.remove({_id: id}).exec(checkCb);
+                User.remove({_id: id}).exec(cb);
+            }
+	        else
+            {
+	            cb();
             }
         }
     });
@@ -429,7 +482,7 @@ function addBook(info, cb)
         {
             if (t && t.id)
             {
-                User.update({name: info.owner}, {$push : {
+                User.update({name: capitalize(info.owner)}, {$push : {
                     books: {
                         id: t.id,
                         title: t.title,
@@ -478,7 +531,7 @@ function saveBook(id, name, ss, cb, anyway)
     Book.findOneAndUpdate(q, nq, (err, t) => {
         if (!err && t && name == t.owner)
         {
-            User.update({name: name}, {$set: {lastBook: id}}, cb);
+            User.update({name: capitalize(name)}, {$set: {lastBook: id}}, cb);
         }
         else
         {
@@ -548,7 +601,7 @@ function getBook(id, name, cb, anyway)
 
     let q = b.select('_id title author link bookmarks owner pos');
 
-    let u = User.findOne({name: name});
+    let u = User.findOne({name: capitalize(name)});
 
     let qu = u.select('books');
 
@@ -612,22 +665,13 @@ function addDoc(col, doc, cb)
     u.save(cb);
 }
 
-module.exports.addUser = addUser;
-module.exports.checkUserNameAndPsw = checkUserNameAndPsw;
-module.exports.checkUserNameAndSecret = checkUserNameAndSecret;
-module.exports.addBook = addBook;
-module.exports.getBook = getBook;
-module.exports.getUser = getUser;
-module.exports.deleteBook = deleteBook;
-module.exports.saveBook = saveBook;
-module.exports.deleteBookmark = deleteBookmark;
-module.exports.editBookmark = editBookmark;
-module.exports.checkInvite = checkInvite;
-module.exports.decInvite = decInvite;
+module.exports.User = User;
+module.exports.Book = Book;
+module.exports.Invite = Invite;
+
 module.exports.getById = getById;
 module.exports.getCol = getCol;
 module.exports.deleteById = deleteById;
-module.exports.deleteUser = deleteUser;
 module.exports.addDoc = addDoc;
 
 module.exports.schemas = [{

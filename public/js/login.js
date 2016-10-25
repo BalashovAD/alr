@@ -55,10 +55,10 @@ var __login = function()
             login.hide();
         }).fail(function(){
             thus.login('Login and/or psw are wrong');
-        }).done(function(){
+        }).done(function(data){
             //msg('You were login.');
 
-            location.assign('/');
+            location.assign('/' + (data.link || ''));
         });
     });
 

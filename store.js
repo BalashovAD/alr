@@ -2,7 +2,6 @@
 var debug = require('debug')('sniffer:store');
 
 var path = require('path');
-var fileSystem = require('fs');
 
 
 var resolve = [];
@@ -11,8 +10,7 @@ resolve[0] = 'adm';
 var app = require('express')();
 var LVL = require('./login').LVL;
 var checkAccess = require('./login').checkAccess;
-var getBook = require('./mongo').getBook;
-var deleteBook = require('./mongo').deleteBook;
+let Book = require('./mongo').Book;
 
 var cookieParser = require('cookie-parser');
 
@@ -36,10 +34,10 @@ app.all('*', function(req, res, next) {
 });
 
 // :id - book id
-app.delete('/book/delete/_:id', function (req, res, next) {
+app.delete('/book/delete/_:id', function (req, res) {
     let id = req.params.id;
 
-    deleteBook(id, req.userName, function (err) {
+	Book.deleteBook(id, req.userName, function (err) {
         if (err)
         {
             res.status(500).json(err).end();
@@ -52,26 +50,26 @@ app.delete('/book/delete/_:id', function (req, res, next) {
 });
 
 // :id - book id
-app.get('/book/get/_(:id)', function(req, res, next) {
+app.get('/book/get/_(:id)', function(req, res) {
     let id = req.params.id;
 
-    let cb = function(err, t) {
+    let cb = function(err, book) {
         if (err)
         {
             res.status(401).end();
         }
         else
         {
-            if (t && t.link)
+            if (book && book.link)
             {
-                debug(path.join(__dirname, './files/', t.link));
+                debug(path.join(__dirname, './files/', book.link));
 
-                res.sendFile(path.join(__dirname, 'files', t.link), function (err) {
+                res.sendFile(path.join(__dirname, 'files', book.link), function (err) {
                     if (err)
                     {
                         if (err.code === "ECONNABORT" && res.statusCode == 304) {
                             // No problem, 304 means client cache hit, so no data sent.
-                            debug('304 cache hit for ' + t.fink);
+                            debug('304 cache hit for ' + book.link);
                         }
                         else
                         {
@@ -84,7 +82,7 @@ app.get('/book/get/_(:id)', function(req, res, next) {
                     }
                     else
                     {
-                        debug('Sent:', t.link);
+                        debug('Sent:', book.link);
                     }
                 });
             }
@@ -100,12 +98,11 @@ app.get('/book/get/_(:id)', function(req, res, next) {
 
     if (req.lvl <= LVL['MOD'])
     {
-        getBook(id, req.userName, cb, true);
-
+	    Book.getBook(id, req.userName, cb, true);
     }
     else
     {
-        getBook(id, req.userName, cb);
+        Book.getBook(id, req.userName, cb);
     }
 });
 

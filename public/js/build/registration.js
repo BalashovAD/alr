@@ -72,6 +72,10 @@ var __ =
 	                $('#okReg').html(JSON.stringify(d));
 	                $('#okReg').attr('class', '');
 	                $('#failReg').attr('class', 'hide');
+	
+	                if (d.link && d.link != '') {
+	                    location.assign('/' + d.link);
+	                }
 	            }).fail(function (d) {
 	                $('#failReg').html('Fail <br>' + d.responseJSON.errmsg);
 	                $('#failReg').attr('class', '');

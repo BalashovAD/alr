@@ -2,7 +2,7 @@
 var app = require('express')();
 var cookieParser = require('cookie-parser');
 
-var debug = require('debug')('admin:book');
+var debug = require('debug')('sniffer:adminPanel');
 
 app.use(cookieParser());
 app.use(require('body-parser').json());
@@ -14,6 +14,8 @@ var deleteById = require('./mongo').deleteById;
 var addDoc = require('./mongo').addDoc;
 
 var schemas = require('./mongo').schemas;
+
+const allowedFunc = require('./adminFunc');
 
 app.all('*', (req, res, next) => {
     if (checkAccess(req.lvl, 'admin'))
@@ -36,7 +38,9 @@ app.get('/index.jade', function (req, res, next) {
 
     res.render('./admin/index.jade', {
         title: 'Admin panel',
-        schemas: schemas
+        schemas: schemas,
+	    hints: Object.keys(allowedFunc),
+	    salt: Date.now()
     });
 });
 
@@ -149,6 +153,38 @@ app.get('/get/_:col/all', (req, res) => {
     {
         res.status(403).end();
     }
+});
+
+app.post('/cmd', (req, res) => {
+	let cmd = req.body.cmd || '';
+
+	let args = cmd.split(' ');
+	let func = args.shift();
+
+	debug('Command: %s(%s)', func, args);
+
+	args.push(cb);
+
+	if (typeof allowedFunc[func] == 'function')
+	{
+		allowedFunc[func].apply(null, args);
+	}
+	else
+	{
+		res.status(404).end();
+	}
+
+	function cb(err)
+	{
+		if (err)
+		{
+			res.status(500).end();
+		}
+		else
+		{
+			res.end();
+		}
+	}
 });
 
 app.delete('/delete/_:col/_:id', (req, res) => {

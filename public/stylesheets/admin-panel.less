@@ -5,170 +5,196 @@
 @cmdSize: 3%;
 
 body {
-  background: black;
-  color: lightgray;
+	background: black;
+	color: whitesmoke;
 }
 
 html {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 *, *:before, *:after {
-  box-sizing: inherit;
+	box-sizing: inherit;
+}
+
+input {
+	all: unset;
+
+	border: 1px solid @borderColor;
+
+	display: inline-block;
+}
+
+input[type=submit] {
+	text-align: center;
 }
 
 #left {
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: inline-block;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	display: inline-block;
 
-  width: 50%;
-  height: 100%;
+	width: 50%;
+	height: 100% - @cmdSize;
 
-  border-right: 1px double @borderColor;
+	border-right: 1px double @borderColor;
 }
 
 #right {
-  position: fixed;
-  top: 0;
-  right: 0;
-  display: inline-block;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	display: inline-block;
 
-  width: 50%;
-  height: 100%;
+	width: 50%;
+	height: 100% - @cmdSize;
 
-  border-left: 1px double @borderColor;
+	border-left: 1px double @borderColor;
 }
 
 .menu {
-  height: @menuLineSize * 2;
-  width: 100%;
+	height: @menuLineSize * 2;
+	width: 100%;
 
-  border-bottom: 1px solid @borderColor;
+	border-bottom: 1px solid @borderColor;
 }
 
 .btn.left-side {
-  border-top: 1px solid @borderColor;
-  border-left: 1px solid @borderColor;
+	border-top: 1px solid @borderColor;
+	border-left: 1px solid @borderColor;
 
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
-
 .btn.right-side {
-  border-top: 1px solid @borderColor;
-  border-right: 1px solid @borderColor;
+	border-top: 1px solid @borderColor;
+	border-right: 1px solid @borderColor;
 
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .menu-line {
-  width: 100%;
-  height: 50%;
+	width: 100%;
+	height: 50%;
 }
-
 
 .menu div.item-menu {
-  display: inline-block;
+	display: inline-block;
 
-  width: 100% / @menuCnt;
-  height: 100%;
+	width: 100% / @menuCnt;
+	height: 100%;
 
-  text-align: center;
+	text-align: center;
 }
-
 
 .menu div.item-menu.select {
-  color: green;
+	color: green;
 }
+
 // main
 
 .main {
-  font-size: 100%;
+	font-size: 100%;
 
-  width: 100%;
-  height: 100% - @menuLineSize * 2 - @singleSize - @cmdSize;
+	width: 100%;
+	height: 100% - @menuLineSize * 2 - @singleSize - @cmdSize;
 
-  font-family: "Courier New";
-  border-bottom: 1px solid @borderColor;
+	font-family: "Courier New";
+	border-bottom: 1px solid @borderColor;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 
-  word-break: break-all;
-  word-wrap: break-word;
+	word-break: break-all;
+	word-wrap: break-word;
 }
 
-
 .main-container span.object-value:after {
-  content: ';';
+	content: ';';
 }
 
 .object-value {
-  user-select: contain;
+	user-select: contain;
 }
+
 // command line
 
 #cmdLine {
-  z-index: 150;
+	z-index: 150;
 
-  height: @cmdSize;
-  width: 100%;
+	height: @cmdSize;
+	width: 100%;
 
-  position: fixed;
+	position: fixed;
 
-  bottom: 0;
-  left: 0;
+	top: 0;
+	left: 0;
 
-  background: green;
+	background: black;
+	color: whitesmoke;
+}
+
+#cmdForm {
+	height: 100%;
+	width: 100%;
+}
+
+#cmd {
+	height: 100%;
+	width: 90%;
+}
+
+#cmdSubmit {
+	height: 100%;
+	width: 9.5%;
 }
 
 // single container
 .single {
-  font-size: 100%;
+	font-size: 100%;
 
-  width: 100%;
-  height: @singleSize;
+	width: 100%;
+	height: @singleSize;
 
-  font-family: "Courier New";
-  border-bottom: 1px solid @borderColor;
+	font-family: "Courier New";
+	border-bottom: 1px solid @borderColor;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 
-  text-wrap: normal;
-  word-wrap: break-word;
+	text-wrap: normal;
+	word-wrap: break-word;
 }
 
 .single span {
-  font-size: 100%;
+	font-size: 100%;
 
 }
 
 .object-name {
-  font-style: oblique;
-  font-weight: bold;
+	font-style: oblique;
+	font-weight: bold;
 
-  color: #a6af30;
+	color: #a6af30;
 }
 
 .single ol {
-  list-style-type: none;
+	list-style-type: none;
 }
 
 .open-bracket {
-  text-align: right;
+	text-align: right;
 }
 
 .open-bracket:after {
-  content: '{';
+	content: '{';
 }
 
 .close-bracket:before {
-  content: '}';
+	content: '}';
 }
 
 .invisibility {
-  display: none;
+	display: none;
 }

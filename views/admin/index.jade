@@ -8,6 +8,13 @@ html(lang="en")
         link(rel='stylesheet', href='/stylesheets/jquery-ui.min.css')
         link(rel='stylesheet', href='/stylesheets/jquery-ui.theme.min.css')
     body
+        #cmdLine
+            form#cmdForm
+                input#cmd(autocomplete="off", list="allowedCmd", name=salt)
+                input#cmdSubmit(type='submit', value="Send")
+                datalist#allowedCmd
+                    each cmd in hints
+                        option(value=cmd)
         #left
             .menu
                 .menu-line
@@ -15,8 +22,8 @@ html(lang="en")
                         div.btn.item-menu.left-side.side(data-id=val.name, data-select=val.name, data-side="left")
                             a.css-center-1-line= val.name
                 .menu-line
-                    div.btn.item-menu.left-side(data-id="schema", data-side="left")
-                        a.css-center-1-line= "schema"
+                    div.btn.item-menu.left-side(data-id="refresh", data-side="left")
+                        a.css-center-1-line= "refresh"
                     div.btn.item-menu.left-side(data-id="Add", data-side="left")
                         a.css-center-1-line= "Add"
                     div.btn.item-menu.left-side(data-id="Delete", data-side="left")
@@ -33,8 +40,8 @@ html(lang="en")
                         div.btn.item-menu.right-side.side(data-id=val.name, data-select=val.name, data-side="right")
                             a.css-center-1-line= val.name
                 .menu-line
-                    div.btn.item-menu.right-side(data-id="schema", data-side="right")
-                        a.css-center-1-line= "schema"
+                    div.btn.item-menu.right-side(data-id="refresh", data-side="right")
+                        a.css-center-1-line= "refresh"
                     div.btn.item-menu.right-side(data-id="Add", data-side="right")
                         a.css-center-1-line= "Add"
                     div.btn.item-menu.right-side(data-id="Delete", data-side="right")
@@ -44,6 +51,5 @@ html(lang="en")
 
             #rightMainContainer.main.right-side.side(data-side="right")
 
-        #cmdLine
 
         script(src='/js/build/adminPanel.js' defer)

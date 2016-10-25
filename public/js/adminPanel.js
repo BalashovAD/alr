@@ -7,6 +7,13 @@ function cssCenter1Line() {
 
 var __DEBUG__adm;
 
+let assert = function (check, msg) {
+	if (!check)
+	{
+		alert('Error: ' + msg);
+	}
+};
+
 $(document).ready(() => {
     cssCenter1Line();
 
@@ -22,6 +29,12 @@ $(document).ready(() => {
 
         adm.show(id, side, sel);
     });
+
+	$('#cmdForm').submit(function(e) {
+		e.preventDefault();
+
+		adm.sendCommand();
+	});
 
     // left - user, right - book
     adm.show(0, 'left', 'user');
@@ -46,6 +59,8 @@ function Adm()
             col: 0
         }
     };
+
+	let cmdEl = $('#cmd');
 
     let singleContainer = {
         left: $('#leftSingleContainer'),
@@ -80,6 +95,11 @@ function Adm()
     };
 
     let thus = this;
+
+	function ok(msg)
+	{
+		console.log('OK: ' + msg);
+	}
 
     function getById()
     {
@@ -181,6 +201,13 @@ function Adm()
 
         return txt;
     }
+
+	function resetSingleContainer(side, col)
+	{
+		return function() {
+			thus.add(side, col);
+		};
+	}
 
     function parseArrayOfObjectToHTML(d, sel)
     {
@@ -299,19 +326,27 @@ function Adm()
         return txt;
     }
 
-    this.reloadDataOnPage = function ()
-    {
-        loadInMainContainer('left');
-        loadInMainContainer('right');
+	function reloadDataOnSide(side)
+	{
+		loadInMainContainer(side);
 
-        if (singleSel['left'].id && singleSel['left'].col)
-        {
-            loadInSingleContainer('left', singleSel['left'].id, singleSel['left'].col);
-        }
-        if (singleSel['right'].id && singleSel['right'].col)
-        {
-            loadInSingleContainer('right', singleSel['right'].id, singleSel['right'].col);
-        }
+		if (singleSel[side].id && singleSel[side].col)
+		{
+			loadInSingleContainer(side, singleSel[side].id, singleSel[side].col);
+		}
+	}
+
+    this.reloadDataOnPage = function (side)
+    {
+	    if (side)
+	    {
+			reloadDataOnSide(side);
+	    }
+	    else
+	    {
+		    reloadDataOnSide('left');
+		    reloadDataOnSide('right');
+	    }
     };
 
 	function addDataInSingleContainer(data, el, nowSelect)
@@ -388,24 +423,43 @@ function Adm()
                 case 'Add':
                             thus.add(side);
                             break;
-
+				case 'refresh':
+		                    thus.reloadDataOnPage(side);
+		                    break;
             }
         }
 
     };
 
-    this.add = function (sideOrCol) {
-        let col;
-        let side;
-        if (sideOrCol === 'left' || sideOrCol === 'right')
-        {// sideOrCol is side
-            col = select[sideOrCol];
-            side = sideOrCol;
+	this.sendCommand = function() {
+		let cmd = cmdEl.val();
+		cmdEl.val('');
+
+		console.log(cmd);
+
+		$.ajax({
+			method: 'POST',
+			url: '/admin/cmd',
+			data: JSON.stringify({
+				cmd: cmd
+			}),
+			contentType: "application/json; charset=utf-8"}).done(function() {
+				thus.reloadDataOnPage();
+				ok('command');
+		}).fail(function(){
+			assert(false, 'sendCommand');
+		});
+	};
+
+    this.add = function (side, col) {
+        if (arguments.length < 2)
+        {//  is side
+            col = select[side];
         }
         else
         {// sideOrCol is col, default side is left
-            col = sideOrCol;
-            side = left;
+            //col = col;
+            side = side || 'left';
         }
 
         $.ajax({
@@ -416,9 +470,12 @@ function Adm()
 
             let addEl = $('<span>').html('[add]').data('id', d._id).data('col', col)
                 .click(addDataFromSingleContainerInDB);
+			let resetEl = $('<span>').html('[reset]').data('id', d._id).data('col', col)
+				.click(resetSingleContainer(side, col));
 
             singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name'))
                 .append(addEl)
+	            .append(resetEl)
                 .append($('<span>').addClass('open-bracket'));
             singleContainer[side].append(parseSchema(d, col)).attr('class', 'single-' + col + ' single')
                 .append($('<span>').addClass('close-bracket'));

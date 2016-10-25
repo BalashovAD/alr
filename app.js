@@ -4,7 +4,7 @@ var path = require('path');
 var store = require('./store');
 
 
-var checkUserNameAndSecret = require('./mongo').checkUserNameAndSecret;
+var User = require('./mongo').User;
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -30,7 +30,7 @@ app.use(function(req, res, next){
 
     req.userIp = req.connection.remoteAddress;
 
-	checkUserNameAndSecret(nm, req.cookies.user, function (err, data) {
+	User.checkUserNameAndSecret(nm, req.cookies.user, function (err, data) {
 
         if (err)
         {
@@ -53,7 +53,7 @@ app.use(function(req, res, next){
 
             req.userName = 0;
             req.userId = '';
-            req.lvl = LVL['MAX_LVL'];
+            req.lvl = LVL['GUEST'];
 
             //debug('user {name: %s, lvl: %d} was load;', req.nameofuser, req.lvl)
         }

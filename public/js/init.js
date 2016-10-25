@@ -386,7 +386,7 @@ $(document).ready(function() {
 // RESIZE
         $(window).on('resize.book', delay_fn(function () {
             book.recalc();
-            book.scrollEl();
+            book.jmp();
             cssCenter1Line();
         }, time_resize));
 // MOUSE WHEEL

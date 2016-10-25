@@ -406,7 +406,7 @@ var __ =
 	        // RESIZE
 	        $(window).on('resize.book', delay_fn(function () {
 	            book.recalc();
-	            book.scrollEl();
+	            book.jmp();
 	            cssCenter1Line();
 	        }, time_resize));
 	        // MOUSE WHEEL
@@ -2893,10 +2893,10 @@ var __ =
 	            login.hide();
 	        }).fail(function () {
 	            thus.login('Login and/or psw are wrong');
-	        }).done(function () {
+	        }).done(function (data) {
 	            //msg('You were login.');
 	
-	            location.assign('/');
+	            location.assign('/' + (data.link || ''));
 	        });
 	    });
 	

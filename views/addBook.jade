@@ -11,6 +11,8 @@ html(lang="en")
                         li
                             h2
                                 = 'Add book (User: ' + name + ')'
+                            if error
+                                h5.error= error
                         li
                             label Title
                             input(name="title", type="text")

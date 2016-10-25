@@ -57,6 +57,12 @@ var __ =
 	
 	var __DEBUG__adm;
 	
+	var assert = function assert(check, msg) {
+	    if (!check) {
+	        alert('Error: ' + msg);
+	    }
+	};
+	
 	$(document).ready(function () {
 	    cssCenter1Line();
 	
@@ -71,6 +77,12 @@ var __ =
 	        var sel = $(this).data('select');
 	
 	        adm.show(id, side, sel);
+	    });
+	
+	    $('#cmdForm').submit(function (e) {
+	        e.preventDefault();
+	
+	        adm.sendCommand();
 	    });
 	
 	    // left - user, right - book
@@ -94,6 +106,8 @@ var __ =
 	            col: 0
 	        }
 	    };
+	
+	    var cmdEl = $('#cmd');
 	
 	    var singleContainer = {
 	        left: $('#leftSingleContainer'),
@@ -128,6 +142,10 @@ var __ =
 	    };
 	
 	    var thus = this;
+	
+	    function ok(msg) {
+	        console.log('OK: ' + msg);
+	    }
 	
 	    function getById() {
 	        var id = $(this).data('id');
@@ -217,6 +235,12 @@ var __ =
 	        }
 	
 	        return txt;
+	    }
+	
+	    function resetSingleContainer(side, col) {
+	        return function () {
+	            thus.add(side, col);
+	        };
 	    }
 	
 	    function parseArrayOfObjectToHTML(d, sel) {
@@ -309,15 +333,20 @@ var __ =
 	        return txt;
 	    }
 	
-	    this.reloadDataOnPage = function () {
-	        loadInMainContainer('left');
-	        loadInMainContainer('right');
+	    function reloadDataOnSide(side) {
+	        loadInMainContainer(side);
 	
-	        if (singleSel['left'].id && singleSel['left'].col) {
-	            loadInSingleContainer('left', singleSel['left'].id, singleSel['left'].col);
+	        if (singleSel[side].id && singleSel[side].col) {
+	            loadInSingleContainer(side, singleSel[side].id, singleSel[side].col);
 	        }
-	        if (singleSel['right'].id && singleSel['right'].col) {
-	            loadInSingleContainer('right', singleSel['right'].id, singleSel['right'].col);
+	    }
+	
+	    this.reloadDataOnPage = function (side) {
+	        if (side) {
+	            reloadDataOnSide(side);
+	        } else {
+	            reloadDataOnSide('left');
+	            reloadDataOnSide('right');
 	        }
 	    };
 	
@@ -381,22 +410,41 @@ var __ =
 	                case 'Add':
 	                    thus.add(side);
 	                    break;
-	
+	                case 'refresh':
+	                    thus.reloadDataOnPage(side);
+	                    break;
 	            }
 	        }
 	    };
 	
-	    this.add = function (sideOrCol) {
-	        var col = void 0;
-	        var side = void 0;
-	        if (sideOrCol === 'left' || sideOrCol === 'right') {
-	            // sideOrCol is side
-	            col = select[sideOrCol];
-	            side = sideOrCol;
+	    this.sendCommand = function () {
+	        var cmd = cmdEl.val();
+	        cmdEl.val('');
+	
+	        console.log(cmd);
+	
+	        $.ajax({
+	            method: 'POST',
+	            url: '/admin/cmd',
+	            data: JSON.stringify({
+	                cmd: cmd
+	            }),
+	            contentType: "application/json; charset=utf-8" }).done(function () {
+	            thus.reloadDataOnPage();
+	            ok('command');
+	        }).fail(function () {
+	            assert(false, 'sendCommand');
+	        });
+	    };
+	
+	    this.add = function (side, col) {
+	        if (arguments.length < 2) {
+	            //  is side
+	            col = select[side];
 	        } else {
 	            // sideOrCol is col, default side is left
-	            col = sideOrCol;
-	            side = left;
+	            //col = col;
+	            side = side || 'left';
 	        }
 	
 	        $.ajax({
@@ -406,8 +454,9 @@ var __ =
 	            singleContainer[side].empty();
 	
 	            var addEl = $('<span>').html('[add]').data('id', d._id).data('col', col).click(addDataFromSingleContainerInDB);
+	            var resetEl = $('<span>').html('[reset]').data('id', d._id).data('col', col).click(resetSingleContainer(side, col));
 	
-	            singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name')).append(addEl).append($('<span>').addClass('open-bracket'));
+	            singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name')).append(addEl).append(resetEl).append($('<span>').addClass('open-bracket'));
 	            singleContainer[side].append(parseSchema(d, col)).attr('class', 'single-' + col + ' single').append($('<span>').addClass('close-bracket'));
 	
 	            singleSel[side] = {
