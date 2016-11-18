@@ -49,19 +49,19 @@ var __ =
 	
 	var _book = __webpack_require__(3);
 	
-	var _login = __webpack_require__(7);
+	var _login = __webpack_require__(8);
 	
 	var file;
-	var JsFile;
+	//var JsFile;
 	
-	var debug = __webpack_require__(8)('app:init');
+	var debug = __webpack_require__(9)('app:init');
 	
 	
 	localStorage.debug = 'app:book';
 	
 	// GLOBAL VARIABLE
-	var __IS_LOGIN__ = false;
-	var __NAME__ = '0';
+	//var __IS_LOGIN__ = false;
+	//var __NAME__ = '0';
 	
 	// CONSTS
 	var time_resize = 1000;
@@ -97,6 +97,7 @@ var __ =
 	};
 	
 	var __ajaxSettings = function __ajaxSettings(book) {
+	    //noinspection NodeModulesDependencies,ES6ModulesDependencies
 	    $.ajax({
 	        statusCode: {},
 	        beforeSend: function beforeSend() {
@@ -108,7 +109,7 @@ var __ =
 	    });
 	};
 	
-	var __DEBUG__book = {};
+	var __DEBUG__ = {};
 	
 	var delay_fn = function delay_fn(cb, cd) {
 	    var timer;
@@ -161,6 +162,59 @@ var __ =
 	var error = __msg.error;
 	var msg = __msg.msg;
 	
+	function __initPlayer(player) {
+	    var container = $('#player');
+	    var btnPlay = $('#btnPlay', container);
+	    var btnStop = $('#btnStop', container);
+	    var containerForSlider = $('#containerForSliderDelay', container);
+	    var prev = void 0;
+	
+	    function init(player, MAX_DELAY, SHIFT_DELAY, DEFAULT_DELAY) {
+	        var buttons = $(document.createDocumentFragment());
+	
+	        for (var valueOfDelay = -MAX_DELAY; valueOfDelay <= MAX_DELAY; valueOfDelay += SHIFT_DELAY) {
+	            var el = $('<div>').addClass('value-of-delay').attr('val', valueOfDelay);
+	
+	            if (Math.abs(valueOfDelay - DEFAULT_DELAY) <= SHIFT_DELAY / 2) {
+	                el.addClass('select');
+	            }
+	
+	            if (Math.abs(Math.ceil(valueOfDelay) - valueOfDelay) < SHIFT_DELAY / 2) {
+	                el.addClass('notch');
+	            }
+	
+	            buttons.append(el);
+	        }
+	
+	        containerForSlider.append(buttons);
+	
+	        prev = $('.value-of-delay.select', container);
+	
+	        $('.value-of-delay').click(function () {
+	            var val = $(this).attr('val');
+	
+	            if (val != prev.attr('val')) {
+	                player.setDelay(val);
+	
+	                prev.removeClass('select');
+	                $(this).addClass('select');
+	
+	                prev = $(this);
+	            }
+	        });
+	
+	        btnPlay.click(function () {
+	            player.play();
+	        });
+	
+	        btnStop.click(function () {
+	            player.stop();
+	        });
+	    }
+	
+	    return init;
+	}
+	
 	function __initBookmark(book) {
 	    var submit = $('#submitBookmark');
 	    var choose = $('#chooseAnotherPosBookmark');
@@ -181,7 +235,7 @@ var __ =
 	
 	        text.val();
 	
-	        console.log(el.text());
+	        book.selectEl(id, 'user-sel');
 	    }
 	
 	    choose.click(function () {
@@ -192,6 +246,8 @@ var __ =
 	    submit.click(function () {
 	        if (pos.val().length != 0) {
 	            book.addBookmark(pos.val(), title.val(), text.val());
+	
+	            book.selectEl(-1, 'user-sel');
 	
 	            pos.val('');title.val('');text.val('');
 	        } else {
@@ -215,6 +271,8 @@ var __ =
 	
 	            if (!isNaN(pos)) {
 	                book.jmp(pos);
+	
+	                book.selectEl(pos, 'jump');
 	            }
 	        });
 	
@@ -315,7 +373,7 @@ var __ =
 	
 	$(document).ready(function () {
 	    //
-	    var login = new _login.__login();
+	    new _login.__login();
 	
 	    // .css-center-1-line
 	    function cssCenter1Line() {
@@ -338,24 +396,47 @@ var __ =
 	        loading: __loading,
 	        ajaxSettings: __ajaxSettings,
 	        controllerLeft: __controllerLeft,
+	        playerInit: __initPlayer,
 	        error: error,
 	        msg: msg
 	    });
 	    // DEBUG
-	    __DEBUG__book = book;
+	    __DEBUG__.book = book;
 	
 	    book.ready(function (book) {
 	        // ONLINE/OFFLINE MODE
 	        $('#onlineMode').on('change', function () {
+	            var context = $(this).closest('.switch-wrapper');
+	            var now = context.data('text');
+	
+	            if (now == 'online') {
+	                context.addClass('offline-mode');
+	                context.data('text', 'offline');
+	            } else {
+	                context.removeClass('offline-mode');
+	                context.data('text', 'online');
+	            }
+	
 	            book.swapOnlineMode();
 	        });
 	        // NIGHT/DAY MODE
 	        $('#nightMode').on('change', function () {
+	            var context = $(this).closest('.switch-wrapper');
+	            var now = context.data('text');
+	
+	            if (now == 'day') {
+	                context.addClass('night-mode');
+	                context.data('text', 'night');
+	            } else {
+	                context.removeClass('night-mode');
+	                context.data('text', 'day');
+	            }
+	
 	            book.swapNightMode();
 	        });
 	
 	        // MENU BUTTONS
-	        $('.item-menu').click(function (e) {
+	        $('.item-menu').click(function () {
 	            var id = $(this).data('id');
 	
 	            book.__int__controllerLeft(id);
@@ -403,6 +484,7 @@ var __ =
 	        $('#save').click(function () {
 	            book.save();
 	        });
+	
 	        // RESIZE
 	        $(window).on('resize.book', delay_fn(function () {
 	            book.recalc();
@@ -413,7 +495,8 @@ var __ =
 	        $('#book').on('wheel.book', function (e) {
 	            var del = e.originalEvent.deltaY;
 	
-	            book.scroll(del > 0 ? false : true, 1, Math.abs(del));
+	            // (del > 0 ? false : true)
+	            book.scroll(del <= 0, 1, Math.abs(del));
 	
 	            return false;
 	        });
@@ -421,23 +504,26 @@ var __ =
 	        $('#slider').on('wheel.book', function (e) {
 	            var del = e.originalEvent.deltaY;
 	
-	            book.scroll(del > 0 ? false : true);
+	            // (del > 0 ? false : true)
+	            book.scroll(del <= 0);
 	
 	            return false;
 	        });
 	        // KEYBOARD
 	        $(document).on('keydown.bookScroll', function (e) {
 	            if (e.keyCode == BUTTON_ARROW_UP || e.keyCode == BUTTON_ARROW_DOWN) {
-	                book.scroll(e.keyCode == BUTTON_ARROW_DOWN ? false : true, EPSILON);
+	                // (e.keyCode == BUTTON_ARROW_DOWN ? false : true)
+	                book.scroll(e.keyCode != BUTTON_ARROW_DOWN, EPSILON);
 	            }
 	            if (e.keyCode == BUTTON_ARROW_LEFT || e.keyCode == BUTTON_ARROW_RIGHT) {
-	                book.scroll(e.keyCode == BUTTON_ARROW_RIGHT ? false : true, 1);
+	                // (e.keyCode == BUTTON_ARROW_RIGHT ? false : true)
+	                book.scroll(e.keyCode != BUTTON_ARROW_RIGHT, 1);
 	            }
 	        });
 	    });
 	});
 	
-	module.exports = __DEBUG__book;
+	module.exports.__DEBUG__ = __DEBUG__;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
@@ -483,6 +569,7 @@ var __ =
 	
 	var debug = console.log.bind(console);
 	
+	var Player = __webpack_require__(7).Player;
 	
 	_filejs2.default.defineEngine(_filejsFb2.default);
 	
@@ -508,7 +595,6 @@ var __ =
 	    var lineSize;
 	    var lineCnt;
 	    var json;
-	    var shift = 0;
 	    var fs = $('#listOfBooks ol');
 	    var thus = this;
 	    var offsetBook = 0;
@@ -524,7 +610,10 @@ var __ =
 	        now: 0
 	    };
 	
-	    var saved = 0;
+	    var saved = {
+	        pos: 0,
+	        bookmarkCount: 0
+	    };
 	
 	    var load = {
 	        book: false,
@@ -547,21 +636,63 @@ var __ =
 	        timer: 0
 	    };
 	
+	    var ECHO_TIMEOUT = 1000 * 60;
+	
 	    var __bookmarks = [];
-	    var notSaved = 0;
 	
-	    // init interface function
-	
+	    // init interface function, no DOM
+	    this.player = new Player(scrollOneString);
 	    // no ajax
 	    this['__int__bookmark'] = interfaceFunc['bookmark'](thus);
 	    this['__int__loading'] = interfaceFunc['loading'](thus);
 	    this['__int__controllerLeft'] = interfaceFunc['controllerLeft'](thus);
+	    var __int__playerInit = interfaceFunc['playerInit'](this.player);
 	    // set settings
 	    this['__int__ajaxSettings'] = interfaceFunc['ajaxSettings'](thus);
+	
+	    this.player.init(__int__playerInit);
 	    // ajax part
 	
 	
 	    // end init
+	
+	    /**
+	     * add border
+	     */
+	    this.selectEl = function () {
+	        var nowSelect = {
+	            'user-sel': undefined,
+	            'jump': undefined,
+	            'another-state': undefined
+	        };
+	
+	        return function (id, state) {
+	            state = state || 'another-state';
+	
+	            if (!nowSelect.hasOwnProperty(state)) {
+	                state = 'another-state';
+	            }
+	
+	            if (typeof id == 'undefined' || id == -1) {
+	                if (typeof nowSelect[state] != 'undefined') {
+	                    __[nowSelect[state]].removeClass('select');
+	                    __[nowSelect[state]].attr('select-state', '');
+	
+	                    nowSelect[state] = undefined;
+	                }
+	            } else {
+	                if (typeof nowSelect[state] != 'undefined') {
+	                    __[nowSelect[state]].removeClass('select');
+	
+	                    __[nowSelect[state]].attr('select-state', '');
+	                }
+	
+	                nowSelect[state] = +id;
+	                __[nowSelect[state]].addClass('select');
+	                __[nowSelect[state]].attr('select-state', state);
+	            }
+	        };
+	    }();
 	
 	    //  id := screen.pos
 	    //  @set up slider
@@ -599,7 +730,7 @@ var __ =
 	        if (mode['online']) {
 	            thus.save();
 	        } else {
-	            notSaved++;
+	            saved.bookmarkCount++;
 	        }
 	    };
 	
@@ -629,21 +760,15 @@ var __ =
 	
 	                        resolve(id);
 	                    }).fail(function () {
-	                        try {
-	                            reject('System error');
-	                        } catch (err) {}
+	                        reject('System error');
 	                    }).always(function () {
 	                        setLoadValueFalse('bookmark');
 	                    });
 	                } else {
-	                    try {
-	                        reject('Queue');
-	                    } catch (err) {}
+	                    reject('Queue');
 	                }
 	            } else {
-	                try {
-	                    reject('Ur in offline mode');
-	                } catch (err) {}
+	                reject('Ur in offline mode');
 	            }
 	        });
 	
@@ -668,29 +793,23 @@ var __ =
 	                    }).done(function () {
 	                        msg('Bookmark was deleted');
 	
-	                        try {
-	                            resolve(id);
-	                        } catch (err) {}
+	                        resolve(id);
 	                    }).fail(function () {
-	                        try {
-	                            reject('System error');
-	                        } catch (err) {}
+	                        reject('System error');
 	                    }).always(function () {
 	                        setLoadValueFalse('bookmark');
 	                    });
 	                } else {
-	                    try {
-	                        reject('Queue');
-	                    } catch (err) {}
+	                    reject('Queue');
 	                }
 	            } else {
-	                try {
-	                    reject('Ur in offline mode');
-	                } catch (err) {}
+	                reject('Ur in offline mode');
 	            }
 	        });
 	
-	        return prom.then(doNothing, error);
+	        return prom.then(function (id) {
+	            thus.__int__bookmark.deleteBookmark(id);
+	        }, error);
 	    };
 	
 	    this.reloadBookmark = function () {
@@ -710,26 +829,18 @@ var __ =
 	                                resolve();
 	                            } catch (err) {}
 	                        }).fail(function () {
-	                            try {
-	                                reject('System fail.');
-	                            } catch (err) {}
+	                            reject('System error');
 	                        }).always(function () {
 	                            setLoadValueFalse('reloadBookmark');
 	                        });
 	                    } else {
-	                        try {
-	                            reject('Ur already reload');
-	                        } catch (err) {}
+	                        reject('Ur already reload');
 	                    }
 	                } else {
-	                    try {
-	                        reject('U must open book');
-	                    } catch (err) {}
+	                    reject('Ur must open the book');
 	                }
 	            } else {
-	                try {
-	                    reject('Ur in offline mode');
-	                } catch (err) {}
+	                reject('Ur in offline mode');
 	            }
 	        });
 	
@@ -743,91 +854,88 @@ var __ =
 	     */
 	    this.save = function (anyway) {
 	        var prom = new Promise(function (resolve, reject) {
+	            if (!thus.isSaved()) {
+	                if (mode['online']) {
+	                    if (bookId) {
+	                        if (!load.save || anyway) {
+	                            load.save = true;
 	
-	            if (mode['online']) {
-	                if (bookId) {
-	                    if (!load.save || anyway) {
-	                        load.save = true;
+	                            // disable edit/delete bookmarks
+	                            $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
 	
-	                        // disable edit/delete bookmarks
-	                        $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
+	                            var tmpSave = screen.pos;
 	
-	                        var tmpSave = screen.pos;
+	                            var dd = {
+	                                pos: tmpSave,
+	                                bookmarks: []
+	                            };
 	
-	                        var dd = {
-	                            pos: tmpSave,
-	                            bookmarks: []
-	                        };
+	                            for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i) {
+	                                dd.bookmarks.push(__bookmarks[kk[i]]);
+	                            }
 	
-	                        for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i) {
-	                            dd.bookmarks.push(__bookmarks[kk[i]]);
-	                        }
+	                            // JSON
+	                            $.ajax({
+	                                method: 'POST',
+	                                url: './book/save/_' + bookId,
+	                                data: JSON.stringify(dd),
+	                                contentType: "application/json; charset=utf-8"
+	                            }).done(function () {
 	
-	                        // JSON
-	                        $.ajax({
-	                            method: 'POST',
-	                            url: './book/save/_' + bookId,
-	                            data: JSON.stringify(dd),
-	                            contentType: "application/json; charset=utf-8"
-	                        }).done(function () {
+	                                saved.pos = tmpSave;
+	                                __bookmarks = [];
+	                                saved.bookmarkCount = 0;
 	
-	                            saved = tmpSave;
-	                            __bookmarks = [];
-	                            notSaved = 0;
+	                                if (dd.bookmarks.length > 0) {
+	                                    $.ajax({
+	                                        method: 'GET',
+	                                        url: '/book/bookmark/get/_' + bookId
+	                                    }).done(function (d) {
+	                                        loadBookmarks(d);
 	
-	                            if (dd.bookmarks.length > 0) {
-	                                $.ajax({
-	                                    method: 'GET',
-	                                    url: '/book/bookmark/get/_' + bookId
-	                                }).done(function (d) {
-	                                    loadBookmarks(d);
-	
+	                                        try {
+	                                            resolve();
+	                                        } catch (err) {}
+	                                    });
+	                                } else {
 	                                    try {
 	                                        resolve();
 	                                    } catch (err) {}
-	                                });
-	                            } else {
-	                                try {
-	                                    resolve();
-	                                } catch (err) {}
-	                            }
-	                        }).fail(function () {
-	                            error('System error');
+	                                }
+	                            }).fail(function () {
+	                                error('System error');
 	
-	                            try {
 	                                reject();
-	                            } catch (err) {}
-	                        }).always(function () {
-	                            setLoadValueFalse('save');
-	                        });
+	                            }).always(function () {
+	                                setLoadValueFalse('save');
+	                            });
+	                        } else {
+	                            msg('Ur already save');
+	
+	                            reject();
+	                        }
 	                    } else {
-	                        msg('Ur already save');
+	                        //error('U must open book');
 	
 	                        try {
-	                            reject();
+	                            resolve();
 	                        } catch (err) {}
 	                    }
 	                } else {
-	                    //error('U must open book');
+	                    msg('Ur in offline mode');
 	
-	                    try {
-	                        resolve();
-	                    } catch (err) {}
+	                    reject();
 	                }
 	            } else {
-	                msg('Ur in offline mode');
-	
-	                try {
-	                    reject();
-	                } catch (err) {}
+	                resolve();
 	            }
 	        });
 	
 	        return prom.then(doNothing, error);
 	    };
 	
-	    this.isSavedPos = function () {
-	        return saved == screen.pos;
+	    this.isSaved = function () {
+	        return saved.pos == screen.pos && saved.bookmarkCount == 0;
 	    };
 	
 	    /**
@@ -893,6 +1001,7 @@ var __ =
 	
 	                var el = $('<div></div>').addClass('mark-user').css('top', bm[k].pos / maxPos * sliderHeight).data('pos', bm[k].pos).click(function () {
 	                    thus.jmp($(this).data('pos'));
+	                    thus.selectEl($(this).data('pos'), 'jump');
 	                });
 	
 	                sliderBookMarks.append(el);
@@ -934,13 +1043,13 @@ var __ =
 	                            }).done(function (fl) {
 	                                thus.__int__loading.play();
 	
-	                                var blobb = new Blob([fl], {
+	                                var blobWithBook = new Blob([fl], {
 	                                    type: 'application/x-fictionbook+xml'
 	                                });
 	
-	                                window.blobb = blobb;
+	                                window.blobb = blobWithBook;
 	
-	                                var fb2 = new _filejs2.default(blobb, {
+	                                var fb2 = new _filejs2.default(blobWithBook, {
 	                                    type: 'application/x-fictionbook+xml',
 	                                    workerPath: '/js/workers/'
 	                                });
@@ -973,6 +1082,7 @@ var __ =
 	
 	                                    var el0 = $('<div></div>').addClass('mark-div').click(function () {
 	                                        thus.jmp(0);
+	                                        thus.selectEl(0, 'jump');
 	                                    });
 	
 	                                    sliderMarks.append(el0);
@@ -988,6 +1098,7 @@ var __ =
 	                                                if (id > 10) {
 	                                                    var el = $('<div></div>').addClass('mark-div').css('top', id / maxPos * sliderHeight).click(function () {
 	                                                        thus.jmp(id);
+	                                                        thus.selectEl(id, 'jump');
 	                                                    });
 	
 	                                                    sliderMarks.append(el);
@@ -997,7 +1108,7 @@ var __ =
 	                                    });
 	
 	                                    // footnote
-	                                    $('.jf-page a').click(function (e) {
+	                                    $('.jf-page a').click(function () {
 	                                        var id = $(this).attr('href').substr(1);
 	                                        var num = $(this).html();
 	                                        var text = '';
@@ -1045,15 +1156,11 @@ var __ =
 	                                }, function (e) {
 	                                    thus.__int__loading.stop();
 	                                    error('Can not read this file. ' + e);
-	                                    try {
-	                                        reject();
-	                                    } catch (err) {}
+	                                    reject();
 	                                });
 	                            }).fail(function () {
-	                                error('This book didn`t load.');
-	                                try {
-	                                    reject();
-	                                } catch (err) {}
+	                                error('This book did not load.');
+	                                reject();
 	                            }).always(function () {
 	                                setLoadValueFalse('book');
 	                            });
@@ -1063,16 +1170,12 @@ var __ =
 	                            //bookEl.empty();
 	                            //bookEl.append($('<span>Can not load file.</span>'));
 	
-	                            error('Info didn`t get.');
-	                            try {
-	                                reject();
-	                            } catch (err) {}
+	                            error('Info did not get.');
+	                            reject();
 	                        });
 	                    } else {
 	                        msg('Ur loading book now');
-	                        try {
-	                            reject();
-	                        } catch (err) {}
+	                        reject();
 	                    }
 	                }
 	            }
@@ -1093,7 +1196,7 @@ var __ =
 	                    }).done(function () {
 	                        msg('Book has been deleted.');
 	
-	                        thus.save(true);
+	                        //thus.save(true);
 	
 	                        location.reload();
 	                    }).fail(function () {
@@ -1128,6 +1231,15 @@ var __ =
 	            }
 	        };
 	    */
+	
+	    /***
+	     * scroll 1 string
+	     * only for cb in player
+	     */
+	    function scrollOneString() {
+	        thus.scroll(false, 0.001);
+	    }
+	
 	    /**
 	     * scrollEl(id) + save jmp pos
 	     * @param id - scroll pos
@@ -1203,7 +1315,6 @@ var __ =
 	
 	    /** System function
 	     *  @param id - first element
-	     *  @param coef > 1 - over view
 	     *  @param scroll - body{scrollTop} before movement
 	     *  @set book.pos = id, over view = coef
 	    */
@@ -1372,6 +1483,7 @@ var __ =
 	            }
 	        }
 	    };
+	
 	    //  Y := (coor.Y - offset)
 	    //  @set up  book <- cursor(Y)
 	    //  -----------------------
@@ -1391,8 +1503,8 @@ var __ =
 	
 	    function checkConnect() {
 	        if (mode['online']) {
-	            $.get('./echo/' + Date.now()).done(function () {
-	                setTimeout(checkConnect, 1000 * 60);
+	            $.get('./echo/_').done(function () {
+	                setTimeout(checkConnect, ECHO_TIMEOUT);
 	            }).fail(function () {
 	                if (mode['online']) {
 	                    $('#onlineMode').trigger('click');
@@ -1416,9 +1528,7 @@ var __ =
 	                            resolve();
 	                        } catch (err) {}
 	                    }).fail(function () {
-	                        try {
-	                            reject('System error');
-	                        } catch (err) {}
+	                        reject();
 	                    }).always(function () {
 	                        load.user = false;
 	                    });
@@ -1460,8 +1570,10 @@ var __ =
 	            fs.append($('<ol>'));
 	
 	            for (var t in user.books) {
+	                //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop,JSUnfilteredForInLoop
 	                var appEl = $('<div>').html(user.books[t].author + ' : ' + user.books[t].title).data('id', user.books[t].id).addClass('fs').addClass('online');
 	
+	                //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop
 	                var iconDel = $('<span>').html('X').addClass('fs-del').addClass('online').data('id', user.books[t].id).data('title', user.books[t].title);
 	
 	                var li = $('<li>').append(appEl);
@@ -1471,7 +1583,7 @@ var __ =
 	                fs.append(li);
 	            }
 	
-	            $('.fs').click(function (e) {
+	            $('.fs').click(function () {
 	                var id = $(this).data('id');
 	                thus.getBook(id);
 	            });
@@ -1504,15 +1616,18 @@ var __ =
 	        }
 	    }, error);
 	
-	    $(window).on('beforeunload', function (e) {
+	    window.onbeforeunload = function (e) {
 	        if (mode['online']) {
-	            thus.save();
-	        } else {
-	            e.returnValue = 'U don\'t save pos and u have ' + notSaved + ' bookmarks';
+	            if (!thus.isSaved()) {
 	
-	            return 'U don\'t save pos and u have ' + notSaved + ' bookmarks';
+	                thus.save(true);
+	            }
+	        } else {
+	            e.returnValue = 'U don\'t save pos (' + Math.abs(screen.pos - saved.pos) + ') and u have ' + saved.bookmarkCount + ' bookmarks';
+	
+	            return 'U don\'t save pos (' + Math.abs(screen.pos - saved.pos) + ') and u have ' + saved.bookmarkCount + ' bookmarks';
 	        }
-	    });
+	    };
 	    // GETTER
 	
 	    this.getMaxPos = function () {
@@ -1521,6 +1636,10 @@ var __ =
 	
 	    this.getPos = function () {
 	        return screen.pos;
+	    };
+	
+	    this.debug = function () {
+	        return __[screen.pos];
 	    };
 	
 	    return this;
@@ -2836,6 +2955,73 @@ var __ =
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	function Player(scroll) {
+		var timeout = 0;
+		var SCROLL_TIMEOUT = void 0;
+		var thus = this;
+		var isPlay = false;
+		var directionIsDown = true;
+	
+		var MAX_DELAY = 3;
+		var SHIFT_DELAY = 0.25;
+		var DEFAULT_DELAY = 1;
+		var INF_TIMEOUT = 60 * 60 * 60 * 1000;
+		var DEFAULT_TIMEOUT = 10 * 1000;
+	
+		SCROLL_TIMEOUT = DEFAULT_TIMEOUT;
+	
+		var play = function play() {
+			if (!isPlay) {
+				isPlay = true;
+	
+				timeout = setInterval(function () {
+					scroll(directionIsDown);
+				}, SCROLL_TIMEOUT);
+			}
+		};
+	
+		var setDelay = function setDelay(val) {
+			if (val < 0) {
+				directionIsDown = false;
+	
+				val = -val;
+			}
+	
+			if (val == 0) {
+				SCROLL_TIMEOUT = INF_TIMEOUT;
+			} else {
+				SCROLL_TIMEOUT = DEFAULT_TIMEOUT * DEFAULT_DELAY / val;
+			}
+	
+			if (isPlay) {
+				thus.stop();
+				thus.play();
+			}
+		};
+	
+		var stop = function stop() {
+			clearInterval(timeout);
+			isPlay = false;
+		};
+	
+		this.play = play.bind(this);
+		this.stop = stop.bind(this);
+		this.setDelay = setDelay.bind(this);
+		this.init = function (init) {
+			init(thus, MAX_DELAY, SHIFT_DELAY, DEFAULT_DELAY);
+		};
+	
+		return this;
+	}
+	
+	module.exports.Player = Player;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {"use strict";
@@ -2933,7 +3119,7 @@ var __ =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -2943,7 +3129,7 @@ var __ =
 	 * Expose `debug()` as the module.
 	 */
 	
-	exports = module.exports = __webpack_require__(9);
+	exports = module.exports = __webpack_require__(10);
 	exports.log = log;
 	exports.formatArgs = formatArgs;
 	exports.save = save;
@@ -3107,7 +3293,7 @@ var __ =
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -3123,7 +3309,7 @@ var __ =
 	exports.disable = disable;
 	exports.enable = enable;
 	exports.enabled = enabled;
-	exports.humanize = __webpack_require__(10);
+	exports.humanize = __webpack_require__(11);
 	
 	/**
 	 * The currently active debug mode names, and names to skip.
@@ -3310,7 +3496,7 @@ var __ =
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**

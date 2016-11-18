@@ -12,6 +12,7 @@
 @borderFormColor: #b3b1b1;
 @mainBackgroundColor: #7892c2;
 @fsWidth: 90%;
+@selectedBorderSize: 5px;
 
 body {
     /*padding: 50px;*/
@@ -160,6 +161,7 @@ hr {
 #book .h-l {
     display: none;
 
+	border-left: @selectedBorderSize solid transparent;
 //DEBUG
 	border-bottom: 1px solid black;
 }
@@ -175,6 +177,24 @@ hr {
 #book .title {
     font-size: 120%;
 }
+
+
+#book .select {
+	border-left: @selectedBorderSize solid gray;
+}
+
+#book .select[select-state=user-sel] {
+	border-left: @selectedBorderSize solid green;
+}
+
+#book .select[select-state=jump] {
+	border-left: @selectedBorderSize solid purple;
+}
+
+#book .select[select-state=another-state] {
+	border-left: @selectedBorderSize solid gray;
+}
+
 
 // END BOOK
 
@@ -530,4 +550,26 @@ div.footnote {
     background: @mainBackgroundColor;
 
     border-bottom: 1px solid @borderColor;
+}
+
+
+#player div.value-of-delay {
+	display: inline-block;
+
+	height: 23px;
+	width: 10px;
+
+	border-top: 5px solid black;
+	//background: red;
+}
+
+
+#player div.value-of-delay.notch {
+	content: attr(val);
+
+	font-size: 75%;
+}
+
+#player div.value-of-delay.select {
+	background: gray;
 }

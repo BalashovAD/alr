@@ -103,6 +103,7 @@ hr {
 }
 #book .h-l {
   display: none;
+  border-left: 5px solid transparent;
   border-bottom: 1px solid black;
 }
 #book .epigraph {
@@ -113,6 +114,18 @@ hr {
 }
 #book .title {
   font-size: 120%;
+}
+#book .select {
+  border-left: 5px solid gray;
+}
+#book .select[select-state=user-sel] {
+  border-left: 5px solid green;
+}
+#book .select[select-state=jump] {
+  border-left: 5px solid purple;
+}
+#book .select[select-state=another-state] {
+  border-left: 5px solid gray;
 }
 .left {
   position: fixed;
@@ -333,4 +346,17 @@ div.footnote {
   z-index: 105;
   background: #7892c2;
   border-bottom: 1px solid grey;
+}
+#player div.value-of-delay {
+  display: inline-block;
+  height: 23px;
+  width: 10px;
+  border-top: 5px solid black;
+}
+#player div.value-of-delay.notch {
+  content: attr(val);
+  font-size: 75%;
+}
+#player div.value-of-delay.select {
+  background: gray;
 }

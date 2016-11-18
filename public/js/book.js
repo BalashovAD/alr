@@ -4,6 +4,7 @@
 let debug = console.log.bind(console);
 import JsFile from './jsFile/filejs';
 import JsFileFb from './jsFile/filejs-fb';
+let Player = require('./player').Player;
 
 JsFile.defineEngine(JsFileFb);
 
@@ -29,7 +30,6 @@ var __book = function(idElem, interfaceFunc) {
     var lineSize;
     var lineCnt;
     var json;
-    var shift = 0;
     var fs = $('#listOfBooks ol');
     var thus = this;
     var offsetBook = 0;
@@ -45,7 +45,10 @@ var __book = function(idElem, interfaceFunc) {
         now: 0
     };
 
-    var saved = 0;
+    var saved = {
+	    pos: 0,
+	    bookmarkCount: 0
+    };
 
     var load = {
         book: false,
@@ -68,22 +71,69 @@ var __book = function(idElem, interfaceFunc) {
         timer: 0
     };
 
+    const ECHO_TIMEOUT = 1000 * 60;
 
     var __bookmarks = [];
-    var notSaved = 0;
 
-// init interface function
-
+// init interface function, no DOM
+	this.player = new Player(scrollOneString);
 // no ajax
     this['__int__bookmark'] = interfaceFunc['bookmark'](thus);
     this['__int__loading'] = interfaceFunc['loading'](thus);
     this['__int__controllerLeft'] = interfaceFunc['controllerLeft'](thus);
+	let __int__playerInit = interfaceFunc['playerInit'](this.player);
 // set settings
     this['__int__ajaxSettings'] = interfaceFunc['ajaxSettings'](thus);
+
+	this.player.init(__int__playerInit);
 // ajax part
 
 
 // end init
+
+/**
+ * add border
+ */
+	this.selectEl = (function() {
+		let nowSelect = {
+			'user-sel': undefined,
+			'jump': undefined,
+			'another-state': undefined
+		};
+
+		return function (id, state) {
+			state = state || 'another-state';
+
+			if (!nowSelect.hasOwnProperty(state))
+			{
+				state = 'another-state';
+			}
+
+			if (typeof id == 'undefined' || id == -1)
+			{
+				if (typeof nowSelect[state] != 'undefined')
+				{
+					__[nowSelect[state]].removeClass('select');
+					__[nowSelect[state]].attr('select-state', '');
+
+					nowSelect[state] = undefined;
+				}
+			}
+			else
+			{
+				if (typeof nowSelect[state] != 'undefined')
+				{
+					__[nowSelect[state]].removeClass('select');
+
+					__[nowSelect[state]].attr('select-state', '');
+				}
+
+				nowSelect[state] = +id;
+				__[nowSelect[state]].addClass('select');
+				__[nowSelect[state]].attr('select-state', state);
+			}
+		};
+	})();
 
 //  id := screen.pos
 //  @set up slider
@@ -128,7 +178,7 @@ var __book = function(idElem, interfaceFunc) {
         }
         else
         {
-            notSaved++;
+            saved.bookmarkCount++;
         }
     };
 
@@ -160,31 +210,19 @@ var __book = function(idElem, interfaceFunc) {
 
                         resolve(id);
                     }).fail(function () {
-                        try {
-                            reject('System error');
-                        } catch(err) {
-
-                        }
+	                    reject('System error');
                     }).always(function() {
                         setLoadValueFalse('bookmark');
                     });
                 }
                 else
                 {
-                    try {
-                        reject('Queue');
-                    } catch(err) {
-
-                    }
+	                reject('Queue');
                 }
             }
             else
             {
-                try {
-                    reject('Ur in offline mode');
-                } catch(err) {
-
-                }
+	            reject('Ur in offline mode');
             }
         });
 
@@ -211,42 +249,26 @@ var __book = function(idElem, interfaceFunc) {
                     }).done(function () {
                         msg('Bookmark was deleted');
 
-                        try{
-                            resolve(id);
-                        } catch (err) {
-
-                        }
+	                    resolve(id);
 
                     }).fail(function () {
-                        try{
-                            reject('System error');
-                        } catch(err) {
-
-                        }
+	                    reject('System error');
                     }).always(function() {
                         setLoadValueFalse('bookmark');
                     });
                 }
                 else
                 {
-                    try{
-                        reject('Queue');
-                    } catch (err) {
-
-                    }
+	                reject('Queue');
                 }
             }
             else
             {
-                try{
-                    reject('Ur in offline mode');
-                } catch(err) {
-
-                }
+	            reject('Ur in offline mode');
             }
         });
 
-        return prom.then(doNothing, error);
+        return prom.then((id) => {thus.__int__bookmark.deleteBookmark(id);}, error);
     };
 
     this.reloadBookmark = function() {
@@ -271,40 +293,24 @@ var __book = function(idElem, interfaceFunc) {
 
                             }
                         }).fail(function() {
-                            try {
-                                reject('System fail.');
-                            } catch (err) {
-
-                            }
+	                        reject('System error');
                         }).always(() => {
                             setLoadValueFalse('reloadBookmark');
                         });
                     }
                     else
                     {
-                        try {
-                            reject('Ur already reload');
-                        } catch (err) {
-
-                        }
+	                    reject('Ur already reload');
                     }
                 }
                 else
                 {
-                    try {
-                        reject('U must open book');
-                    } catch (err) {
-
-                    }
+	                reject('Ur must open the book');
                 }
             }
             else
             {
-                try {
-                    reject('Ur in offline mode');
-                } catch (err) {
-
-                }
+	            reject('Ur in offline mode');
             }
         });
 
@@ -318,116 +324,110 @@ var __book = function(idElem, interfaceFunc) {
      */
     this.save = function(anyway) {
         let prom = new Promise(function(resolve, reject){
+	        if (!thus.isSaved())
+	        {
+		        if (mode['online'])
+		        {
+			        if (bookId)
+			        {
+				        if (!load.save || anyway)
+				        {
+					        load.save = true;
 
-            if (mode['online'])
-            {
-                if (bookId)
-                {
-                    if (!load.save || anyway)
-                    {
-                        load.save = true;
+					        // disable edit/delete bookmarks
+					        $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
 
-                        // disable edit/delete bookmarks
-                        $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
+					        var tmpSave = screen.pos;
 
-                        var tmpSave = screen.pos;
+					        var dd = {
+						        pos: tmpSave,
+						        bookmarks: []
+					        };
 
-                        var dd = {
-                            pos: tmpSave,
-                            bookmarks: []
-                        };
+					        for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i)
+					        {
+						        dd.bookmarks.push(__bookmarks[kk[i]]);
+					        }
 
-                        for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i)
-                        {
-                            dd.bookmarks.push(__bookmarks[kk[i]]);
-                        }
+					        // JSON
+					        $.ajax({
+						        method: 'POST',
+						        url: './book/save/_' + bookId,
+						        data: JSON.stringify(dd),
+						        contentType: "application/json; charset=utf-8"
+					        }).done(function () {
 
-                        // JSON
-                        $.ajax({
-                            method: 'POST',
-                            url: './book/save/_' + bookId,
-                            data: JSON.stringify(dd),
-                            contentType: "application/json; charset=utf-8"
-                        }).done(function () {
+						        saved.pos = tmpSave;
+						        __bookmarks = [];
+						        saved.bookmarkCount = 0;
 
-                            saved = tmpSave;
-                            __bookmarks = [];
-                            notSaved = 0;
+						        if (dd.bookmarks.length > 0)
+						        {
+							        $.ajax({
+								        method: 'GET',
+								        url: '/book/bookmark/get/_' + bookId
+							        }).done (function(d) {
+								        loadBookmarks(d);
 
-                            if (dd.bookmarks.length > 0)
-                            {
-                                $.ajax({
-                                    method: 'GET',
-                                    url: '/book/bookmark/get/_' + bookId
-                                }).done (function(d) {
-                                    loadBookmarks(d);
+								        try {
+									        resolve();
+								        } catch (err) {
 
-                                    try {
-                                        resolve();
-                                    } catch (err) {
+								        }
+							        });
+						        }
+						        else
+						        {
+							        try {
+								        resolve();
+							        } catch (err) {
 
-                                    }
-                                });
-                            }
-                            else
-                            {
-                                try {
-                                    resolve();
-                                } catch (err) {
+							        }
+						        }
+					        }).fail(function(){
+						        error('System error');
 
-                                }
-                            }
-                        }).fail(function(){
-                            error('System error');
+						        reject();
+					        }).always(()=> {
+						        setLoadValueFalse('save');
+					        });
+				        }
+				        else
+				        {
+					        msg('Ur already save');
 
-                            try {
-                                reject();
-                            } catch (err) {
+					        reject();
+				        }
+			        }
+			        else
+			        {
+				        //error('U must open book');
 
-                            }
-                        }).always(()=> {
-                            setLoadValueFalse('save');
-                        });
-                    }
-                    else
-                    {
-                        msg('Ur already save');
+				        try {
+					        resolve();
+				        } catch (err) {
 
-                        try {
-                            reject();
-                        } catch (err) {
+				        }
+			        }
+		        }
+		        else
+		        {
+			        msg('Ur in offline mode');
 
-                        }
-                    }
-                }
-                else
-                {
-                    //error('U must open book');
-
-                    try {
-                        resolve();
-                    } catch (err) {
-
-                    }
-                }
-            }
-            else
-            {
-                msg('Ur in offline mode');
-
-                try {
-                    reject();
-                } catch (err) {
-
-                }
-            }
+			        reject();
+		        }
+	        }
+	        else
+	        {
+		        resolve();
+	        }
         });
 
         return prom.then(doNothing, error);
     };
 
-    this.isSavedPos = function () {
-        return (saved == screen.pos);
+    this.isSaved = function () {
+        return (saved.pos == screen.pos && saved.bookmarkCount == 0);
     };
 
     /**
@@ -517,6 +517,7 @@ var __book = function(idElem, interfaceFunc) {
                     .data('pos', bm[k].pos)
                     .click(function() {
                         thus.jmp($(this).data('pos'));
+	                    thus.selectEl($(this).data('pos'), 'jump');
                     });
 
                 sliderBookMarks.append(el);
@@ -563,14 +564,14 @@ var __book = function(idElem, interfaceFunc) {
                             }).done(function (fl) {
                                 thus.__int__loading.play();
 
-                                var blobb = new Blob([fl], {
+                                var blobWithBook = new Blob([fl], {
                                     type: 'application/x-fictionbook+xml'
                                 });
 
-	                            window.blobb = blobb;
+	                            window.blobb = blobWithBook;
 
 
-                                var fb2 = new JsFile(blobb, {
+                                var fb2 = new JsFile(blobWithBook, {
                                     type: 'application/x-fictionbook+xml',
                                     workerPath: '/js/workers/'
                                 });
@@ -604,7 +605,8 @@ var __book = function(idElem, interfaceFunc) {
                                     var el0 = $('<div></div>')
                                         .addClass('mark-div')
                                         .click(function () {
-                                            thus.jmp(0)
+                                            thus.jmp(0);
+	                                        thus.selectEl(0, 'jump');
                                         });
 
                                     sliderMarks.append(el0);
@@ -631,6 +633,7 @@ var __book = function(idElem, interfaceFunc) {
                                                         .css('top', id / maxPos * sliderHeight)
                                                         .click(function () {
                                                             thus.jmp(id);
+	                                                        thus.selectEl(id, 'jump');
                                                         });
 
                                                     sliderMarks.append(el);
@@ -640,7 +643,7 @@ var __book = function(idElem, interfaceFunc) {
                                     });
 
                                     // footnote
-                                    $('.jf-page a').click(function(e){
+                                    $('.jf-page a').click(function(){
                                         var id = $(this).attr('href').substr(1);
                                         var num = $(this).html();
                                         var text = '';
@@ -694,19 +697,11 @@ var __book = function(idElem, interfaceFunc) {
                                 }, function (e) {
                                     thus.__int__loading.stop();
                                     error('Can not read this file. ' + e);
-                                    try {
-                                        reject();
-                                    } catch (err) {
-
-                                    }
+	                                reject();
                                 });
                             }).fail(function () {
-                                error('This book didn`t load.');
-                                try {
-                                    reject();
-                                } catch (err) {
-
-                                }
+                                error('This book did not load.');
+	                            reject();
                             }).always(()=> {
                                 setLoadValueFalse('book');
                             });
@@ -716,22 +711,14 @@ var __book = function(idElem, interfaceFunc) {
                             //bookEl.empty();
                             //bookEl.append($('<span>Can not load file.</span>'));
 
-                            error('Info didn`t get.');
-                            try {
-                                reject();
-                            } catch (err) {
-
-                            }
+                            error('Info did not get.');
+	                        reject();
                         });
                     }
                     else
                     {
                         msg('Ur loading book now');
-                        try {
-                            reject();
-                        } catch (err) {
-
-                        }
+	                    reject();
                     }
                 }
             }
@@ -754,7 +741,7 @@ var __book = function(idElem, interfaceFunc) {
                     }).done(function () {
                         msg('Book has been deleted.');
 
-                        thus.save(true);
+                        //thus.save(true);
 
                         location.reload();
                     }).fail(function () {
@@ -790,6 +777,16 @@ var __book = function(idElem, interfaceFunc) {
         }
     };
 */
+
+	/***
+	 * scroll 1 string
+	 * only for cb in player
+	 */
+	function scrollOneString()
+	{
+		thus.scroll(false, 0.001);
+	}
+
     /**
      * scrollEl(id) + save jmp pos
      * @param id - scroll pos
@@ -877,7 +874,6 @@ var __book = function(idElem, interfaceFunc) {
 
     /** System function
      *  @param id - first element
-     *  @param coef > 1 - over view
      *  @param scroll - body{scrollTop} before movement
      *  @set book.pos = id, over view = coef
     */
@@ -1087,6 +1083,7 @@ var __book = function(idElem, interfaceFunc) {
             }
         }
     };
+
 //  Y := (coor.Y - offset)
 //  @set up  book <- cursor(Y)
 //  -----------------------
@@ -1108,9 +1105,9 @@ var __book = function(idElem, interfaceFunc) {
     function checkConnect() {
         if (mode['online'])
         {
-            $.get('./echo/' + Date.now())
+            $.get('./echo/_')
                 .done(() => {
-                    setTimeout(checkConnect, 1000 * 60);
+                    setTimeout(checkConnect, ECHO_TIMEOUT);
                 }).fail(() => {
                 if (mode['online'])
                 {
@@ -1119,6 +1116,7 @@ var __book = function(idElem, interfaceFunc) {
             });
         }
     }
+
 
     setTimeout(checkConnect, 1000 * 60);
 
@@ -1139,11 +1137,7 @@ var __book = function(idElem, interfaceFunc) {
 
                         }
                     }).fail(() => {
-                        try{
-                            reject('System error');
-                        } catch(err) {
-
-                        }
+	                    reject();
                     }).always(()=> {
                         load.user = false;
                     });
@@ -1193,13 +1187,15 @@ var __book = function(idElem, interfaceFunc) {
 
             for (let t in user.books)
             {
-                var appEl = $('<div>')
+	            //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop,JSUnfilteredForInLoop
+	            var appEl = $('<div>')
                                 .html(user.books[t].author + ' : ' + user.books[t].title)
                                 .data('id', user.books[t].id)
                                 .addClass('fs')
                                 .addClass('online');
 
-                var iconDel = $('<span>')
+	            //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop
+	            var iconDel = $('<span>')
                     .html('X')
                     .addClass('fs-del')
                     .addClass('online')
@@ -1215,7 +1211,7 @@ var __book = function(idElem, interfaceFunc) {
                 fs.append(li);
             }
 
-            $('.fs').click(function (e) {
+            $('.fs').click(function () {
                 var id = $(this).data('id');
                 thus.getBook(id);
             });
@@ -1250,18 +1246,23 @@ var __book = function(idElem, interfaceFunc) {
         }
     }, error);
 
-    $(window).on('beforeunload', function(e) {
+	window.onbeforeunload = function(e) {
         if (mode['online'])
         {
-            thus.save();
+            if (!thus.isSaved())
+            {
+
+	            thus.save(true);
+
+            }
         }
         else
         {
-            e.returnValue = `U don't save pos and u have ${notSaved} bookmarks`;
+            e.returnValue = `U don't save pos (${ Math.abs(screen.pos - saved.pos) }) and u have ${ saved.bookmarkCount } bookmarks`;
 
-            return `U don't save pos and u have ${notSaved} bookmarks`;
+            return `U don't save pos (${ Math.abs(screen.pos - saved.pos) }) and u have ${ saved.bookmarkCount } bookmarks`;
         }
-    });
+    };
 // GETTER
 
     this.getMaxPos = function() {
@@ -1273,6 +1274,9 @@ var __book = function(idElem, interfaceFunc) {
         return screen.pos;
     };
 
+    this.debug = function () {
+	    return __[screen.pos];
+    };
 
     return this;
 };

@@ -1,7 +1,7 @@
 "use strict";
 var app = require('express')();
 var cookieParser = require('cookie-parser');
-var path = require('path');
+
 var fs = require('fs');
 
 var debug = require('debug')('sniffer:book');
@@ -10,9 +10,9 @@ app.use(cookieParser());
 
 var checkAccess = require('./login').checkAccess;
 
-let User = require('./mongo').User;
-let Book = require('./mongo').Book;
-let Invite = require('./mongo').Invite;
+
+
+
 
 
 app.use(require('body-parser').json());

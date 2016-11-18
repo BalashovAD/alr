@@ -32,7 +32,7 @@ app.all('*', (req, res, next) => {
 });
 
 
-app.get('/index.jade', function (req, res, next) {
+app.get('/index.jade', function (req, res) {
 
     res.set('Content-Type', 'text/html');
 
@@ -65,7 +65,7 @@ app.post('/add/_:col', (req, res) => {
     switch (col)
     {
 	    case 'user':
-		                addDoc('user', value, (err, t) => {
+		                addDoc('user', value, (err) => {
 			                if (err)
 			                {
 				                res.status(403).end();
@@ -78,7 +78,7 @@ app.post('/add/_:col', (req, res) => {
 
 		                break;
 	    case 'book':
-		                addDoc('book', value, (err, t) => {
+		                addDoc('book', value, (err) => {
 			                if (err)
 			                {
 				                res.status(403).end();
@@ -91,7 +91,7 @@ app.post('/add/_:col', (req, res) => {
 
 		                break;
         case 'invite':
-                        addDoc('invite', value, (err, t) => {
+                        addDoc('invite', value, (err) => {
                             if (err)
                             {
                                 res.status(403).end();
@@ -193,7 +193,7 @@ app.delete('/delete/_:col/_:id', (req, res) => {
 
     if (['user', 'book', 'invite'].indexOf(col) > -1)
     {
-        deleteById(col, id, function(err, t) {
+        deleteById(col, id, function(err) {
             if (err)
             {
                 res.status(403).end();

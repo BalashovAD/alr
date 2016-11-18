@@ -9,9 +9,9 @@ block content
         div
             span#save.online Save
 
-        div.switch-wrapper
+        div.switch-wrapper(data-text="online")
             input(id='onlineMode', type='checkbox', value='1', checked='true', class='switch-button')
-        div.switch-wrapper
+        div.switch-wrapper(data-text="day")
             input(id='nightMode', type='checkbox', value='1', checked='true', class='switch-button')
 
         hr
@@ -60,6 +60,16 @@ block content
                 a.btn-navigate.css-center-1-line Back
             #btnNavRedo
                 a.btn-navigate.css-center-1-line Forward
+
+        hr
+
+        div#player
+            #btnPlay
+                a.btn-player.css-center-1-line Play
+            #btnStop
+                a.btn-player.css-center-1-line Stop
+            div#containerForSliderDelay
+
 
     div#addBookmark.left.hide
         h2 Add bookmark

@@ -25,7 +25,7 @@ const ACCESS_LVL = {
 };
 
 let User = require('./mongo').User;
-let Book = require('./mongo').Book;
+
 let Invite = require('./mongo').Invite;
 
 
@@ -67,7 +67,7 @@ function getLinkFromQuery(link)
 // Login
 // user/psw
 // TODO: psw -> hash(psw)
-app.get('/_:user/_(:psw)?', function(req, res, next){
+app.get('/_:user/_(:psw)?', function(req, res){
     var name = req.params.user;
     var psw = req.params.psw;
 	res.query = res.query || {};
@@ -95,7 +95,7 @@ app.get('/_:user/_(:psw)?', function(req, res, next){
 
 // exit
 //
-app.get('/exit/_:user/', function(req, res, next){
+app.get('/exit/_:user/', function(req, res){
     var name = req.params.user;
 
     if (req.userName != '0')
@@ -204,7 +204,7 @@ app.post('/add/', (req, res, next) => {
 
 // Get db document
 // :user - only u
-app.get('/info', function (req, res, next) {
+app.get('/info', function (req, res) {
     if (req.userName != 0)
     {
         User.getUser(req.userName, function(err, t) {

@@ -1,6 +1,6 @@
 "use strict";
 var file;
-var JsFile;
+//var JsFile;
 
 let debug = require('debug')('app:init');
 import {__book} from './book';
@@ -9,8 +9,8 @@ import {__login} from './login';
 localStorage.debug = 'app:book';
 
 // GLOBAL VARIABLE
-var __IS_LOGIN__ = false;
-var __NAME__ = '0';
+//var __IS_LOGIN__ = false;
+//var __NAME__ = '0';
 
 // CONSTS
 const time_resize = 1000;
@@ -48,7 +48,8 @@ var __loading = function() {
 };
 
 var __ajaxSettings = function(book) {
-    $.ajax({
+	//noinspection NodeModulesDependencies,ES6ModulesDependencies
+	$.ajax({
         statusCode: {},
         beforeSend: function () {
             book.__int__loading.play();
@@ -59,7 +60,7 @@ var __ajaxSettings = function(book) {
     });
 };
 
-var __DEBUG__book = {};
+var __DEBUG__ = {};
 
 
 var delay_fn = function (cb, cd) {
@@ -116,6 +117,63 @@ var error = __msg.error;
 var msg = __msg.msg;
 
 
+function __initPlayer(player)
+{
+	let container = $('#player');
+	let btnPlay = $('#btnPlay', container);
+	let btnStop = $('#btnStop', container);
+	let containerForSlider = $('#containerForSliderDelay', container);
+	let prev;
+
+	function init(player, MAX_DELAY, SHIFT_DELAY, DEFAULT_DELAY)
+	{
+		let buttons = $(document.createDocumentFragment());
+
+		for (let valueOfDelay = -MAX_DELAY; valueOfDelay <= MAX_DELAY; valueOfDelay += SHIFT_DELAY) {
+			let el = $('<div>').addClass('value-of-delay').attr('val', valueOfDelay);
+
+			if (Math.abs(valueOfDelay - DEFAULT_DELAY) <= SHIFT_DELAY / 2) {
+				el.addClass('select');
+			}
+
+			if (Math.abs(Math.ceil(valueOfDelay) - valueOfDelay) < SHIFT_DELAY / 2)
+			{
+				el.addClass('notch');
+			}
+
+			buttons.append(el);
+		}
+
+		containerForSlider.append(buttons);
+
+		prev = $('.value-of-delay.select', container);
+
+		$('.value-of-delay').click(function () {
+			let val = $(this).attr('val');
+
+			if (val != prev.attr('val'))
+			{
+				player.setDelay(val);
+
+				prev.removeClass('select');
+				$(this).addClass('select');
+
+				prev = $(this);
+			}
+		});
+
+		btnPlay.click(()=> {
+			player.play();
+		});
+
+		btnStop.click(()=> {
+			player.stop();
+		});
+	}
+
+	return init;
+}
+
 function __initBookmark(book)
 {
     var submit = $('#submitBookmark');
@@ -137,7 +195,7 @@ function __initBookmark(book)
 
         text.val();
 
-        console.log(el.text());
+        book.selectEl(id, 'user-sel');
     }
 
     choose.click(function() {
@@ -149,6 +207,8 @@ function __initBookmark(book)
         if (pos.val().length != 0)
         {
             book.addBookmark(pos.val(), title.val(), text.val());
+
+	        book.selectEl(-1, 'user-sel');
 
             pos.val(''); title.val(''); text.val('');
         }
@@ -176,6 +236,8 @@ function __initBookmark(book)
             if (!isNaN(pos))
             {
                 book.jmp(pos);
+
+	            book.selectEl(pos, 'jump');
             }
         });
 
@@ -290,7 +352,7 @@ function __controllerLeft(book) {
 
 $(document).ready(function() {
 //
-	let login = new __login();
+	new __login();
 
 // .css-center-1-line
     function cssCenter1Line() {
@@ -313,24 +375,53 @@ $(document).ready(function() {
         loading: __loading,
         ajaxSettings: __ajaxSettings,
         controllerLeft: __controllerLeft,
+	    playerInit: __initPlayer,
 	    error: error,
 	    msg: msg
     });
 // DEBUG
-    __DEBUG__book = book;
+    __DEBUG__.book = book;
 
     book.ready(function(book) {
 // ONLINE/OFFLINE MODE
         $('#onlineMode').on('change', function() {
+	        let context = $(this).closest('.switch-wrapper');
+	        let now = context.data('text');
+
+	        if (now == 'online')
+	        {
+		        context.addClass('offline-mode');
+		        context.data('text', 'offline');
+	        }
+	        else
+	        {
+		        context.removeClass('offline-mode');
+		        context.data('text', 'online');
+	        }
+
             book.swapOnlineMode();
         });
 // NIGHT/DAY MODE
         $('#nightMode').on('change', function() {
+	        let context = $(this).closest('.switch-wrapper');
+	        let now = context.data('text');
+
+	        if (now == 'day')
+	        {
+		        context.addClass('night-mode');
+		        context.data('text', 'night');
+	        }
+	        else
+	        {
+		        context.removeClass('night-mode');
+		        context.data('text', 'day');
+	        }
+
             book.swapNightMode();
         });
 
 // MENU BUTTONS
-        $('.item-menu').click(function(e) {
+        $('.item-menu').click(function() {
             var id = $(this).data('id');
 
             book.__int__controllerLeft(id);
@@ -383,6 +474,7 @@ $(document).ready(function() {
         $('#save').click(()=>{
             book.save();
         });
+
 // RESIZE
         $(window).on('resize.book', delay_fn(function () {
             book.recalc();
@@ -393,7 +485,8 @@ $(document).ready(function() {
         $('#book').on('wheel.book', function(e) {
             var del = e.originalEvent.deltaY;
 
-            book.scroll((del > 0 ? false : true), 1, Math.abs(del));
+	        // (del > 0 ? false : true)
+            book.scroll((del <= 0), 1, Math.abs(del));
 
             return false;
         });
@@ -401,7 +494,8 @@ $(document).ready(function() {
         $('#slider').on('wheel.book', function(e) {
             var del = e.originalEvent.deltaY;
 
-            book.scroll((del > 0 ? false : true));
+	        // (del > 0 ? false : true)
+            book.scroll((del <= 0));
 
             return false;
         });
@@ -409,11 +503,13 @@ $(document).ready(function() {
 	    $(document).on('keydown.bookScroll', function(e) {
 		    if (e.keyCode == BUTTON_ARROW_UP || e.keyCode == BUTTON_ARROW_DOWN)
 		    {
-			    book.scroll((e.keyCode == BUTTON_ARROW_DOWN ? false : true), EPSILON);
+			    // (e.keyCode == BUTTON_ARROW_DOWN ? false : true)
+			    book.scroll((e.keyCode != BUTTON_ARROW_DOWN), EPSILON);
 		    }
 		    if (e.keyCode == BUTTON_ARROW_LEFT || e.keyCode == BUTTON_ARROW_RIGHT)
 		    {
-			    book.scroll((e.keyCode == BUTTON_ARROW_RIGHT ? false : true), 1);
+			    // (e.keyCode == BUTTON_ARROW_RIGHT ? false : true)
+			    book.scroll((e.keyCode != BUTTON_ARROW_RIGHT), 1);
 		    }
 
 	    })
@@ -423,4 +519,4 @@ $(document).ready(function() {
 });
 
 
-module.exports = __DEBUG__book;
+module.exports.__DEBUG__ = __DEBUG__;

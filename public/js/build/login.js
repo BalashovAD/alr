@@ -47,7 +47,7 @@ var __ =
 
 	'use strict';
 	
-	var _login = __webpack_require__(7);
+	var _login = __webpack_require__(8);
 	
 	var loginObj = new _login.__login();
 
@@ -74,7 +74,8 @@ var __ =
 /* 4 */,
 /* 5 */,
 /* 6 */,
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {"use strict";

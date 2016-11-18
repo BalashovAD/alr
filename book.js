@@ -198,7 +198,7 @@ function getFile(req, res, next)
  * @body title
  * @body author
  */
-app.post('/add/', getFile, function(req, res, next) {
+app.post('/add/', getFile, function(req, res) {
     let title = req.body.title || "";
     let author = req.body.author || "";
 // TODO: form upload
@@ -231,7 +231,7 @@ app.post('/add/', getFile, function(req, res, next) {
     });
 // TODO: convert files to fb2
 */
-    function db_cb(err, t)
+    function db_cb(err)
     {
         if (err)
         {
@@ -254,7 +254,7 @@ app.post('/save/_:id', (req, res, next) => {
     debug('Save book _id = %s, user = %s', id, req.userName);
 
     // If no book
-    if (id == 0)
+    if (typeof id == 'undefined' || id == 0)
     {
         res.status(301).end();
 
@@ -299,11 +299,11 @@ app.post('/save/_:id', (req, res, next) => {
  *  @param :id - book id
  *  @body markId
  */
-app.post('/bookmark/delete/_:id', function(req, res, next){
+app.post('/bookmark/delete/_:id', function(req, res){
     let id = req.params.id;
     let markId = req.body.markId;
 
-    debug('bookId = %s, markId = %s', id, markId);
+    debug('Delete bookmark. bookId = %s, markId = %s', id, markId);
 
     if (typeof markId == 'undefined')
     {
@@ -324,7 +324,7 @@ app.post('/bookmark/delete/_:id', function(req, res, next){
     });
 });
 
-app.post('/bookmark/edit/_:id', function(req, res, next){
+app.post('/bookmark/edit/_:id', function(req, res){
     let id = req.params.id;
     let mark = req.body.mark;
 
@@ -342,7 +342,7 @@ app.post('/bookmark/edit/_:id', function(req, res, next){
     });
 });
 
-app.get('/bookmark/get/_:id', function(req, res, next) {
+app.get('/bookmark/get/_:id', function(req, res) {
     let id = req.params.id;
 
     debug('/bookmark/get/_:id  :id = %s', id);
@@ -361,7 +361,7 @@ app.get('/bookmark/get/_:id', function(req, res, next) {
 
 // Get info about book
 // :id - book id in db
-app.get('/info/_:id', function(req, res, next) {
+app.get('/info/_:id', function(req, res) {
     let id = req.params.id;
 
     Book.getBook(id, req.userName, function(err, t) {

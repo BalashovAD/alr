@@ -5,7 +5,7 @@ var path = require('path');
 var debug = require('debug')('sniffer:mongo');
 // debug = ()=>{};
 
-const LVL = require('./login').LVL;
+// const LVL = require('./login').LVL;
 
 var url = process.env.DB_URL || 'mongodb://localhost:27017/alr';
 
@@ -312,7 +312,7 @@ function decInvite(inv, user)
 					id: user.id
 				}
 			}
-		}, function(err, inv) {
+		}, function(err) {
 			if (err)
 			{
 				user.delete();
@@ -371,7 +371,7 @@ function deleteBook(id, name, cb, anyway)
 			            {
 				            let filePath = path.join(__dirname, 'files', book.link);
 
-				            fs.unlink(filePath, function (err, t) {
+				            fs.unlink(filePath, function (err) {
 					            if (err)
 					            {
 						            debug(err);

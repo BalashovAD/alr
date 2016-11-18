@@ -7,7 +7,7 @@ var store = require('./store');
 var User = require('./mongo').User;
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+// var users = require('./routes/users');
 var debug = require('debug')('sniffer:app');
 
 var app = express();
@@ -54,8 +54,6 @@ app.use(function(req, res, next){
             req.userName = 0;
             req.userId = '';
             req.lvl = LVL['GUEST'];
-
-            //debug('user {name: %s, lvl: %d} was load;', req.nameofuser, req.lvl)
         }
 
 
@@ -151,7 +149,7 @@ app.use('/book', require('./book').app);
 // Admin panel
 app.use('/admin', require('./admin').app);
 
-app.all('/echo*', function(req, res, next) {
+app.all('/echo/:msg', function(req, res) {
     let MB = 1000 * 1000;
     let echo = process.memoryUsage(); echo.heapTotal /= MB; echo.heapUsed /= MB; echo.rss /= MB;
     echo.freemem = require('os').freemem() / MB;
@@ -159,6 +157,11 @@ app.all('/echo*', function(req, res, next) {
     echo.sum = echo.heapTotal + echo.heapUsed + echo.rss;
 
     res.status(200).json(echo).end();
+
+	if (req.params.msg && req.params.msg.length > 1)
+	{
+		debug('ECHO: ', req.params.msg);
+	}
 });
 
 
