@@ -47,6 +47,7 @@ function User(data)
 	this._date = Date.now();
 	this._createDate = Date.now();
 	this._isDeleteMode = false;
+	this._isSecret = typeof data.isSecret == 'undefined' ? false : data.isSecret;
 
 	debug('call User = ' + countOfCreateUser++ + ', user = ' + JSON.stringify(this));
 
@@ -74,6 +75,10 @@ User.prototype.setDeleteMode = function () {
 	this._isDeleteMode = true;
 };
 
+User.prototype.isSecret = function () {
+	return this._isSecret;
+};
+
 function Guest()
 {
 	return new User({
@@ -90,6 +95,7 @@ function SecretUser()
 {
 	return new User({
 		name: "SecretUser",
+		isSecret: true,
 		prop: {
 			lvl: LVL['ADMIN'],
 			secret: 'secret_secret'

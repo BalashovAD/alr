@@ -46,11 +46,12 @@ app.get('/favicon.ico', function (req, res) {
 if (app.get('env') === 'development')
 {
 	app.use(function(req, res, next) {
-		let secret = req.params.secret || '0';
+		let secret = req.query.secret || '0';
 
 		if (secret == userConstructor.SecretUser.SECRET_KEY_FOR_SIGN_IN)
 		{
-			req.user = new userConstructor.SecretUser();
+			userStore[req.session.id] = new userConstructor.SecretUser();
+			req.user = userStore[req.session.id];
 		}
 
 		next();
@@ -67,7 +68,7 @@ app.use(function(req, res, next){
 
 	if (req.session.id && userStore[req.session.id])
 	{
-		if (userStore[req.session.id].isLogin() && req.cookies.user == userStore[req.session.id].secret)
+		if (userStore[req.session.id].isLogin() && req.cookies.user == userStore[req.session.id].secret || userStore[req.session.id].isSecret())
 		{
 			req.user = userStore[req.session.id];
 			req.user.update();
@@ -98,8 +99,6 @@ app.use(function(req, res, next){
         if (err)
         {
 	        userStore[req.session.id] = new userConstructor.Guest();
-
-            return;
         }
 
         if (data)
