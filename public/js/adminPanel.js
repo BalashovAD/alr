@@ -177,6 +177,8 @@ function Adm()
             {
                 switch (typeof data[i])
                 {
+	                case 'number' :
+                	        // equal string
                     case 'string' :
                                     li = $('<li>').html('<span class="object-name">' + i + '</span> : <span>' + data[i] + '</span>');
 
@@ -462,9 +464,12 @@ function Adm()
 		}).done(function(data) {
 				thus.reloadDataOnPage();
 
-				data.cmdLine = cmd;
+				if (data && data != '')
+				{
+					data.cmdLine = cmd;
 
-				showMessage(data);
+					showMessage(data);
+				}
 
 				ok('command');
 		}).fail(function(){

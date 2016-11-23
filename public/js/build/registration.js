@@ -77,7 +77,9 @@ var __ =
 	                    location.assign('/' + d.link);
 	                }
 	            }).fail(function (d) {
-	                $('#failReg').html('Fail <br>' + d.responseJSON.errmsg);
+	                if (d && d.responseJSON && d.responseJSON.errmsg) {
+	                    $('#failReg').html('Fail <br>' + d.responseJSON.errmsg);
+	                }
 	                $('#failReg').attr('class', '');
 	                $('#okReg').attr('class', 'hide');
 	            });

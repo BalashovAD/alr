@@ -181,7 +181,14 @@ app.post('/cmd', (req, res) => {
 		}
 		else
 		{
-			res.json(data).end();
+			if (typeof data == 'undefined')
+			{
+				res.status(200).end();
+			}
+			else
+			{
+				res.status(200).json(data).end();
+			}
 		}
 	}
 });

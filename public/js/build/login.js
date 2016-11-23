@@ -159,6 +159,7 @@ var __ =
 	    this.exit = function () {
 	        $.get('/login/exit/_' + getCookie.part1('user')).done(function () {
 	            thus.deleteCookie('user');
+	            thus.deleteCookie('connect.sid');
 	
 	            location.reload();
 	        }).fail(function (e) {

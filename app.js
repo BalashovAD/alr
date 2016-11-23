@@ -68,7 +68,7 @@ app.use(function(req, res, next){
 
 	if (req.session.id && userStore[req.session.id])
 	{
-		if (userStore[req.session.id].isLogin() && req.cookies.user == userStore[req.session.id].secret || userStore[req.session.id].isSecret())
+		if (userStore[req.session.id].isLogin() && (req.cookies.user == userStore[req.session.id].secret || userStore[req.session.id].isSecret()))
 		{
 			req.user = userStore[req.session.id];
 			req.user.update();

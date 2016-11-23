@@ -79,6 +79,11 @@ User.prototype.isSecret = function () {
 	return this._isSecret;
 };
 
+User.prototype.exit = function () {
+	this._isLogin = false;
+	this.setDeleteMode();
+};
+
 function Guest()
 {
 	return new User({

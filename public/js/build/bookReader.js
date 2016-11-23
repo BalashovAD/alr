@@ -561,7 +561,7 @@ var __ =
 	
 	var _filejs2 = _interopRequireDefault(_filejs);
 	
-	var _filejsFb = __webpack_require__(5);
+	var _filejsFb = __webpack_require__(6);
 	
 	var _filejsFb2 = _interopRequireDefault(_filejsFb);
 	
@@ -1798,10 +1798,26 @@ var __ =
 	worker.addEventListener('error',errorHandler);function errorHandler(err){worker.terminate();onerror(err);}}function onerror_default(error){console.error(error);}var zip={BlobReader:BlobReader,BlobWriter:BlobWriter,createWorker:createWorker,getDataHelper:getDataHelper,seekEOCDR:seekEOCDR,readCommonHeader:readCommonHeader,getString:getString,decodeUTF8:decodeUTF8,decodeASCII:decodeASCII,copy:copy,inflate:inflate,ERR_READ:ERR_READ,ERR_BAD_FORMAT:ERR_BAD_FORMAT,ERR_READ_DATA:ERR_READ_DATA,ERR_WRITE_DATA:ERR_WRITE_DATA,workerScripts:null};exports.default=zip;/***/},/* 30 *//***/function(module,exports,__webpack_require__){'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _zip=__webpack_require__(29);var _zip2=_interopRequireDefault(_zip);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}var copy=_zip2.default.copy;var readCommonHeader=_zip2.default.readCommonHeader;var getDataHelper=_zip2.default.getDataHelper;var inflate=_zip2.default.inflate;var ERR_BAD_FORMAT=_zip2.default.ERR_BAD_FORMAT;var ERR_READ_DATA=_zip2.default.ERR_READ_DATA;var ERR_WRITE_DATA=_zip2.default.ERR_WRITE_DATA;var Entry=function(){function Entry(options){_classCallCheck(this,Entry);Object.merge(this,options);}_createClass(Entry,[{key:'testCrc32',value:function testCrc32(crc32){var dataCrc32=getDataHelper(4);dataCrc32.view.setUint32(0,crc32);return this.crc32===dataCrc32.view.getUint32(0);}},{key:'getData',value:function getData(){var _this=this;var options=arguments.length<=0||arguments[0]===undefined?{}:arguments[0];return new Promise(function(resolve){var checkCrc32=options.checkCrc32;var onReadError=function onReadError(err){throw new Error(err||ERR_READ_DATA);};function onWriteError(err){throw new Error(err||ERR_WRITE_DATA);}_this.reader.readUint8Array(_this.offset,30,function(bytes){var data=getDataHelper(bytes.length,bytes);if(data.view.getUint32(0)!==0x504b0304){throw new Error(ERR_BAD_FORMAT);}readCommonHeader(_this,data,4,false,onerror);var dataOffset=_this.offset+30+_this.filenameLength+_this.extraFieldLength;var writer=_this.writer;var reader=_this.reader;var worker=_this.worker;var compressedSize=_this.compressedSize;options.inflateSN++;writer.init(function(){var method=inflate;if(_this.compressionMethod===0){method=copy;}method(worker,options.inflateSN,reader,writer,dataOffset,compressedSize,checkCrc32,function(uncompressedSize,crc32){if(checkCrc32&&!_this.testCrc32(crc32)){throw new Error(ERR_CRC);}else{writer.getData(function(data){return resolve(data);});}},null,onReadError,onWriteError);},onWriteError);},onReadError);});}}]);return Entry;}();exports.default=Entry;/***/},/* 31 *//***/function(module,exports){"use strict";Object.defineProperty(exports,"__esModule",{value:true});// jscs:disable
 	var mask=/^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i;// jscs:enable
 	exports.default=function(val){return mask.test(val);};/***/},/* 32 *//***/function(module,exports,__webpack_require__){'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.default=function(obj){return(0,_merge2.default)({},obj);};var _merge=__webpack_require__(15);var _merge2=_interopRequireDefault(_merge);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}/***/}/******/]));});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)(module)))
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
+	}
+
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {'use strict';
@@ -2937,23 +2953,7 @@ var __ =
 	                        /******/])
 	            );
 	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)(module)))
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	module.exports = function(module) {
-		if(!module.webpackPolyfill) {
-			module.deprecate = function() {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
-	}
-
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)(module)))
 
 /***/ },
 /* 7 */
@@ -3107,6 +3107,7 @@ var __ =
 	    this.exit = function () {
 	        $.get('/login/exit/_' + getCookie.part1('user')).done(function () {
 	            thus.deleteCookie('user');
+	            thus.deleteCookie('connect.sid');
 	
 	            location.reload();
 	        }).fail(function (e) {

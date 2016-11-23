@@ -106,9 +106,11 @@ app.get('/exit/_:user/', function(req, res){
             path: '/'
         });
 
-	    res.clearCookie('connect.cid', {
+	    res.clearCookie('connect.sid', {
 		    path: '/'
 	    });
+
+	    req.user.exit();
 
 	    req.user.setDeleteMode();
 
@@ -156,7 +158,7 @@ app.post('/add/', (req, res, next) => {
     if (req.user.checkAccess('registration'))
     {
         Invite.getInvite(invite, function (err, inv) {
-	        if (err)
+	        if (err || inv === null)
 	        {
 		        res.status(403).json({
 			        errmsg: 'Wrong invite'
