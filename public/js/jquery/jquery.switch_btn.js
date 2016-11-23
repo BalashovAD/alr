@@ -192,7 +192,7 @@ import {jQuery} from 'jquery';
         },
 
         _initEvents: function() {
-            var self = this;
+            let self = this;
 
             // Toggle switch when the switch is clicked
             this.button_bg.click(function(e) {
@@ -261,13 +261,13 @@ import {jQuery} from 'jquery';
                 return;
 
             this.options.checked = !this.options.checked;
-            var newLeft = "";
+            let newLeft = "";
             if (this.options.checked) {
                 // Update the underlying checkbox state
                 this.element.prop("checked", true);
                 this.element.change();
 
-                var dLeft = this.options.width - this.options.button_width;
+                let dLeft = this.options.width - this.options.button_width;
                 newLeft = "+=" + dLeft;
 
                 // Update labels states

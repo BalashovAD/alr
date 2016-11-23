@@ -1,6 +1,6 @@
 function getCookie(name)
 {
-    var matches = document.cookie.match(new RegExp(
+    let matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
 
@@ -8,8 +8,8 @@ function getCookie(name)
 }
 
 getCookie.part1 = function(n){
-    var val = getCookie(n) || '0';
-    var tmp = val.split('_');
+    let val = getCookie(n) || '0';
+    let tmp = val.split('_');
 
     return tmp[0];
 };
@@ -17,13 +17,13 @@ getCookie.part1 = function(n){
 
 let __NAME__, __IS_LOGIN__;
 
-var __login = function()
+let __login = function()
 {
-    var login = $('#login');
-    var sh_login = $('#login .login');
-    var sh_exit = $('#login .exit');
-    var err = $('#login .error');
-    var thus = this;
+    let login = $('#login');
+    let sh_login = $('#login .login');
+    let sh_exit = $('#login .exit');
+    let err = $('#login .error');
+    let thus = this;
 
     this.resolve = function() {
         __NAME__ = getCookie.part1('user');
@@ -48,8 +48,8 @@ var __login = function()
     thus.resolve();
 
     $('#btnLogin').click(function(){
-        var name = $('#login input[name=user]').val().split('/')[0];
-        var psw = $('#login input[name=psw]').val().split('/')[0];
+        let name = $('#login input[name=user]').val().split('/')[0];
+        let psw = $('#login input[name=psw]').val().split('/')[0];
 
         $.get('/login/_' + name + '/_' + psw).always(function(){
             login.hide();

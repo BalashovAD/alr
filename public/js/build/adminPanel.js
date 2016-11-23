@@ -55,7 +55,7 @@ var __ =
 	    });
 	}
 	
-	var __DEBUG__adm;
+	var __DEBUG__adm = void 0;
 	
 	var assert = function assert(check, msg) {
 	    if (!check) {
@@ -350,6 +350,18 @@ var __ =
 	        }
 	    };
 	
+	    function showMessage(data) {
+	        var el = singleContainer['left'];
+	
+	        emptySingleContainer(el);
+	
+	        el.append($('<span>').html(data.cmdLine + ' = ').addClass('object-name')).append($('<span>').addClass('open-bracket'));
+	
+	        data.cmdLine = undefined;
+	
+	        el.append(parseObjectToHTML(data)).attr('class', 'single').append($('<span>').addClass('close-bracket'));
+	    }
+	
 	    function addDataInSingleContainer(data, el, nowSelect) {
 	        emptySingleContainer(el);
 	        var delEl = $('<span>').html('[del]').data('id', data._id).data('col', nowSelect).click(deleteById);
@@ -429,8 +441,14 @@ var __ =
 	            data: JSON.stringify({
 	                cmd: cmd
 	            }),
-	            contentType: "application/json; charset=utf-8" }).done(function () {
+	            contentType: "application/json; charset=utf-8"
+	        }).done(function (data) {
 	            thus.reloadDataOnPage();
+	
+	            data.cmdLine = cmd;
+	
+	            showMessage(data);
+	
 	            ok('command');
 	        }).fail(function () {
 	            assert(false, 'sendCommand');

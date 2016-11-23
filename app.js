@@ -1,68 +1,125 @@
 "use strict";
-var express = require('express');
-var path = require('path');
-var store = require('./store');
+let express = require('express');
+let path = require('path');
+let store = require('./store');
 
+let session = require('express-session');
 
-var User = require('./mongo').User;
+const userConstructor = require('./user');
 
-var routes = require('./routes/index');
-// var users = require('./routes/users');
-var debug = require('debug')('sniffer:app');
+let User = require('./mongo').User;
 
-var app = express();
+let routes = require('./routes/index');
+// let users = require('./routes/users');
+let debug = require('debug')('sniffer:app');
 
-var cookieParser = require('cookie-parser');
+let app = express();
 
-var LVL = require('./login').LVL;
-
-var checkAccess = require('./login').checkAccess;
+let cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
 app.use(require('body-parser').json());
 
+app.use(session({
+	secret: process.env.SESSION_SECRET || 'SECRET_',
+	resave: true,
+	saveUninitialized: true
+}));
+
+
+const genUID = function (){
+	let id = 0;
+
+	return function () {
+		return ++id;
+	}
+}();
+
+// static
+app.use(express.static(__dirname + '/public'));
+
+app.get('/favicon.ico', function (req, res) {
+	res.end();
+});
+
+if (app.get('env') === 'development')
+{
+	app.use(function(req, res, next) {
+		let secret = req.params.secret || '0';
+
+		if (secret == userConstructor.SecretUser.SECRET_KEY_FOR_SIGN_IN)
+		{
+			req.user = new userConstructor.SecretUser();
+		}
+
+		next();
+	});
+}
+
+let userStore = require('./user').userStore;
+
 app.use(function(req, res, next){
     req.cookies.user = req.cookies.user || '0';
     let nm = (req.cookies.user.split('_'))[0] || 0;
-    //let secret = (req.cookies.user.split('_'))[1] || 0;
 
+	req.userIp = req.connection.remoteAddress;
 
-    req.userIp = req.connection.remoteAddress;
+	if (req.session.id && userStore[req.session.id])
+	{
+		if (userStore[req.session.id].isLogin() && req.cookies.user == userStore[req.session.id].secret)
+		{
+			req.user = userStore[req.session.id];
+			req.user.update();
+
+			next();
+
+			return;
+		}
+		else
+		{
+			if (userStore[req.session.id].isLogin() == false && req.cookies.user == '0')
+			{
+
+				req.user = userStore[req.session.id];
+				req.user.update();
+
+				next();
+
+				return;
+			}
+		}
+	}
 
 	User.checkUserNameAndSecret(nm, req.cookies.user, function (err, data) {
 
+		debug('session id:' + req.session.id);
+
         if (err)
         {
-            req.userName = 0;
-            req.userId = '';
-            req.lvl = LVL['GUEST'];
+	        userStore[req.session.id] = new userConstructor.Guest();
 
             return;
         }
 
         if (data)
         {
-            req.userName = data.name;
-            req.userId = data._id;
-            req.lvl = data.prop.lvl;
+	        userStore[req.session.id] = new userConstructor.User(data);
         }
         else
         {
-            res.clearCookie('user', {path: '/'});
+            // res.clearCookie('user', {path: '/'});
 
-            req.userName = 0;
-            req.userId = '';
-            req.lvl = LVL['GUEST'];
+            debug('URL: ' + req.originalUrl);
+
+	        userStore[req.session.id] = new userConstructor.Guest();
         }
 
+        req.user = userStore[req.session.id];
 
         next();
     });
 });
-
-// static
-app.use(express.static(__dirname + '/public'));
 
 // Optional since express defaults to CWD/views
 
@@ -73,15 +130,12 @@ app.set('views', __dirname + '/views');
 // (although you can still mix and match)
 app.set('view engine', 'jade');
 
-app.get('/', function (req, res, next) {
-
-    if (req.userName == 0)
+app.get('/', function (req, res) {
+    if (req.user.isLogin() == false)
     {
         res.set('Location', '/login.jade');
 
         res.status(302).end();
-
-        next();
     }
     else
     {
@@ -93,9 +147,9 @@ app.get('/', function (req, res, next) {
     }
 });
 
-app.get('/login.jade', function (req, res, next) {
+app.get('/login.jade', function (req, res) {
 
-    if (req.userName == 0)
+    if (req.user.isLogin() == false)
     {
         res.set('Content-Type', 'text/html');
 
@@ -108,13 +162,11 @@ app.get('/login.jade', function (req, res, next) {
         res.set('Location', '/');
 
         res.status(302).end();
-
-        next();
     }
 });
 
 app.get('/registration.jade', function (req, res, next) {
-    if (checkAccess(req.lvl, 'registration'))
+    if (req.user.checkAccess('registration'))
     {
         res.set('Content-Type', 'text/html');
 
@@ -150,13 +202,22 @@ app.use('/book', require('./book').app);
 app.use('/admin', require('./admin').app);
 
 app.all('/echo/:msg', function(req, res) {
-    let MB = 1000 * 1000;
-    let echo = process.memoryUsage(); echo.heapTotal /= MB; echo.heapUsed /= MB; echo.rss /= MB;
-    echo.freemem = require('os').freemem() / MB;
-    echo.totalmem = require('os').totalmem() / MB;
-    echo.sum = echo.heapTotal + echo.heapUsed + echo.rss;
+	if (app.get('env') === 'development') {
+		let MB = 1000 * 1000;
+		let echo = process.memoryUsage();
+		echo.heapTotal /= MB;
+		echo.heapUsed /= MB;
+		echo.rss /= MB;
+		echo.freemem = require('os').freemem() / MB;
+		echo.totalmem = require('os').totalmem() / MB;
+		echo.sum = echo.heapTotal + echo.heapUsed + echo.rss;
 
-    res.status(200).json(echo).end();
+		res.status(200).json(echo).end();
+	}
+	else
+	{
+		res.status(200).end();
+	}
 
 	if (req.params.msg && req.params.msg.length > 1)
 	{
@@ -165,4 +226,4 @@ app.all('/echo/:msg', function(req, res) {
 });
 
 
-module.exports = app;
+module.exports.app = app;

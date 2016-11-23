@@ -1,15 +1,15 @@
 'use strict';
-var mongoose = require('mongoose');
-var assert = require('assert');
-var path = require('path');
-var debug = require('debug')('sniffer:mongo');
+let mongoose = require('mongoose');
+let assert = require('assert');
+let path = require('path');
+let debug = require('debug')('sniffer:mongo');
 // debug = ()=>{};
 
 // const LVL = require('./login').LVL;
 
-var url = process.env.DB_URL || 'mongodb://localhost:27017/alr';
+let url = process.env.DB_URL || 'mongodb://localhost:27017/alr';
 
-var db = mongoose.connection;
+let db = mongoose.connection;
 
 db.on('error', (err) => {
     debug(err);
@@ -17,7 +17,7 @@ db.on('error', (err) => {
     throw new Error(err);
 });
 
-var schemaUser = {
+let schemaUser = {
 	name: {
 		type: String,
 		unique: true,
@@ -47,7 +47,7 @@ var schemaUser = {
 	}
 };
 
-var schemaBook = {
+let schemaBook = {
 	title: String,
 	author: String,
 	link: {
@@ -63,7 +63,7 @@ var schemaBook = {
 	pos: Number
 };
 
-var schemaInvite = {
+let schemaInvite = {
 	value: {
 		type: String,
 		unique: true
@@ -339,7 +339,7 @@ function getUser(name, cb)
     q.exec(cb);
 }
 
-var fs = require('fs');
+let fs = require('fs');
 
 function deleteBook(id, name, cb, anyway)
 {

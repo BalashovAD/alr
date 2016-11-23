@@ -742,7 +742,7 @@
                     var localName = node.localName;
 
                     if (localName === 'title') {
-                        let res = this.parseBlock(node, documentData);
+                        var res = this.parseBlock(node, documentData);
                         res.properties.className = 'title';
 
                         list.push(res);
@@ -751,7 +751,7 @@
                     } else if (localName === 'poem') {
                         this.parsePages(node, documentData, list);
                     } else if (localName === 'stanza') {
-                        let res = this.parseBlockElement({
+                        var res = this.parseBlockElement({
                             node: node,
                             documentData: documentData
                         });
@@ -759,7 +759,7 @@
 
                         list.push(res);
                     } else if (localName === 'cite') {
-                        let res = this.parseBlockElement({
+                        var res = this.parseBlockElement({
                             node: node,
                             documentData: documentData
                         });
@@ -767,7 +767,7 @@
 
                         list.push(res);
                     } else if (localName === 'epigraph') {
-                        let res = this.parseBlockElement({
+                        var res = this.parseBlockElement({
                             node: node,
                             documentData: documentData
                         });
@@ -787,7 +787,7 @@
                     el.properties.tagName = 'A';
                     el.properties.name = attributes.id.value;
 
-                    let it = list.length - 1;
+                    var it = list.length - 1;
                     while (it >= 0 && list[it].properties.tagName != 'DIV')
                     {
                         list[it].children.unshift(el);

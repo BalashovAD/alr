@@ -5,7 +5,7 @@ function cssCenter1Line() {
     });
 }
 
-var __DEBUG__adm;
+let __DEBUG__adm;
 
 let assert = function (check, msg) {
 	if (!check)
@@ -349,6 +349,21 @@ function Adm()
 	    }
     };
 
+    function showMessage(data)
+    {
+    	let el = singleContainer['left'];
+
+	    emptySingleContainer(el);
+
+	    el.append($('<span>').html(data.cmdLine + ' = ').addClass('object-name'))
+		    .append($('<span>').addClass('open-bracket'));
+
+	    data.cmdLine = undefined;
+
+	    el.append(parseObjectToHTML(data)).attr('class', 'single')
+		    .append($('<span>').addClass('close-bracket'));
+    }
+
 	function addDataInSingleContainer(data, el, nowSelect)
 	{
 		emptySingleContainer(el);
@@ -443,8 +458,14 @@ function Adm()
 			data: JSON.stringify({
 				cmd: cmd
 			}),
-			contentType: "application/json; charset=utf-8"}).done(function() {
+			contentType: "application/json; charset=utf-8"
+		}).done(function(data) {
 				thus.reloadDataOnPage();
+
+				data.cmdLine = cmd;
+
+				showMessage(data);
+
 				ok('command');
 		}).fail(function(){
 			assert(false, 'sendCommand');

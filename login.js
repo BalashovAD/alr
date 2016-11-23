@@ -1,19 +1,19 @@
 "use strict";
-var app = require('express')();
-var cookieParser = require('cookie-parser');
+let app = require('express')();
+let cookieParser = require('cookie-parser');
 
-var debug = require('debug')('sniffer:login');
+let debug = require('debug')('sniffer:login');
 
 app.use(cookieParser());
 
-var __log = [];
+let __log = [];
 
 const LVL = {
     MAX_LVL: 1000,
     GUEST: 5,
     USER: 4,
     MOD: 2,
-    ADM: 0
+    ADMIN: 0
 };
 
 const ACCESS_LVL = {
@@ -21,7 +21,7 @@ const ACCESS_LVL = {
     addBook: LVL['USER'],
     user: LVL['USER'],
     moder: LVL['MOD'],
-    admin: LVL['ADM']
+    admin: LVL['ADMIN']
 };
 
 let User = require('./mongo').User;
@@ -68,8 +68,8 @@ function getLinkFromQuery(link)
 // user/psw
 // TODO: psw -> hash(psw)
 app.get('/_:user/_(:psw)?', function(req, res){
-    var name = req.params.user;
-    var psw = req.params.psw;
+    let name = req.params.user;
+    let psw = req.params.psw;
 	res.query = res.query || {};
 
     User.checkUserNameAndPsw(name, psw, function (err, data) {
@@ -96,15 +96,21 @@ app.get('/_:user/_(:psw)?', function(req, res){
 // exit
 //
 app.get('/exit/_:user/', function(req, res){
-    var name = req.params.user;
+    let name = req.params.user;
 
-    if (req.userName != '0')
+    if (req.user.isLogin())
     {
-        debug('Exit (user = ' + name + ')');
+        debug('Exit (user = ' + req.user.name + ')');
 
         res.clearCookie('user', {
             path: '/'
         });
+
+	    res.clearCookie('connect.cid', {
+		    path: '/'
+	    });
+
+	    req.user.setDeleteMode();
 
         res.status(200).json({
 	        link: 'login.jade'
@@ -121,7 +127,7 @@ app.get('/exit/_:user/', function(req, res){
 // Registration
 // now access only for all
 app.post('/add/*', (req, res, next) => {
-    if (checkAccess(req.lvl, 'registration'))
+    if (req.user.checkAccess('registration'))
     {
         next();
     }
@@ -140,14 +146,14 @@ app.post('/add/*', (req, res, next) => {
 // TODO: psw -> hash(psw)
 // TODO: regExp(user)
 app.post('/add/', (req, res, next) => {
-    var user = req.body.name;
-    var psw = req.body.psw;
+    let user = req.body.name;
+    let psw = req.body.psw;
 	let invite = req.body.invite;
 
-    debug('User ' + req.userName + ' create user;');
+    debug('User ' + req.user.name + ' create user;');
     debug('user = %s, psw = %s', user, psw);
 
-    if (checkAccess(req.lvl, 'registration'))
+    if (req.user.checkAccess('registration'))
     {
         Invite.getInvite(invite, function (err, inv) {
 	        if (err)
@@ -205,9 +211,9 @@ app.post('/add/', (req, res, next) => {
 // Get db document
 // :user - only u
 app.get('/info', function (req, res) {
-    if (req.userName != 0)
+    if (req.user.name != 0)
     {
-        User.getUser(req.userName, function(err, t) {
+        User.getUser(req.user.name, function(err, t) {
             if (err)
             {
                 res.status(402).end();

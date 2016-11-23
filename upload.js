@@ -1,18 +1,18 @@
-var debug = require('debug')('sniffer:upload');
+'use strict';
+let debug = require('debug')('sniffer:upload');
 
-var resolve = [];
+let resolve = [];
 resolve[0] = 'adm';
 
-var app = require('express')();
-var checkAccess = require('./login').checkAccess;
+let app = require('express')();
 
-var cookieParser = require('cookie-parser');
+let cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
 app.get('/', function(req, res, next){
 
-    if (checkAccess(req.lvl, 'addBook'))
+    if (req.user.checkAccess('addBook'))
     {
         next();
     }

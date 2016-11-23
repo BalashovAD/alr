@@ -1,24 +1,23 @@
 "use strict";
-var app = require('express')();
-var cookieParser = require('cookie-parser');
+let app = require('express')();
+let cookieParser = require('cookie-parser');
 
-var debug = require('debug')('sniffer:adminPanel');
+let debug = require('debug')('sniffer:adminPanel');
 
 app.use(cookieParser());
 app.use(require('body-parser').json());
 
-var checkAccess = require('./login').checkAccess;
-var getById = require('./mongo').getById;
-var getCol = require('./mongo').getCol;
-var deleteById = require('./mongo').deleteById;
-var addDoc = require('./mongo').addDoc;
+let getById = require('./mongo').getById;
+let getCol = require('./mongo').getCol;
+let deleteById = require('./mongo').deleteById;
+let addDoc = require('./mongo').addDoc;
 
-var schemas = require('./mongo').schemas;
+let schemas = require('./mongo').schemas;
 
 const allowedFunc = require('./adminFunc');
 
 app.all('*', (req, res, next) => {
-    if (checkAccess(req.lvl, 'admin'))
+    if (req.user.checkAccess('admin'))
     {
         next();
     }
@@ -174,7 +173,7 @@ app.post('/cmd', (req, res) => {
 		res.status(404).end();
 	}
 
-	function cb(err)
+	function cb(err, data)
 	{
 		if (err)
 		{
@@ -182,12 +181,12 @@ app.post('/cmd', (req, res) => {
 		}
 		else
 		{
-			res.end();
+			res.json(data).end();
 		}
 	}
 });
 
-app.delete('/delete/_:col/_:id', (req, res) => {
+app.post('/delete/_:col/_:id', (req, res) => {
     let col = req.params.col;
     let id = req.params.id;
 

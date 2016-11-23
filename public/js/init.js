@@ -1,6 +1,6 @@
 "use strict";
-var file;
-//var JsFile;
+let file;
+//let JsFile;
 
 let debug = require('debug')('app:init');
 import {__book} from './book';
@@ -9,8 +9,8 @@ import {__login} from './login';
 localStorage.debug = 'app:book';
 
 // GLOBAL VARIABLE
-//var __IS_LOGIN__ = false;
-//var __NAME__ = '0';
+//let __IS_LOGIN__ = false;
+//let __NAME__ = '0';
 
 // CONSTS
 const time_resize = 1000;
@@ -20,9 +20,9 @@ const BUTTON_ARROW_RIGHT = 39;
 const BUTTON_ARROW_LEFT = 37;
 const EPSILON = 0.001;
 
-var __loading = function() {
-    var cnt = 1;
-    var el = $('#loading');
+let __loading = function() {
+    let cnt = 1;
+    let el = $('#loading');
 
     this.play = function() {
         ++ cnt;
@@ -47,7 +47,7 @@ var __loading = function() {
     return this;
 };
 
-var __ajaxSettings = function(book) {
+let __ajaxSettings = function(book) {
 	//noinspection NodeModulesDependencies,ES6ModulesDependencies
 	$.ajax({
         statusCode: {},
@@ -60,11 +60,11 @@ var __ajaxSettings = function(book) {
     });
 };
 
-var __DEBUG__ = {};
+let __DEBUG__ = {};
 
 
-var delay_fn = function (cb, cd) {
-    var timer;
+let delay_fn = function (cb, cd) {
+    let timer;
 
     return function(e) {
         if (timer) {
@@ -77,9 +77,9 @@ var delay_fn = function (cb, cd) {
     }
 };
 
-var __msg = new function() {
-    var num_of_errors = 0;
-    var el = $('#msg');
+let __msg = new function() {
+    let num_of_errors = 0;
+    let el = $('#msg');
 
     el.click(function(){
         el.hide();
@@ -113,8 +113,8 @@ var __msg = new function() {
 }();
 
 
-var error = __msg.error;
-var msg = __msg.msg;
+let error = __msg.error;
+let msg = __msg.msg;
 
 
 function __initPlayer(player)
@@ -176,16 +176,16 @@ function __initPlayer(player)
 
 function __initBookmark(book)
 {
-    var submit = $('#submitBookmark');
-    var choose = $('#chooseAnotherPosBookmark');
-    var title = $('#titleOfBookmark');
-    var text = $('#textOfBookmark');
-    var pos = $('#posOnMouseBookmark');
-    var reload = $('#reloadBookmark');
+    let submit = $('#submitBookmark');
+    let choose = $('#chooseAnotherPosBookmark');
+    let title = $('#titleOfBookmark');
+    let text = $('#textOfBookmark');
+    let pos = $('#posOnMouseBookmark');
+    let reload = $('#reloadBookmark');
 
     function bookCb(e) {
-        var el = $(e.target).closest('.h-l');
-        var id = ((el.attr('id') || '0').split('_') || [, 0])[1] || '';
+        let el = $(e.target).closest('.h-l');
+        let id = ((el.attr('id') || '0').split('_') || [, 0])[1] || '';
 
         pos.val(id);
 
@@ -224,14 +224,14 @@ function __initBookmark(book)
         }, error);
     });
 
-    var deleteBookmark = function (id){
+    let deleteBookmark = function (id){
         $('.bookmark[data-id=' + id + ']').remove();
     };
 
 
-    var reset = function() {
+    let reset = function() {
         $('.bookmark .btn-bookmark-goto').click(function () {
-            var pos = $(this).closest('.bookmark').data('pos');
+            let pos = $(this).closest('.bookmark').data('pos');
 
             if (!isNaN(pos))
             {
@@ -244,14 +244,14 @@ function __initBookmark(book)
         $('.bookmark .btn-bookmark-edit').click(function () {
             if ($(this).data('disable') != 'true')
             {
-                var el = $(this).closest('.bookmark');
+                let el = $(this).closest('.bookmark');
 
                 $(el).find('div.contenteditable').attr('contenteditable', 'true');
             }
         });
 
         $('.bookmark .btn-bookmark-save').click(function () {
-            var el = $(this).closest('.bookmark');
+            let el = $(this).closest('.bookmark');
 
             $(el).find('div.contenteditable').attr('contenteditable', 'false');
 
@@ -263,9 +263,9 @@ function __initBookmark(book)
         });
 
         $('.bookmark .btn-bookmark-delete').click(function() {
-            var el = $(this).closest('.bookmark');
+            let el = $(this).closest('.bookmark');
 
-            var id = $(el).data('id');
+            let id = $(el).data('id');
 
             book.deleteBookmark(id).then(function(t) {
                 deleteBookmark(t);
@@ -280,15 +280,15 @@ function __initBookmark(book)
     };
 }
 
-var clock = new (function (){
-    var dataFormat = function(time) {
+let clock = new (function (){
+    let dataFormat = function(time) {
         return ("0" + time.getHours()).slice(-2)   + ":" +
             ("0" + time.getMinutes()).slice(-2);
     };
-    var tm = $('#time');
-    var cnt;
+    let tm = $('#time');
+    let cnt;
 
-    var tmF = function(){
+    let tmF = function(){
         tm.text(dataFormat(new Date()));
 
         cnt = setTimeout(tmF, 1000 * 60);
@@ -300,7 +300,7 @@ var clock = new (function (){
     };
 
     this.play = function() {
-        var time = new Date();
+        let time = new Date();
         tm.text(dataFormat(new Date()));
         cnt = setTimeout(tmF, 1000 * 60 + 1000 * (60 - ("0" + time.getSeconds()).slice(-2)));
     };
@@ -333,7 +333,7 @@ function __controllerLeft(book) {
             }
 
             $('.left').hide();
-            var elms = $('#' + id);
+            let elms = $('#' + id);
 
             if (elms && elms.length != 0)
             {
@@ -370,7 +370,7 @@ $(document).ready(function() {
 
 // BOOK
 
-    var book = new __book('book', {
+    let book = new __book('book', {
         bookmark: __initBookmark,
         loading: __loading,
         ajaxSettings: __ajaxSettings,
@@ -422,7 +422,7 @@ $(document).ready(function() {
 
 // MENU BUTTONS
         $('.item-menu').click(function() {
-            var id = $(this).data('id');
+            let id = $(this).data('id');
 
             book.__int__controllerLeft(id);
         });
@@ -483,7 +483,7 @@ $(document).ready(function() {
         }, time_resize));
 // MOUSE WHEEL
         $('#book').on('wheel.book', function(e) {
-            var del = e.originalEvent.deltaY;
+            let del = e.originalEvent.deltaY;
 
 	        // (del > 0 ? false : true)
             book.scroll((del <= 0), 1, Math.abs(del));
@@ -492,7 +492,7 @@ $(document).ready(function() {
         });
 
         $('#slider').on('wheel.book', function(e) {
-            var del = e.originalEvent.deltaY;
+            let del = e.originalEvent.deltaY;
 
 	        // (del > 0 ? false : true)
             book.scroll((del <= 0));

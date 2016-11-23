@@ -3,10 +3,10 @@ $(document).ready(function () {
 });
 
 function loadOutputFormats(control) {
-    var parts = control.value.split(".");
+    let parts = control.value.split(".");
     if (1 < parts.length) {
         //Getting file's extension
-        var ext = parts[parts.length - 1];
+        let ext = parts[parts.length - 1];
         if ((null != ext) && ("" != ext)) {
             //Checking allowed extensions
             upperExt = ext.toUpperCase();
@@ -342,15 +342,15 @@ function loadOutputFormats(control) {
     }
 }
 
-var SupportedFormatsFileValid = false;
+let SupportedFormatsFileValid = false;
 function CheckSupportedFormatsFile(sender, args) {
-    var upperExt;
+    let upperExt;
     if ((null != args.Value) && ("" != args.Value)) {
-        var parts = args.Value.split(".");
+        let parts = args.Value.split(".");
 
         if (1 < parts.length) {
             //Getting file's extension
-            var ext = parts[parts.length - 1];
+            let ext = parts[parts.length - 1];
             if ((null != ext) && ("" != ext)) {
                 //Checking allowed extensions
                 upperExt = ext.toUpperCase();
@@ -415,7 +415,7 @@ function CheckSupportedFormatsFile(sender, args) {
      */
 }
 
-var DirectConversionFormat = null;
+let DirectConversionFormat = null;
 function directConvert(format) {
     DirectConversionFormat = format;
 

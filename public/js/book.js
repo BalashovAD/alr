@@ -12,60 +12,60 @@ jQuery.fn.cssInt = function(n) {
     return parseInt($(this[0]).css(n), 10);
 };
 
-var doNothing = ()=>{};
+let doNothing = ()=>{};
 
-var __book = function(idElem, interfaceFunc) {
-    var info = {};
-    var user = undefined;
+let __book = function(idElem, interfaceFunc) {
+    let info = {};
+    let user = undefined;
 
 	let error = interfaceFunc['error'];
 	let msg = interfaceFunc['msg'];
 
-    var bookDoc;
-    var bookEl = $('#' + idElem);
-    var slider = $('#slider_btn');
-    var footnote = $('#footnote');
-    var sliderHeight = $('#slider').height() - slider.height();
-    var hiddenEl = $('#hidden_' + idElem);
-    var lineSize;
-    var lineCnt;
-    var json;
-    var fs = $('#listOfBooks ol');
-    var thus = this;
-    var offsetBook = 0;
-    var height = 0;
-    var __ = [];
-    var maxPos = 0;
-    var bookId = 0;
-    var sliderMarks = $('#slider > #marks');
-    var sliderBookMarks = $('#slider > #userMarks');
+    let bookDoc;
+    let bookEl = $('#' + idElem);
+    let slider = $('#slider_btn');
+    let footnote = $('#footnote');
+    let sliderHeight = $('#slider').height() - slider.height();
+    let hiddenEl = $('#hidden_' + idElem);
+    let lineSize;
+    let lineCnt;
+    let json;
+    let fs = $('#listOfBooks ol');
+    let thus = this;
+    let offsetBook = 0;
+    let height = 0;
+    let __ = [];
+    let maxPos = 0;
+    let bookId = 0;
+    let sliderMarks = $('#slider > #marks');
+    let sliderBookMarks = $('#slider > #userMarks');
 
-    var screen = {
+    let screen = {
         pos: 0,
         now: 0
     };
 
-    var saved = {
+    let saved = {
 	    pos: 0,
 	    bookmarkCount: 0
     };
 
-    var load = {
+    let load = {
         book: false,
         bookmark: false,
         save: false,
         user: false,
         del: false
     };
-    var timeout = {
+    let timeout = {
         saveload: 1000
     };
-    var mode = {
+    let mode = {
         online: true,
         night: false
     };
 
-    var jump = {
+    let jump = {
         list: [],
         it: 0,
         timer: 0
@@ -73,7 +73,7 @@ var __book = function(idElem, interfaceFunc) {
 
     const ECHO_TIMEOUT = 1000 * 60;
 
-    var __bookmarks = [];
+    let __bookmarks = [];
 
 // init interface function, no DOM
 	this.player = new Player(scrollOneString);
@@ -337,14 +337,14 @@ var __book = function(idElem, interfaceFunc) {
 					        // disable edit/delete bookmarks
 					        $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
 
-					        var tmpSave = screen.pos;
+					        let tmpSave = screen.pos;
 
-					        var dd = {
+					        let dd = {
 						        pos: tmpSave,
 						        bookmarks: []
 					        };
 
-					        for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i)
+					        for (let kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i)
 					        {
 						        dd.bookmarks.push(__bookmarks[kk[i]]);
 					        }
@@ -470,14 +470,14 @@ var __book = function(idElem, interfaceFunc) {
     };
 
     /**
-     * Write array of bookmarks in VAR lb = #listOfBookmarks
+     * Write array of bookmarks in let lb = #listOfBookmarks
      * Add bookmarks in slider
      * sync
      * @param bm - array of bookmarks
      */
     function loadBookmarks(bm)
     {
-        var lb = $('#listOfBookmarks');
+        let lb = $('#listOfBookmarks');
 
 
         //debug(bm);
@@ -495,11 +495,11 @@ var __book = function(idElem, interfaceFunc) {
             return 0;
         });
 
-        for(var k in bm)
+        for(let k in bm)
         {
             if (bm.hasOwnProperty(k))
             {
-                var tmp = $(`<div data-id="${bm[k]._id}">
+                let tmp = $(`<div data-id="${bm[k]._id}">
                     <div class="bookmark-pos hide">${bm[k].pos}</div>
                     <div class="bookmark-title contenteditable">${bm[k].title}</div>
                     <div class="bookmark-text contenteditable">${bm[k].text}</div>
@@ -511,7 +511,7 @@ var __book = function(idElem, interfaceFunc) {
 
                 lb.append(tmp);
 
-                var el = $('<div></div>')
+                let el = $('<div></div>')
                     .addClass('mark-user')
                     .css('top', bm[k].pos / maxPos * sliderHeight)
                     .data('pos', bm[k].pos)
@@ -564,14 +564,14 @@ var __book = function(idElem, interfaceFunc) {
                             }).done(function (fl) {
                                 thus.__int__loading.play();
 
-                                var blobWithBook = new Blob([fl], {
+                                let blobWithBook = new Blob([fl], {
                                     type: 'application/x-fictionbook+xml'
                                 });
 
 	                            window.blobb = blobWithBook;
 
 
-                                var fb2 = new JsFile(blobWithBook, {
+                                let fb2 = new JsFile(blobWithBook, {
                                     type: 'application/x-fictionbook+xml',
                                     workerPath: '/js/workers/'
                                 });
@@ -589,7 +589,7 @@ var __book = function(idElem, interfaceFunc) {
 
                                     // book
                                     $('.jf-page > *').each(function (i) {
-                                        var tt = $(this);
+                                        let tt = $(this);
 
                                         tt.attr('id', 'p_' + i);
                                         tt.addClass('h-l');
@@ -602,7 +602,7 @@ var __book = function(idElem, interfaceFunc) {
                                     // mark
                                     sliderMarks.empty();
 
-                                    var el0 = $('<div></div>')
+                                    let el0 = $('<div></div>')
                                         .addClass('mark-div')
                                         .click(function () {
                                             thus.jmp(0);
@@ -613,7 +613,7 @@ var __book = function(idElem, interfaceFunc) {
 
 
                                     $('.jf-page > div.h-l').each(function () {
-                                        var id = $(this).data('id');
+                                        let id = $(this).data('id');
 
                                         if ($(this).next().children() && $(this).next().children()[0] &&
                                                 $(this).next().children()[0].tagName === 'A' &&
@@ -628,7 +628,7 @@ var __book = function(idElem, interfaceFunc) {
                                             {
                                                 if (id > 10)
                                                 {
-                                                    var el = $('<div></div>')
+                                                    let el = $('<div></div>')
                                                         .addClass('mark-div')
                                                         .css('top', id / maxPos * sliderHeight)
                                                         .click(function () {
@@ -644,9 +644,9 @@ var __book = function(idElem, interfaceFunc) {
 
                                     // footnote
                                     $('.jf-page a').click(function(){
-                                        var id = $(this).attr('href').substr(1);
-                                        var num = $(this).html();
-                                        var text = '';
+                                        let id = $(this).attr('href').substr(1);
+                                        let num = $(this).html();
+                                        let text = '';
 
                                         $('#book a[name=' + id + ']').each(function () {
                                             text += $(this).closest('p.h-l').html();
@@ -656,7 +656,7 @@ var __book = function(idElem, interfaceFunc) {
                                         thus.__int__controllerLeft('navigate');
 
                                         footnote.empty();
-                                        var el = $(`<div class="footnote">
+                                        let el = $(`<div class="footnote">
 	                                                    <p style="text-align: center">${num || ''}</p>
 	                                                    <p>${text || ''}</p>
 	                                                </div>
@@ -667,8 +667,8 @@ var __book = function(idElem, interfaceFunc) {
                                     });
 
                                     $('.jf-page a').dblclick(function() {
-                                        var id = $(this).attr('href').substr(1);
-                                        var pos = $('a[name=' + id + ']').closest('p.h-l').data('id');
+                                        let id = $(this).attr('href').substr(1);
+                                        let pos = $('a[name=' + id + ']').closest('p.h-l').data('id');
 
                                         thus.jmp(pos);
                                     });
@@ -737,7 +737,7 @@ var __book = function(idElem, interfaceFunc) {
 
                     $.ajax({
                         url: './store/book/delete/_' + id,
-                        method: 'delete'
+                        method: 'POST'
                     }).done(function () {
                         msg('Book has been deleted.');
 
@@ -758,7 +758,7 @@ var __book = function(idElem, interfaceFunc) {
     };
 /*
     this.scrollEl = function(id) {
-        var top = $('#p_' + id).offset().top - offset_book;
+        let top = $('#p_' + id).offset().top - offset_book;
         $(document).scrollTop(top);
     };
 
@@ -905,9 +905,9 @@ var __book = function(idElem, interfaceFunc) {
         }
 
 
-        var hV = 0;
-        var shV = 0;
-        var shH = screen.now;
+        let hV = 0;
+        let shV = 0;
+        let shH = screen.now;
 
         if(isNaN(id) || id < 0 || id >= maxPos)
         {
@@ -1188,14 +1188,14 @@ var __book = function(idElem, interfaceFunc) {
             for (let t in user.books)
             {
 	            //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop,JSUnfilteredForInLoop
-	            var appEl = $('<div>')
+	            let appEl = $('<div>')
                                 .html(user.books[t].author + ' : ' + user.books[t].title)
                                 .data('id', user.books[t].id)
                                 .addClass('fs')
                                 .addClass('online');
 
 	            //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop
-	            var iconDel = $('<span>')
+	            let iconDel = $('<span>')
                     .html('X')
                     .addClass('fs-del')
                     .addClass('online')
@@ -1212,15 +1212,15 @@ var __book = function(idElem, interfaceFunc) {
             }
 
             $('.fs').click(function () {
-                var id = $(this).data('id');
+                let id = $(this).data('id');
                 thus.getBook(id);
             });
 
             $('.fs-del').click(function (e) {
                 e.stopPropagation();
 
-                var id = $(this).data('id');
-                var title = $(this).data('title');
+                let id = $(this).data('id');
+                let title = $(this).data('title');
                 thus.deleteBook(id, title);
             });
         });

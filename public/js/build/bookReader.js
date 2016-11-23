@@ -51,8 +51,8 @@ var __ =
 	
 	var _login = __webpack_require__(8);
 	
-	var file;
-	//var JsFile;
+	var file = void 0;
+	//let JsFile;
 	
 	var debug = __webpack_require__(9)('app:init');
 	
@@ -60,8 +60,8 @@ var __ =
 	localStorage.debug = 'app:book';
 	
 	// GLOBAL VARIABLE
-	//var __IS_LOGIN__ = false;
-	//var __NAME__ = '0';
+	//let __IS_LOGIN__ = false;
+	//let __NAME__ = '0';
 	
 	// CONSTS
 	var time_resize = 1000;
@@ -112,7 +112,7 @@ var __ =
 	var __DEBUG__ = {};
 	
 	var delay_fn = function delay_fn(cb, cd) {
-	    var timer;
+	    var timer = void 0;
 	
 	    return function (e) {
 	        if (timer) {
@@ -316,7 +316,7 @@ var __ =
 	        return ("0" + time.getHours()).slice(-2) + ":" + ("0" + time.getMinutes()).slice(-2);
 	    };
 	    var tm = $('#time');
-	    var cnt;
+	    var cnt = void 0;
 	
 	    var tmF = function tmF() {
 	        tm.text(dataFormat(new Date()));
@@ -561,7 +561,7 @@ var __ =
 	
 	var _filejs2 = _interopRequireDefault(_filejs);
 	
-	var _filejsFb = __webpack_require__(6);
+	var _filejsFb = __webpack_require__(5);
 	
 	var _filejsFb2 = _interopRequireDefault(_filejsFb);
 	
@@ -586,15 +586,15 @@ var __ =
 	    var error = interfaceFunc['error'];
 	    var msg = interfaceFunc['msg'];
 	
-	    var bookDoc;
+	    var bookDoc = void 0;
 	    var bookEl = $('#' + idElem);
 	    var slider = $('#slider_btn');
 	    var footnote = $('#footnote');
 	    var sliderHeight = $('#slider').height() - slider.height();
 	    var hiddenEl = $('#hidden_' + idElem);
-	    var lineSize;
-	    var lineCnt;
-	    var json;
+	    var lineSize = void 0;
+	    var lineCnt = void 0;
+	    var json = void 0;
 	    var fs = $('#listOfBooks ol');
 	    var thus = this;
 	    var offsetBook = 0;
@@ -858,57 +858,59 @@ var __ =
 	                if (mode['online']) {
 	                    if (bookId) {
 	                        if (!load.save || anyway) {
-	                            load.save = true;
+	                            (function () {
+	                                load.save = true;
 	
-	                            // disable edit/delete bookmarks
-	                            $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
+	                                // disable edit/delete bookmarks
+	                                $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
 	
-	                            var tmpSave = screen.pos;
+	                                var tmpSave = screen.pos;
 	
-	                            var dd = {
-	                                pos: tmpSave,
-	                                bookmarks: []
-	                            };
+	                                var dd = {
+	                                    pos: tmpSave,
+	                                    bookmarks: []
+	                                };
 	
-	                            for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i) {
-	                                dd.bookmarks.push(__bookmarks[kk[i]]);
-	                            }
+	                                for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i) {
+	                                    dd.bookmarks.push(__bookmarks[kk[i]]);
+	                                }
 	
-	                            // JSON
-	                            $.ajax({
-	                                method: 'POST',
-	                                url: './book/save/_' + bookId,
-	                                data: JSON.stringify(dd),
-	                                contentType: "application/json; charset=utf-8"
-	                            }).done(function () {
+	                                // JSON
+	                                $.ajax({
+	                                    method: 'POST',
+	                                    url: './book/save/_' + bookId,
+	                                    data: JSON.stringify(dd),
+	                                    contentType: "application/json; charset=utf-8"
+	                                }).done(function () {
 	
-	                                saved.pos = tmpSave;
-	                                __bookmarks = [];
-	                                saved.bookmarkCount = 0;
+	                                    saved.pos = tmpSave;
+	                                    __bookmarks = [];
+	                                    saved.bookmarkCount = 0;
 	
-	                                if (dd.bookmarks.length > 0) {
-	                                    $.ajax({
-	                                        method: 'GET',
-	                                        url: '/book/bookmark/get/_' + bookId
-	                                    }).done(function (d) {
-	                                        loadBookmarks(d);
+	                                    if (dd.bookmarks.length > 0) {
+	                                        $.ajax({
+	                                            method: 'GET',
+	                                            url: '/book/bookmark/get/_' + bookId
+	                                        }).done(function (d) {
+	                                            loadBookmarks(d);
 	
+	                                            try {
+	                                                resolve();
+	                                            } catch (err) {}
+	                                        });
+	                                    } else {
 	                                        try {
 	                                            resolve();
 	                                        } catch (err) {}
-	                                    });
-	                                } else {
-	                                    try {
-	                                        resolve();
-	                                    } catch (err) {}
-	                                }
-	                            }).fail(function () {
-	                                error('System error');
+	                                    }
+	                                }).fail(function () {
+	                                    error('System error');
 	
-	                                reject();
-	                            }).always(function () {
-	                                setLoadValueFalse('save');
-	                            });
+	                                    reject();
+	                                }).always(function () {
+	                                    setLoadValueFalse('save');
+	                                });
+	                            })();
 	                        } else {
 	                            msg('Ur already save');
 	
@@ -972,7 +974,7 @@ var __ =
 	    };
 	
 	    /**
-	     * Write array of bookmarks in VAR lb = #listOfBookmarks
+	     * Write array of bookmarks in let lb = #listOfBookmarks
 	     * Add bookmarks in slider
 	     * sync
 	     * @param bm - array of bookmarks
@@ -1192,7 +1194,7 @@ var __ =
 	
 	                    $.ajax({
 	                        url: './store/book/delete/_' + id,
-	                        method: 'delete'
+	                        method: 'POST'
 	                    }).done(function () {
 	                        msg('Book has been deleted.');
 	
@@ -1212,7 +1214,7 @@ var __ =
 	    };
 	    /*
 	        this.scrollEl = function(id) {
-	            var top = $('#p_' + id).offset().top - offset_book;
+	            let top = $('#p_' + id).offset().top - offset_book;
 	            $(document).scrollTop(top);
 	        };
 	    
@@ -1796,26 +1798,10 @@ var __ =
 	worker.addEventListener('error',errorHandler);function errorHandler(err){worker.terminate();onerror(err);}}function onerror_default(error){console.error(error);}var zip={BlobReader:BlobReader,BlobWriter:BlobWriter,createWorker:createWorker,getDataHelper:getDataHelper,seekEOCDR:seekEOCDR,readCommonHeader:readCommonHeader,getString:getString,decodeUTF8:decodeUTF8,decodeASCII:decodeASCII,copy:copy,inflate:inflate,ERR_READ:ERR_READ,ERR_BAD_FORMAT:ERR_BAD_FORMAT,ERR_READ_DATA:ERR_READ_DATA,ERR_WRITE_DATA:ERR_WRITE_DATA,workerScripts:null};exports.default=zip;/***/},/* 30 *//***/function(module,exports,__webpack_require__){'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _zip=__webpack_require__(29);var _zip2=_interopRequireDefault(_zip);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}var copy=_zip2.default.copy;var readCommonHeader=_zip2.default.readCommonHeader;var getDataHelper=_zip2.default.getDataHelper;var inflate=_zip2.default.inflate;var ERR_BAD_FORMAT=_zip2.default.ERR_BAD_FORMAT;var ERR_READ_DATA=_zip2.default.ERR_READ_DATA;var ERR_WRITE_DATA=_zip2.default.ERR_WRITE_DATA;var Entry=function(){function Entry(options){_classCallCheck(this,Entry);Object.merge(this,options);}_createClass(Entry,[{key:'testCrc32',value:function testCrc32(crc32){var dataCrc32=getDataHelper(4);dataCrc32.view.setUint32(0,crc32);return this.crc32===dataCrc32.view.getUint32(0);}},{key:'getData',value:function getData(){var _this=this;var options=arguments.length<=0||arguments[0]===undefined?{}:arguments[0];return new Promise(function(resolve){var checkCrc32=options.checkCrc32;var onReadError=function onReadError(err){throw new Error(err||ERR_READ_DATA);};function onWriteError(err){throw new Error(err||ERR_WRITE_DATA);}_this.reader.readUint8Array(_this.offset,30,function(bytes){var data=getDataHelper(bytes.length,bytes);if(data.view.getUint32(0)!==0x504b0304){throw new Error(ERR_BAD_FORMAT);}readCommonHeader(_this,data,4,false,onerror);var dataOffset=_this.offset+30+_this.filenameLength+_this.extraFieldLength;var writer=_this.writer;var reader=_this.reader;var worker=_this.worker;var compressedSize=_this.compressedSize;options.inflateSN++;writer.init(function(){var method=inflate;if(_this.compressionMethod===0){method=copy;}method(worker,options.inflateSN,reader,writer,dataOffset,compressedSize,checkCrc32,function(uncompressedSize,crc32){if(checkCrc32&&!_this.testCrc32(crc32)){throw new Error(ERR_CRC);}else{writer.getData(function(data){return resolve(data);});}},null,onReadError,onWriteError);},onWriteError);},onReadError);});}}]);return Entry;}();exports.default=Entry;/***/},/* 31 *//***/function(module,exports){"use strict";Object.defineProperty(exports,"__esModule",{value:true});// jscs:disable
 	var mask=/^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i;// jscs:enable
 	exports.default=function(val){return mask.test(val);};/***/},/* 32 *//***/function(module,exports,__webpack_require__){'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.default=function(obj){return(0,_merge2.default)({},obj);};var _merge=__webpack_require__(15);var _merge2=_interopRequireDefault(_merge);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}/***/}/******/]));});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)(module)))
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
-
-	module.exports = function(module) {
-		if(!module.webpackPolyfill) {
-			module.deprecate = function() {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
-	}
-
-
-/***/ },
-/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {'use strict';
@@ -2645,29 +2631,29 @@ var __ =
 	                                                            } else if (localName === 'poem') {
 	                                                                        this.parsePages(node, documentData, list);
 	                                                            } else if (localName === 'stanza') {
-	                                                                        var _res = this.parseBlockElement({
+	                                                                        var res = this.parseBlockElement({
 	                                                                                    node: node,
 	                                                                                    documentData: documentData
 	                                                                        });
-	                                                                        _res.properties.className = 'stanza';
+	                                                                        res.properties.className = 'stanza';
 	
-	                                                                        list.push(_res);
+	                                                                        list.push(res);
 	                                                            } else if (localName === 'cite') {
-	                                                                        var _res2 = this.parseBlockElement({
+	                                                                        var res = this.parseBlockElement({
 	                                                                                    node: node,
 	                                                                                    documentData: documentData
 	                                                                        });
-	                                                                        _res2.properties.className = 'cite';
+	                                                                        res.properties.className = 'cite';
 	
-	                                                                        list.push(_res2);
+	                                                                        list.push(res);
 	                                                            } else if (localName === 'epigraph') {
-	                                                                        var _res3 = this.parseBlockElement({
+	                                                                        var res = this.parseBlockElement({
 	                                                                                    node: node,
 	                                                                                    documentData: documentData
 	                                                                        });
-	                                                                        _res3.properties.className = 'epigraph';
+	                                                                        res.properties.className = 'epigraph';
 	
-	                                                                        list.push(_res3);
+	                                                                        list.push(res);
 	                                                            } else if (localName) {
 	                                                                        list.push(this.parseBlockElement({
 	                                                                                    node: node,
@@ -2951,7 +2937,23 @@ var __ =
 	                        /******/])
 	            );
 	});
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)(module)))
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
+	}
+
 
 /***/ },
 /* 7 */
@@ -3122,14 +3124,14 @@ var __ =
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	
+	/* WEBPACK VAR INJECTION */(function(process) {
 	/**
 	 * This is the web browser implementation of `debug()`.
 	 *
 	 * Expose `debug()` as the module.
 	 */
 	
-	exports = module.exports = __webpack_require__(10);
+	exports = module.exports = __webpack_require__(11);
 	exports.log = log;
 	exports.formatArgs = formatArgs;
 	exports.save = save;
@@ -3163,7 +3165,8 @@ var __ =
 	
 	function useColors() {
 	  // is webkit? http://stackoverflow.com/a/16459606/376773
-	  return ('WebkitAppearance' in document.documentElement.style) ||
+	  // document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
+	  return (typeof document !== 'undefined' && 'WebkitAppearance' in document.documentElement.style) ||
 	    // is firebug? http://stackoverflow.com/a/398120/376773
 	    (window.console && (console.firebug || (console.exception && console.table))) ||
 	    // is firefox >= v31?
@@ -3176,7 +3179,11 @@ var __ =
 	 */
 	
 	exports.formatters.j = function(v) {
-	  return JSON.stringify(v);
+	  try {
+	    return JSON.stringify(v);
+	  } catch (err) {
+	    return '[UnexpectedJSONParseError]: ' + err.message;
+	  }
 	};
 	
 	
@@ -3263,9 +3270,13 @@ var __ =
 	function load() {
 	  var r;
 	  try {
-	    r = exports.storage.debug;
+	    return exports.storage.debug;
 	  } catch(e) {}
-	  return r;
+	
+	  // If debug isn't set in LS, and we're in Electron, try to load $DEBUG
+	  if (typeof process !== 'undefined' && 'env' in process) {
+	    return process.env.DEBUG;
+	  }
 	}
 	
 	/**
@@ -3290,10 +3301,197 @@ var __ =
 	    return window.localStorage;
 	  } catch (e) {}
 	}
-
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ },
 /* 10 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+	var process = module.exports = {};
+	
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+	
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+	
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
+	(function () {
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
+	    }
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
+	    }
+	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+	
+	
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+	
+	
+	
+	}
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+	
+	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+	
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = runTimeout(cleanUpNextTick);
+	    draining = true;
+	
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    runClearTimeout(timeout);
+	}
+	
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        runTimeout(drainQueue);
+	    }
+	};
+	
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+	
+	function noop() {}
+	
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+	
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+	
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -3304,12 +3502,12 @@ var __ =
 	 * Expose `debug()` as the module.
 	 */
 	
-	exports = module.exports = debug;
+	exports = module.exports = debug.debug = debug;
 	exports.coerce = coerce;
 	exports.disable = disable;
 	exports.enable = enable;
 	exports.enabled = enabled;
-	exports.humanize = __webpack_require__(11);
+	exports.humanize = __webpack_require__(12);
 	
 	/**
 	 * The currently active debug mode names, and names to skip.
@@ -3381,7 +3579,10 @@ var __ =
 	    if (null == self.useColors) self.useColors = exports.useColors();
 	    if (null == self.color && self.useColors) self.color = selectColor();
 	
-	    var args = Array.prototype.slice.call(arguments);
+	    var args = new Array(arguments.length);
+	    for (var i = 0; i < args.length; i++) {
+	      args[i] = arguments[i];
+	    }
 	
 	    args[0] = exports.coerce(args[0]);
 	
@@ -3408,9 +3609,9 @@ var __ =
 	      return match;
 	    });
 	
-	    if ('function' === typeof exports.formatArgs) {
-	      args = exports.formatArgs.apply(self, args);
-	    }
+	    // apply env-specific formatting
+	    args = exports.formatArgs.apply(self, args);
+	
 	    var logFn = enabled.log || exports.log || console.log.bind(console);
 	    logFn.apply(self, args);
 	  }
@@ -3439,7 +3640,7 @@ var __ =
 	
 	  for (var i = 0; i < len; i++) {
 	    if (!split[i]) continue; // ignore empty strings
-	    namespaces = split[i].replace(/\*/g, '.*?');
+	    namespaces = split[i].replace(/[\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*?');
 	    if (namespaces[0] === '-') {
 	      exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
 	    } else {
@@ -3496,18 +3697,18 @@ var __ =
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/**
 	 * Helpers.
 	 */
 	
-	var s = 1000;
-	var m = s * 60;
-	var h = m * 60;
-	var d = h * 24;
-	var y = d * 365.25;
+	var s = 1000
+	var m = s * 60
+	var h = m * 60
+	var d = h * 24
+	var y = d * 365.25
 	
 	/**
 	 * Parse or format the given `val`.
@@ -3518,17 +3719,23 @@ var __ =
 	 *
 	 * @param {String|Number} val
 	 * @param {Object} options
+	 * @throws {Error} throw an error if val is not a non-empty string or a number
 	 * @return {String|Number}
 	 * @api public
 	 */
 	
-	module.exports = function(val, options){
-	  options = options || {};
-	  if ('string' == typeof val) return parse(val);
-	  return options.long
-	    ? long(val)
-	    : short(val);
-	};
+	module.exports = function (val, options) {
+	  options = options || {}
+	  var type = typeof val
+	  if (type === 'string' && val.length > 0) {
+	    return parse(val)
+	  } else if (type === 'number' && isNaN(val) === false) {
+	    return options.long ?
+				fmtLong(val) :
+				fmtShort(val)
+	  }
+	  throw new Error('val is not a non-empty string or a valid number. val=' + JSON.stringify(val))
+	}
 	
 	/**
 	 * Parse the given `str` and return milliseconds.
@@ -3539,47 +3746,53 @@ var __ =
 	 */
 	
 	function parse(str) {
-	  str = '' + str;
-	  if (str.length > 10000) return;
-	  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
-	  if (!match) return;
-	  var n = parseFloat(match[1]);
-	  var type = (match[2] || 'ms').toLowerCase();
+	  str = String(str)
+	  if (str.length > 10000) {
+	    return
+	  }
+	  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str)
+	  if (!match) {
+	    return
+	  }
+	  var n = parseFloat(match[1])
+	  var type = (match[2] || 'ms').toLowerCase()
 	  switch (type) {
 	    case 'years':
 	    case 'year':
 	    case 'yrs':
 	    case 'yr':
 	    case 'y':
-	      return n * y;
+	      return n * y
 	    case 'days':
 	    case 'day':
 	    case 'd':
-	      return n * d;
+	      return n * d
 	    case 'hours':
 	    case 'hour':
 	    case 'hrs':
 	    case 'hr':
 	    case 'h':
-	      return n * h;
+	      return n * h
 	    case 'minutes':
 	    case 'minute':
 	    case 'mins':
 	    case 'min':
 	    case 'm':
-	      return n * m;
+	      return n * m
 	    case 'seconds':
 	    case 'second':
 	    case 'secs':
 	    case 'sec':
 	    case 's':
-	      return n * s;
+	      return n * s
 	    case 'milliseconds':
 	    case 'millisecond':
 	    case 'msecs':
 	    case 'msec':
 	    case 'ms':
-	      return n;
+	      return n
+	    default:
+	      return undefined
 	  }
 	}
 	
@@ -3591,12 +3804,20 @@ var __ =
 	 * @api private
 	 */
 	
-	function short(ms) {
-	  if (ms >= d) return Math.round(ms / d) + 'd';
-	  if (ms >= h) return Math.round(ms / h) + 'h';
-	  if (ms >= m) return Math.round(ms / m) + 'm';
-	  if (ms >= s) return Math.round(ms / s) + 's';
-	  return ms + 'ms';
+	function fmtShort(ms) {
+	  if (ms >= d) {
+	    return Math.round(ms / d) + 'd'
+	  }
+	  if (ms >= h) {
+	    return Math.round(ms / h) + 'h'
+	  }
+	  if (ms >= m) {
+	    return Math.round(ms / m) + 'm'
+	  }
+	  if (ms >= s) {
+	    return Math.round(ms / s) + 's'
+	  }
+	  return ms + 'ms'
 	}
 	
 	/**
@@ -3607,12 +3828,12 @@ var __ =
 	 * @api private
 	 */
 	
-	function long(ms) {
-	  return plural(ms, d, 'day')
-	    || plural(ms, h, 'hour')
-	    || plural(ms, m, 'minute')
-	    || plural(ms, s, 'second')
-	    || ms + ' ms';
+	function fmtLong(ms) {
+	  return plural(ms, d, 'day') ||
+	    plural(ms, h, 'hour') ||
+	    plural(ms, m, 'minute') ||
+	    plural(ms, s, 'second') ||
+	    ms + ' ms'
 	}
 	
 	/**
@@ -3620,9 +3841,13 @@ var __ =
 	 */
 	
 	function plural(ms, n, name) {
-	  if (ms < n) return;
-	  if (ms < n * 1.5) return Math.floor(ms / n) + ' ' + name;
-	  return Math.ceil(ms / n) + ' ' + name + 's';
+	  if (ms < n) {
+	    return
+	  }
+	  if (ms < n * 1.5) {
+	    return Math.floor(ms / n) + ' ' + name
+	  }
+	  return Math.ceil(ms / n) + ' ' + name + 's'
 	}
 
 

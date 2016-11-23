@@ -1,18 +1,18 @@
 "use strict";
-var debug = require('debug')('sniffer:store');
+let debug = require('debug')('sniffer:store');
 
-var path = require('path');
+let path = require('path');
 
 
-var resolve = [];
+let resolve = [];
 resolve[0] = 'adm';
 
-var app = require('express')();
-var LVL = require('./login').LVL;
-var checkAccess = require('./login').checkAccess;
+let app = require('express')();
+let LVL = require('./login').LVL;
+let checkAccess = require('./login').checkAccess;
 let Book = require('./mongo').Book;
 
-var cookieParser = require('cookie-parser');
+let cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
@@ -21,9 +21,9 @@ app.all('*', function(req, res, next) {
 
     debug(req.originalUrl);
 
-    if (checkAccess(req.lvl, 'user'))
+    if (req.user.checkAccess('user'))
     {
-        debug(req.userName);
+        debug(req.user.name);
 
         next();
     }
@@ -34,10 +34,10 @@ app.all('*', function(req, res, next) {
 });
 
 // :id - book id
-app.delete('/book/delete/_:id', function (req, res) {
+app.post('/book/delete/_:id', function (req, res) {
     let id = req.params.id;
 
-	Book.deleteBook(id, req.userName, function (err) {
+	Book.deleteBook(id, req.user.name, function (err) {
         if (err)
         {
             res.status(500).json(err).end();
@@ -98,11 +98,11 @@ app.get('/book/get/_(:id)', function(req, res) {
 
     if (req.lvl <= LVL['MOD'])
     {
-	    Book.getBook(id, req.userName, cb, true);
+	    Book.getBook(id, req.user.name, cb, true);
     }
     else
     {
-        Book.getBook(id, req.userName, cb);
+        Book.getBook(id, req.user.name, cb);
     }
 });
 

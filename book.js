@@ -1,14 +1,14 @@
 "use strict";
-var app = require('express')();
-var cookieParser = require('cookie-parser');
-var path = require('path');
-var fs = require('fs');
+let app = require('express')();
+let cookieParser = require('cookie-parser');
+let path = require('path');
+let fs = require('fs');
 
-var debug = require('debug')('sniffer:book');
+let debug = require('debug')('sniffer:book');
 
 app.use(cookieParser());
 
-var checkAccess = require('./login').checkAccess;
+let checkAccess = require('./login').checkAccess;
 let Book = require('./mongo').Book;
 
 /**
@@ -73,7 +73,7 @@ app.use(require('body-parser').json());
 
 // Access for USER
 app.all('*', (req, res, next) => {
-    if (checkAccess(req.lvl, 'addBook'))
+    if (req.user.checkAccess('addBook'))
     {
         next();
     }
@@ -91,18 +91,18 @@ app.get('/', (req, res) => {
 
     res.render('addBook.jade', {
         title: 'Add book',
-        name: req.userName,
+        name: req.user.name,
 	    error: (req.query || {})['error']
     });
 });
 
-var fileCounter = 0;
+let fileCounter = 0;
 
 
 app.post('/add/*', function(req, res, next){
-    if (req.userName && req.userName != '0')
+    if (req.user.name && req.user.name != '0')
     {
-        checkFolder('./files/' + req.userName, next);
+        checkFolder('./files/' + req.user.name, next);
     }
     else
     {
@@ -110,10 +110,10 @@ app.post('/add/*', function(req, res, next){
     }
 });
 
-var Busboy = require('busboy');
-var inspect = require('util').inspect;
-var MAX_FILE_SIZE_IN_MB = 2.4;
-var MAX_FILE_SIZE = MAX_FILE_SIZE_IN_MB * 1024 * 1024;
+let Busboy = require('busboy');
+let inspect = require('util').inspect;
+let MAX_FILE_SIZE_IN_MB = 2.4;
+let MAX_FILE_SIZE = MAX_FILE_SIZE_IN_MB * 1024 * 1024;
 
 function getFile(req, res, next)
 {
@@ -121,7 +121,7 @@ function getFile(req, res, next)
     let date = Date.now();
 
 
-    let lnk = path.join(req.userName, req.userName + '__' + date + '_' + fileCounter + ".fb2");
+    let lnk = path.join(req.user.name, req.user.name + '__' + date + '_' + fileCounter + ".fb2");
 
     let pp = path.join(__dirname, '/files/', lnk);
 
@@ -129,7 +129,7 @@ function getFile(req, res, next)
 
     ++fileCounter;
 
-    var busboy = new Busboy({
+    let busboy = new Busboy({
         headers: req.headers,
         limits: {
             fileSize: MAX_FILE_SIZE,
@@ -209,7 +209,7 @@ app.post('/add/', getFile, function(req, res) {
 	Book.addBook({
         title: title,
         author: author,
-        owner: req.userName,
+        owner: req.user.name,
         lnk: req.lnkBook
     }, db_cb);
 
@@ -224,7 +224,7 @@ app.post('/add/', getFile, function(req, res) {
             addBook({
                 title: title,
                 author: author,
-                owner: req.userName,
+                owner: req.user.name,
                 lnk: lnk
             }, db_cb);
         }
@@ -251,7 +251,7 @@ app.post('/save/_:id', (req, res, next) => {
     let id = req.params.id;
     let allowedParams = ['pos', 'bookmarks'];
 
-    debug('Save book _id = %s, user = %s', id, req.userName);
+    debug('Save book _id = %s, user = %s', id, req.user.name);
 
     // If no book
     if (typeof id == 'undefined' || id == 0)
@@ -274,7 +274,7 @@ app.post('/save/_:id', (req, res, next) => {
 
     debug(ss);
 
-	Book.saveBook(id, req.userName, ss, (err, t) => {
+	Book.saveBook(id, req.user.name, ss, (err, t) => {
         if (err)
         {
             debug(err);
@@ -312,7 +312,7 @@ app.post('/bookmark/delete/_:id', function(req, res){
         return;
     }
 
-    Book.deleteBookmark(id, req.userName, markId, function(err){
+    Book.deleteBookmark(id, req.user.name, markId, function(err){
         if (err)
         {
             res.status(401).end();
@@ -330,7 +330,7 @@ app.post('/bookmark/edit/_:id', function(req, res){
 
     debug('/bookmark/edit/_:id  :id = %s, mark = %s', id, JSON.stringify(mark));
 
-    Book.editBookmark(id, req.userName, mark, function(err){
+    Book.editBookmark(id, req.user.name, mark, function(err){
         if (err)
         {
             res.status(401).end();
@@ -347,7 +347,7 @@ app.get('/bookmark/get/_:id', function(req, res) {
 
     debug('/bookmark/get/_:id  :id = %s', id);
 
-    Book.getBook(id, req.userName, function(err, t) {
+    Book.getBook(id, req.user.name, function(err, t) {
         if (err)
         {
             res.status(401).json(err).end();
@@ -364,7 +364,7 @@ app.get('/bookmark/get/_:id', function(req, res) {
 app.get('/info/_:id', function(req, res) {
     let id = req.params.id;
 
-    Book.getBook(id, req.userName, function(err, t) {
+    Book.getBook(id, req.user.name, function(err, t) {
         if (err)
         {
             res.status(401).json(err).end();

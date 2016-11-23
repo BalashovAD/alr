@@ -4,12 +4,12 @@ $(document).ready(function() {
     function confirm() {
         $('#okReg').attr('class', 'hide');
         $('#failReg').attr('class', 'hide');
-        var name = $('#login input[name=user]').val().split('/')[0];
-        var psw = $('#login input[name=psw]').val().split('/')[0];
-        var invite = $('#login input[name=invite]').val().split('/')[0];
-        var cnf = $('#login input[name=cnfPsw]').val().split('/')[0];
+        let name = $('#login input[name=user]').val().split('/')[0];
+        let psw = $('#login input[name=psw]').val().split('/')[0];
+        let invite = $('#login input[name=invite]').val().split('/')[0];
+        let cnf = $('#login input[name=cnfPsw]').val().split('/')[0];
 
-        var data = {
+        let data = {
             name: name,
             psw: psw,
             invite: invite

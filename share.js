@@ -1,14 +1,14 @@
 "use strict";
-var app = require('express')();
-var cookieParser = require('cookie-parser');
+let app = require('express')();
+let cookieParser = require('cookie-parser');
 
-var fs = require('fs');
+let fs = require('fs');
 
-var debug = require('debug')('sniffer:book');
+let debug = require('debug')('sniffer:book');
 
 app.use(cookieParser());
 
-var checkAccess = require('./login').checkAccess;
+let checkAccess = require('./login').checkAccess;
 
 
 
@@ -19,7 +19,7 @@ app.use(require('body-parser').json());
 
 // Access for USER
 app.all('*', (req, res, next) => {
-	if (checkAccess(req.lvl, 'addBook'))
+	if (req.user.checkAccess('addBook'))
 	{
 		next();
 	}
