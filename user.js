@@ -4,8 +4,6 @@ const LVL = require('./login').LVL;
 const checkAccess = require('./login').checkAccess;
 const debug = require('debug')('sniffer:user!constructor');
 
-let countOfCreateUser = 0;
-
 const USER_EXPIRED_TIMEOUT = 60 * 60 * 60 * 1000;
 
 let userStore = Object.create(null);
@@ -46,10 +44,8 @@ function User(data)
 	this._isLogin = typeof data.isLogin == 'undefined' ? true : data.isLogin;
 	this._date = Date.now();
 	this._createDate = Date.now();
-	this._isDeleteMode = false;
+	this._isDeleteMode = typeof data.isDeleteMode == 'undefined' ? false : data.isDeleteMode;
 	this._isSecret = typeof data.isSecret == 'undefined' ? false : data.isSecret;
-
-	debug('call User = ' + countOfCreateUser++ + ', user = ' + JSON.stringify(this));
 
 	return this;
 }
@@ -92,7 +88,8 @@ function Guest()
 			lvl: LVL['GUEST'],
 			secret: 'guest_secret'
 		},
-		isLogin: false
+		isLogin: false,
+		isDeleteMode: true
 	});
 }
 
