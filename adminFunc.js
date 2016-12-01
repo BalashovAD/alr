@@ -53,27 +53,49 @@ function capitalizeUser()
 	})
 }
 
-let userStore = require('./user').userStore;
+let userStorage = require('./user').userStorage;
 let garbageCollectorForUsers = require('./user').garbageCollectorForUsers;
 
-function changeUserStore(param)
+function changeUserStorage(param)
 {
 	let cb = arguments.length == 0 ? () => {} : arguments[arguments.length - 1];
+
+	let length, retainedSize;
 
 	switch(param)
 	{
 		case 'clearOld':
 							garbageCollectorForUsers();
 
-							changeUserStore('info', cb);
+							changeUserStorage('info', cb);
 							break;
 		case 'info':
-							let length = Object.keys(userStore).length;
-							let retainedSize = length * 6.4 / 1000 / 1000 + 'MB';
+							length = Object.keys(userStorage).length;
+							retainedSize = length * 6.4 / 1000 / 1000 + 'MB';
 
 							cb(undefined, {
 								count: length,
 								retainedSize: retainedSize
+							});
+
+							break;
+		case 'fullInfo':
+							length = Object.keys(userStorage).length;
+							retainedSize = length * 6.4 / 1000 / 1000 + 'MB';
+							let users = [];
+
+							for (let i in userStorage)
+							{
+								users.push({
+									name: userStorage[i].name,
+									timeLeft: userStorage[i].timeLeft()
+								});
+							}
+
+							cb(undefined, {
+								count: length,
+								retainedSize: retainedSize,
+								users: users
 							});
 
 							break;
@@ -84,5 +106,24 @@ function changeUserStore(param)
 
 module.exports = {
 	capitalizeUser: capitalizeUser,
-	changeUserStore: changeUserStore
+	__capitalizeUser: {
+		description: 'Update all data connected with userName. Universalize userName.',
+		params: {}
+	},
+	changeUserStorage: changeUserStorage,
+	__changeUserStorage: {
+		description: 'Command for management userStorage.',
+		params: {
+			clearOld: 'Remove all users from userStorage that expired or were set deleteMode.',
+			info: 'Return info about allocated memory and count of user.',
+			fullInfo: 'Return all users and info about allocated memory and count of user.'
+		}
+	},
+	__help: {
+		description: 'Turn on/off helpMode. Autocomplete command and show params.',
+		params: {
+			on: 'Turn on helpMode.',
+			off: 'Turn off helpMode.'
+		}
+	}
 };

@@ -6,19 +6,19 @@ const debug = require('debug')('sniffer:user!constructor');
 
 const USER_EXPIRED_TIMEOUT = 60 * 60 * 60 * 1000;
 
-let userStore = Object.create(null);
+let userStorage = Object.create(null);
 const GARBAGE_COLLECTOR_TIMEOUT = 60 * 60 * 60 * 100;
 
 /**
  * delete old users (1h now)
  */
 function garbageCollectorForUsers() {
-	for (let i in userStore)
+	for (let i in userStorage)
 	{
-		if (userStore[i].isExpired())
+		if (userStorage[i].isExpired())
 		{
-			userStore[i] = undefined;
-			delete userStore[i];
+			userStorage[i] = undefined;
+			delete userStorage[i];
 		}
 	}
 }
@@ -80,6 +80,10 @@ User.prototype.exit = function () {
 	this.setDeleteMode();
 };
 
+User.prototype.timeLeft = function () {
+	return this._isDeleteMode ? -1 : this._date - this._createDate;
+};
+
 function Guest()
 {
 	return new User({
@@ -128,5 +132,5 @@ module.exports = {
 	VoidUser: VoidUser
 };
 
-module.exports.userStore = userStore;
+module.exports.userStorage = userStorage;
 module.exports.garbageCollectorForUsers = garbageCollectorForUsers;

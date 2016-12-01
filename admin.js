@@ -30,6 +30,35 @@ app.all('*', (req, res, next) => {
     }
 });
 
+function filter(obj, checker)
+{
+	let tmp = Object.create(obj.__proto__);
+
+	for (let i in obj)
+	{
+		if (obj.hasOwnProperty(i))
+		{
+			if (checker(i, obj[i], obj))
+			{
+				tmp[i] = obj[i];
+			}
+		}
+	}
+
+	return tmp;
+}
+
+function renameObjectProp(obj)
+{
+	let tmp = Object.create(null);
+
+	for (let i in obj)
+	{
+		tmp[i.substr(2)] = obj[i];
+	}
+
+	return tmp;
+}
 
 app.get('/index.jade', function (req, res) {
 
@@ -38,7 +67,8 @@ app.get('/index.jade', function (req, res) {
     res.render('./admin/index.jade', {
         title: 'Admin panel',
         schemas: schemas,
-	    hints: Object.keys(allowedFunc),
+	    hints: Object.keys(allowedFunc).filter((name)=>name[0] != '_'),
+	    func: JSON.stringify(renameObjectProp(filter(allowedFunc, (name) => name[0] == '_'), '__')),
 	    salt: Date.now()
     });
 });

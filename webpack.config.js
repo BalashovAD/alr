@@ -17,7 +17,7 @@ module.exports = {
 	},
 	watch: true,
 	watchOptions: {
-		aggregateTimeout: 1000
+		aggregateTimeout: 6000
 	},
 	resolve: {
 		modulesDirectories: [

@@ -9,6 +9,10 @@ body {
 	color: whitesmoke;
 }
 
+.hidden {
+	display: none;
+}
+
 html {
 	box-sizing: border-box;
 }
@@ -100,7 +104,7 @@ input[type=submit] {
 	width: 100%;
 	height: 100% - @menuLineSize * 2 - @singleSize - @cmdSize;
 
-	font-family: "Courier New";
+	font-family: "Courier New", monospace;
 	border-bottom: 1px solid @borderColor;
 
 	overflow-y: auto;
@@ -157,7 +161,7 @@ input[type=submit] {
 	width: 100%;
 	height: @singleSize;
 
-	font-family: "Courier New";
+	font-family: "Courier New", monospace;
 	border-bottom: 1px solid @borderColor;
 
 	overflow-y: auto;
@@ -183,16 +187,40 @@ input[type=submit] {
 	list-style-type: none;
 }
 
-.open-bracket {
+.open-curly-brace {
 	text-align: right;
 }
 
-.open-bracket:after {
+.open-curly-brace:after {
 	content: '{';
 }
 
-.close-bracket:before {
+.close-curly-brace:before {
 	content: '}';
+}
+
+.open-square-bracket {
+	text-align: right;
+}
+
+.open-square-bracket:after {
+	content: '[';
+}
+
+.close-square-bracket:before {
+	content: ']';
+}
+
+.elems-of-array::after {
+	content: ',';
+}
+
+.elems-of-array.last-elems-of-array::after {
+	content: '';
+}
+
+.hidden-array-elem {
+	display: none;
 }
 
 .invisibility {

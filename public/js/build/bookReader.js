@@ -579,6 +579,14 @@ var __ =
 	
 	var doNothing = function doNothing() {};
 	
+	var getUId = function getUId() {
+	    var id = 0;
+	
+	    return function () {
+	        return id++;
+	    };
+	};
+	
 	var __book = function __book(idElem, interfaceFunc) {
 	    var info = {};
 	    var user = undefined;
@@ -720,12 +728,12 @@ var __ =
 	        }, timeout[name + 'load'] || 1000);
 	    }
 	
-	    this.addBookmark = function (pos, title, text, id) {
-	        __bookmarks['__' + id] = {
+	    this.addBookmark = function (pos, title, text) {
+	        __bookmarks.push({
 	            pos: pos || 0,
 	            title: title,
 	            text: text
-	        };
+	        });
 	
 	        if (mode['online']) {
 	            thus.save();
@@ -825,9 +833,7 @@ var __ =
 	                        }).done(function (d) {
 	                            loadBookmarks(d);
 	
-	                            try {
-	                                resolve();
-	                            } catch (err) {}
+	                            resolve();
 	                        }).fail(function () {
 	                            reject('System error');
 	                        }).always(function () {
@@ -871,8 +877,8 @@ var __ =
 	                                    bookmarks: []
 	                                };
 	
-	                                for (var kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i) {
-	                                    dd.bookmarks.push(__bookmarks[kk[i]]);
+	                                for (var i = 0; i < __bookmarks.length; ++i) {
+	                                    dd.bookmarks.push(__bookmarks[i]);
 	                                }
 	
 	                                // JSON
@@ -937,7 +943,7 @@ var __ =
 	    };
 	
 	    this.isSaved = function () {
-	        return saved.pos == screen.pos && saved.bookmarkCount == 0;
+	        return saved.pos == screen.pos && __bookmarks.length == 0;
 	    };
 	
 	    /**

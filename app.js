@@ -50,15 +50,15 @@ if (app.get('env') === 'development')
 
 		if (secret == userConstructor.SecretUser.SECRET_KEY_FOR_SIGN_IN)
 		{
-			userStore[req.session.id] = new userConstructor.SecretUser();
-			req.user = userStore[req.session.id];
+			userStorage[req.session.id] = new userConstructor.SecretUser();
+			req.user = userStorage[req.session.id];
 		}
 
 		next();
 	});
 }
 
-let userStore = require('./user').userStore;
+let userStorage = require('./user').userStorage;
 
 app.use(function(req, res, next){
     req.cookies.user = req.cookies.user || '0';
@@ -66,11 +66,11 @@ app.use(function(req, res, next){
 
 	req.userIp = req.connection.remoteAddress;
 
-	if (req.session.id && userStore[req.session.id])
+	if (req.session.id && userStorage[req.session.id])
 	{
-		if (userStore[req.session.id].isLogin() && (req.cookies.user == userStore[req.session.id].secret || userStore[req.session.id].isSecret()))
+		if (userStorage[req.session.id].isLogin() && (req.cookies.user == userStorage[req.session.id].secret || userStorage[req.session.id].isSecret()))
 		{
-			req.user = userStore[req.session.id];
+			req.user = userStorage[req.session.id];
 			req.user.update();
 
 			next();
@@ -79,10 +79,10 @@ app.use(function(req, res, next){
 		}
 		else
 		{
-			if (userStore[req.session.id].isLogin() == false && req.cookies.user == '0')
+			if (userStorage[req.session.id].isLogin() == false && req.cookies.user == '0')
 			{
 
-				req.user = userStore[req.session.id];
+				req.user = userStorage[req.session.id];
 				req.user.update();
 
 				next();
@@ -98,12 +98,12 @@ app.use(function(req, res, next){
 
         if (err)
         {
-	        userStore[req.session.id] = new userConstructor.Guest();
+	        userStorage[req.session.id] = new userConstructor.Guest();
         }
 
         if (data)
         {
-	        userStore[req.session.id] = new userConstructor.User(data);
+	        userStorage[req.session.id] = new userConstructor.User(data);
         }
         else
         {
@@ -111,10 +111,10 @@ app.use(function(req, res, next){
 
             debug('URL: ' + req.originalUrl);
 
-	        userStore[req.session.id] = new userConstructor.Guest();
+	        userStorage[req.session.id] = new userConstructor.Guest();
         }
 
-        req.user = userStore[req.session.id];
+        req.user = userStorage[req.session.id];
 
         next();
     });

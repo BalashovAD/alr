@@ -8,13 +8,14 @@ html(lang="en")
         link(rel='stylesheet', href='/stylesheets/jquery-ui.min.css')
         link(rel='stylesheet', href='/stylesheets/jquery-ui.theme.min.css')
     body
+        #systemInfo.hidden
+            #mainFunc=func
+
         #cmdLine
             form#cmdForm
-                input#cmd(autocomplete="off", list="allowedCmd", name=salt)
+                input#cmd(autocomplete="off", name=salt)
                 input#cmdSubmit(type='submit', value="Send")
-                datalist#allowedCmd
-                    each cmd in hints
-                        option(value=cmd)
+
         #left
             .menu
                 .menu-line

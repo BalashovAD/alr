@@ -33,7 +33,7 @@ $(document).ready(() => {
 	$('#cmdForm').submit(function(e) {
 		e.preventDefault();
 
-		adm.sendCommand();
+		adm.cmd();
 	});
 
     // left - user, right - book
@@ -41,6 +41,240 @@ $(document).ready(() => {
     adm.show(0, 'right', 'book');
 });
 
+
+function filter(obj, checker)
+{
+	let tmp = Object.create(obj.__proto__);
+
+	for (let i in obj)
+	{
+		if (obj.hasOwnProperty(i))
+		{
+			if (checker(i, obj[i], obj))
+			{
+				tmp[i] = obj[i];
+			}
+		}
+	}
+
+	return tmp;
+}
+
+function runOnKeys(func)
+{
+	let codes = [].slice.call(arguments, 1);
+
+	let pressed = {};
+
+	$(document).on('keydown.help', function(e) {
+		e = e || window.event;
+
+		pressed[e.keyCode] = true;
+
+		for (let i = 0; i < codes.length; i++)
+		{ // проверить, все ли клавиши нажаты
+			if (!pressed[codes[i]])
+			{
+				return;
+			}
+		}
+
+		pressed = {};
+
+		func();
+
+	});
+
+	$(document).on('keyup.help', function(e) {
+		e = e || window.event;
+
+		delete pressed[e.keyCode];
+	});
+}
+
+function Helper(input, container, emptySingleContainer)
+{
+	let isHelpMode = false;
+
+	const CTRL_CODE = 17;
+	const SPACE_CODE = 32;
+
+	/**
+	 * FUNC = {
+	 *     %CMD_NAME%: {
+	 *          description: %DESCRIPTION_OF_CMD%,  (String)
+	 *          params: %PARAMS%
+	 *     }
+	 * }
+	 */
+	let FUNC = JSON.parse($('#mainFunc').html());
+	/**
+	 * PARAMS = [
+	 *     $PARAM_NAME%: {
+	 *         description: %DESCRIPTION_OF_PARAM%  (String)
+	 *     }
+	 * ]
+	 */
+
+	/**
+	 * $(this).data-func - name of command
+	 */
+	function setupFunc()
+	{
+		input.val($(this).data('func'));
+	}
+
+	function check(val)
+	{
+		let funcName = val.split(' ')[0];
+
+		return typeof FUNC[funcName] != 'undefined';
+	}
+
+	function show(objWithDescription)
+	{
+		let title = objWithDescription.title || '';
+
+		emptySingleContainer(container);
+
+		container.append($('<span>').html(title + ' = ').addClass('object-name'))
+			.append($('<span>').addClass('open-curly-brace'));
+
+		let data = $('<ol>').addClass('single-data');
+
+		if (typeof objWithDescription.func != 'undefined')
+		{// show all func with description
+			let li;
+
+			for (let i in objWithDescription.func)
+			{
+				if (objWithDescription.func.hasOwnProperty(i))
+				{
+					li = $('<li>').append(
+						$('<span>').html(i).addClass('object-name')
+					).append($('<span>').html(' [setup]').data('func', i).click(setupFunc))
+						.append($('<span>').html(' : '))
+						.append(
+							$('<span>').html(objWithDescription.func[i].description)
+						);
+				}
+				data.append(li);
+			}
+		}
+		else
+		{// show all params for this command
+			let li;
+
+			li = $('<li>').append(
+				$('<span>').html('description').addClass('object-name')
+			).append($('<span>').html(' : '))
+				.append(
+					$('<span>').html(objWithDescription.description)
+				);
+
+			data.append(li);
+
+			for (let i in objWithDescription.params)
+			{
+				if (objWithDescription.params.hasOwnProperty(i))
+				{
+					li = $('<li>').append(
+						$('<span>').html(i).addClass('object-name')
+					).append($('<span>').html(' : '))
+						.append(
+							$('<span>').html(objWithDescription.params[i])
+						);
+				}
+				data.append(li);
+			}
+		}
+
+		container.append(data);
+
+		container.append($('<span>').addClass('close-curly-brace'));
+	}
+
+	function on()
+	{
+		if (!isHelpMode)
+		{
+			isHelpMode = true;
+
+			input.on('input.help', function () {
+				let params = input.val().split(' ');
+				let cmd = params.shift();
+
+				if (params.length > 0 || typeof FUNC[cmd] !== 'undefined')
+				{// choose param
+					if (typeof FUNC[cmd] === 'undefined' || typeof FUNC[cmd].params === 'undefined')
+					{
+						show({
+							title: 'Unknown command',
+							func: FUNC
+						});
+					}
+					else
+					{
+						show({
+							title: 'Existing params.',
+							description: FUNC[cmd].description,
+							params: FUNC[cmd].params
+						});
+					}
+				}
+				else
+				{// choose cmd
+					let regExp_EqualStartOfFuncName = new RegExp('^' + cmd, 'i');
+
+					let allowedFunc = filter(FUNC, function (name) {
+						return regExp_EqualStartOfFuncName.test(name);
+					});
+
+					show({
+						title: 'Choose command',
+						func: allowedFunc
+					});
+				}
+			});
+
+			runOnKeys(function () {
+				let params = input.val().split(' ');
+				let cmd = params.shift();
+
+				if (params.length == 0)
+				{
+					let regExp_EqualStartOfFuncName = new RegExp('^' + cmd, 'i');
+
+					let allowedFunc = Object.keys(FUNC).filter(function (name) {
+						return regExp_EqualStartOfFuncName.test(name);
+					});
+
+					if (allowedFunc.length == 1)
+					{
+						input.val(allowedFunc[0]);
+					}
+				}
+			}, CTRL_CODE, SPACE_CODE);
+		}
+	}
+
+	function off()
+	{
+		if (isHelpMode)
+		{
+			isHelpMode = false;
+
+			input.off('.help');
+			$(document).off('.help');
+		}
+	}
+
+	return {
+		on: on,
+		off: off,
+		check: check
+	};
+}
 
 function Adm()
 {
@@ -94,7 +328,14 @@ function Adm()
         }
     };
 
+
+	this.help = new Helper(cmdEl, singleContainer['right'], emptySingleContainer);
+
+	this.help.on();
+
     let thus = this;
+
+    const MAX_DISPLAY_ARRAY_ELEMS = 2;
 
 	function ok(msg)
 	{
@@ -109,6 +350,18 @@ function Adm()
 
 
 	    loadInSingleContainer(side, id, col);
+    }
+
+	/**
+	 * Show all child of $(this)
+	 */
+	function showAllElemsOfArray()
+	{
+		$('.hidden-array-elem', $(this).closest('li')).each(function (){
+			$(this).removeClass('hidden-array-elem');
+		});
+
+		$(this).hide();
     }
 
     function deleteById()
@@ -186,16 +439,32 @@ function Adm()
 
                                     break;
 
+                    // It's array or object
                     case 'object' :
-                                    li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
-                                                .append($('<span>').addClass('open-bracket'))
-                                                .append(parseObjectToHTML(data[i], lvl + 1));
-                                    txt.append(li);
+                    	            if (typeof data[i][0] === 'undefined')
+	                                {// object
+		                                li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
+			                                .append($('<span>').addClass('open-curly-brace'))
+			                                .append(parseObjectToHTML(data[i], lvl + 1));
+		                                txt.append(li);
 
-                                    txt.append($('<span>').addClass('close-bracket'));
+		                                txt.append($('<span>').addClass('close-curly-brace'));
+	                                }
+	                                else
+	                                {// array
+		                                let showAllBtn = $('<span>').html('[show]').click(showAllElemsOfArray).addClass();
+										let countOfElems = $('<span>').html('(' + data[i].length + 'elems)');
 
-                                    break;
-                    case 'array' :
+		                                li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
+			                                .append(showAllBtn)
+			                                .append(countOfElems)
+			                                .append($('<span>').addClass('open-square-bracket'))
+			                                .append(parseArrayToHTML(data[i], lvl + 1));
+		                                txt.append(li);
+
+		                                txt.append($('<span>').addClass('close-square-bracket'));
+	                                }
+
                                     break;
                 }
             }
@@ -204,6 +473,74 @@ function Adm()
         return txt;
     }
 
+	/**
+	 * Recursion function
+	 * @param data - enter data
+	 * @param lvl - depth of recursion
+	 * @returns {*|jQuery}
+	 */
+	function parseArrayToHTML(data, lvl)
+	{
+		if (typeof lvl == 'undefined')
+		{
+			lvl = 0;
+		}
+
+		let txt = $('<ol>').addClass('single-data').addClass('array-data');
+		let li;
+		let isLastElem = false;
+
+		for (let i in data)
+		{
+			if (data.hasOwnProperty(i))
+			{
+				if (+i === data.length - 1)
+				{
+					isLastElem = true;
+				}
+
+				switch (typeof data[i])
+				{
+					case 'number' :
+					// equal string
+					case 'string' :
+						li = $('<li>').html('<span>' + data[i] + '</span>').addClass('elems-of-array').addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? 'hidden' : '');
+
+						txt.append(li);
+
+						break;
+
+					// It's array or object
+					case 'object' :
+						if (typeof data[i][0] === 'undefined')
+						{// object
+							li = $('<li>').addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? 'hidden-array-elem' : '')
+								.append($('<span>').addClass('open-curly-brace'))
+								.append(parseObjectToHTML(data[i], lvl + 1))
+								.append($('<span>').addClass('close-curly-brace').addClass('elems-of-array' + (isLastElem ? ' last-elems-of-array' : '')));
+							txt.append(li);
+
+						}
+						else
+						{// array
+							let showAllBtn = $('<span>').html('[show]').click(showAllElemsOfArray).addClass();
+
+							li = $('<li>').addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? 'hidden' : '')
+								.append(showAllBtn)
+								.append($('<span>').addClass('open-square-bracket'))
+								.append(parseArrayToHTML(data[i], lvl + 1))
+								.append($('<span>').addClass('close-square-bracket').addClass('elems-of-array' + (isLastElem ? ' last-elems-of-array' : '')));
+							txt.append(li);
+						}
+
+						break;
+				}
+			}
+		}
+
+		return txt;
+	}
+
 	function resetSingleContainer(side, col)
 	{
 		return function() {
@@ -211,7 +548,7 @@ function Adm()
 		};
 	}
 
-    function parseArrayOfObjectToHTML(d, sel)
+    function parseArrayOfObjectToHTMLForMainPage(d, sel)
     {
         /*
         User - name, prop
@@ -267,6 +604,8 @@ function Adm()
         return txt;
     }
 
+
+
     function parseSchema(data, lvl = 0, pref = '')
     {
         let txt = $('<ol>').addClass('single-data');
@@ -312,11 +651,11 @@ function Adm()
                         else
                         {
                             li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
-                                .append($('<span>').addClass('open-bracket'))
+                                .append($('<span>').addClass('open-curly-brace'))
                                 .append(parseSchema(data[i], lvl + 1, pref + i + '.'));
                             txt.append(li);
 
-                            txt.append($('<span>').addClass('close-bracket'));
+                            txt.append($('<span>').addClass('close-curly-brace'));
                         }
 
                         break;
@@ -358,12 +697,12 @@ function Adm()
 	    emptySingleContainer(el);
 
 	    el.append($('<span>').html(data.cmdLine + ' = ').addClass('object-name'))
-		    .append($('<span>').addClass('open-bracket'));
+		    .append($('<span>').addClass('open-curly-brace'));
 
 	    data.cmdLine = undefined;
 
 	    el.append(parseObjectToHTML(data)).attr('class', 'single')
-		    .append($('<span>').addClass('close-bracket'));
+		    .append($('<span>').addClass('close-curly-brace'));
     }
 
 	function addDataInSingleContainer(data, el, nowSelect)
@@ -374,9 +713,9 @@ function Adm()
 
 		el.append($('<span>').html(nowSelect + ' = ').addClass('object-name'))
 			.append(delEl)
-			.append($('<span>').addClass('open-bracket'));
+			.append($('<span>').addClass('open-curly-brace'));
 		el.append(parseObjectToHTML(data)).attr('class', 'single-' + nowSelect + ' single')
-			.append($('<span>').addClass('close-bracket'));
+			.append($('<span>').addClass('close-curly-brace'));
 
 	}
 
@@ -416,7 +755,7 @@ function Adm()
 			url: '/admin/get/_' + nowSelect + '/all/'
 		}).done(function(d){
 			emptySingleContainer(mainContainer[side]);
-			mainContainer[side].append(parseArrayOfObjectToHTML(d, nowSelect));
+			mainContainer[side].append(parseArrayOfObjectToHTMLForMainPage(d, nowSelect));
 		}).fail(function() {
 			console.error('Error');
 		});
@@ -448,10 +787,7 @@ function Adm()
 
     };
 
-	this.sendCommand = function() {
-		let cmd = cmdEl.val();
-		cmdEl.val('');
-
+	function sendCommand(cmd) {
 		console.log(cmd);
 
 		$.ajax({
@@ -475,6 +811,32 @@ function Adm()
 		}).fail(function(){
 			assert(false, 'sendCommand');
 		});
+	}
+
+
+	this.cmd = function() {
+		let cmd = cmdEl.val();
+		cmdEl.val('');
+
+		switch (cmd)
+		{
+			case 'help on':
+							this.help.on();
+
+							break;
+			case 'help off':
+							this.help.off();
+
+							break;
+			case '':
+							break;
+			default:
+
+							if (this.help.check(cmd))
+							{
+								sendCommand(cmd);
+							}
+		}
 	};
 
     this.add = function (side, col) {
@@ -502,9 +864,9 @@ function Adm()
             singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name'))
                 .append(addEl)
 	            .append(resetEl)
-                .append($('<span>').addClass('open-bracket'));
+                .append($('<span>').addClass('open-curly-brace'));
             singleContainer[side].append(parseSchema(d, col)).attr('class', 'single-' + col + ' single')
-                .append($('<span>').addClass('close-bracket'));
+                .append($('<span>').addClass('close-curly-brace'));
 
             singleSel[side] = {
                 id: 0,

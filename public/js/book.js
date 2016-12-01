@@ -14,6 +14,15 @@ jQuery.fn.cssInt = function(n) {
 
 let doNothing = ()=>{};
 
+let getUId = function () {
+	let id = 0;
+
+	return function () {
+		return id++;
+	};
+};
+
+
 let __book = function(idElem, interfaceFunc) {
     let info = {};
     let user = undefined;
@@ -165,12 +174,12 @@ let __book = function(idElem, interfaceFunc) {
         }, timeout[name + 'load'] || 1000);
     }
 
-    this.addBookmark = function(pos, title, text, id) {
-        __bookmarks['__' + id] = {
+    this.addBookmark = function(pos, title, text) {
+        __bookmarks.push({
             pos: pos || 0,
             title: title,
             text: text
-        };
+        });
 
         if (mode['online'])
         {
@@ -287,11 +296,7 @@ let __book = function(idElem, interfaceFunc) {
                         }).done (function(d) {
                             loadBookmarks(d);
 
-                            try {
-                                resolve();
-                            } catch (err) {
-
-                            }
+	                        resolve();
                         }).fail(function() {
 	                        reject('System error');
                         }).always(() => {
@@ -344,9 +349,9 @@ let __book = function(idElem, interfaceFunc) {
 						        bookmarks: []
 					        };
 
-					        for (let kk = Object.keys(__bookmarks), i = 0; i < kk.length; ++i)
+					        for (let i = 0; i < __bookmarks.length; ++i)
 					        {
-						        dd.bookmarks.push(__bookmarks[kk[i]]);
+						        dd.bookmarks.push(__bookmarks[i]);
 					        }
 
 					        // JSON
@@ -427,7 +432,7 @@ let __book = function(idElem, interfaceFunc) {
     };
 
     this.isSaved = function () {
-        return (saved.pos == screen.pos && saved.bookmarkCount == 0);
+        return (saved.pos == screen.pos && __bookmarks.length == 0);
     };
 
     /**
