@@ -111,6 +111,7 @@ function SecretUser()
 
 SecretUser.SECRET_KEY_FOR_SIGN_IN = process.env.SECRET_KEY_FOR_SIGN_IN;
 debug('SECRET KEY == ' + SecretUser.SECRET_KEY_FOR_SIGN_IN);
+debug('link == /?secret=' + SecretUser.SECRET_KEY_FOR_SIGN_IN);
 
 function VoidUser()
 {
