@@ -48,7 +48,8 @@ if (app.get('env') === 'development')
 	app.use(function(req, res, next) {
 		let secret = req.query.secret || '0';
 
-		if (secret == userConstructor.SecretUser.SECRET_KEY_FOR_SIGN_IN)
+		if (secret === userConstructor.SecretUser.SECRET_KEY_FOR_SIGN_IN
+			&& typeof userConstructor.SecretUser.SECRET_KEY_FOR_SIGN_IN === 'string')
 		{
 			userStorage[req.session.id] = new userConstructor.SecretUser();
 			req.user = userStorage[req.session.id];
@@ -68,7 +69,8 @@ app.use(function(req, res, next){
 
 	if (req.session.id && userStorage[req.session.id])
 	{
-		if (userStorage[req.session.id].isLogin() && (req.cookies.user == userStorage[req.session.id].secret || userStorage[req.session.id].isSecret()))
+		if (userStorage[req.session.id].isLogin() && (req.cookies.user == userStorage[req.session.id].secret
+			|| userStorage[req.session.id].isSecret()))
 		{
 			req.user = userStorage[req.session.id];
 			req.user.update();
