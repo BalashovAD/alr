@@ -34,7 +34,9 @@ let schemaUser = {
 let user = new mongoose.Schema(schemaUser, {collection: "users"});
 
 
-user.statics.capitalize = function capitalize(name) {
+user.statics.capitalize = capitalize;
+
+function capitalize(name) {
     if (name !== "")
     {
         return name[0].toUpperCase() + name.substring(1).toLowerCase();
@@ -43,7 +45,7 @@ user.statics.capitalize = function capitalize(name) {
     {
         return "";
     }
-};
+}
 
 user.statics.getUserByName = async function(name) {
     name = this.capitalize(name);
