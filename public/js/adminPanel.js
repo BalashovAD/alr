@@ -1,7 +1,7 @@
 "use strict";
 function cssCenter1Line() {
-    $('.css-center-1-line').each(function () {
-        $(this).css('line-height', $(this).css('height'));
+    $(".css-center-1-line").each(function () {
+        $(this).css("line-height", $(this).css("height"));
     });
 }
 
@@ -10,7 +10,7 @@ let __DEBUG__adm;
 let assert = function (check, msg) {
 	if (!check)
 	{
-		alert('Error: ' + msg);
+		alert("Error: " + msg);
 	}
 };
 
@@ -22,23 +22,23 @@ $(document).ready(() => {
     // DEBUG
     __DEBUG__adm = adm;
 
-    $('.item-menu').click(function() {
-        let id = $(this).data('id');
-        let side = $(this).data('side');
-        let sel = $(this).data('select');
+    $(".item-menu").click(function() {
+        let id = $(this).data("id");
+        let side = $(this).data("side");
+        let sel = $(this).data("select");
 
         adm.show(id, side, sel);
     });
 
-	$('#cmdForm').submit(function(e) {
+	$("#cmdForm").submit(function(e) {
 		e.preventDefault();
 
 		adm.cmd();
 	});
 
     // left - user, right - book
-    adm.show(0, 'left', 'user');
-    adm.show(0, 'right', 'book');
+    adm.show(0, "left", "user");
+    adm.show(0, "right", "book");
 });
 
 
@@ -66,7 +66,7 @@ function runOnKeys(func)
 
 	let pressed = {};
 
-	$(document).on('keydown.help', function(e) {
+	$(document).on("keydown.help", function(e) {
 		e = e || window.event;
 
 		pressed[e.keyCode] = true;
@@ -85,7 +85,7 @@ function runOnKeys(func)
 
 	});
 
-	$(document).on('keyup.help', function(e) {
+	$(document).on("keyup.help", function(e) {
 		e = e || window.event;
 
 		delete pressed[e.keyCode];
@@ -107,7 +107,7 @@ function Helper(input, container, emptySingleContainer)
 	 *     }
 	 * }
 	 */
-	let FUNC = JSON.parse($('#mainFunc').html());
+	let FUNC = JSON.parse($("#mainFunc").html());
 	/**
 	 * PARAMS = [
 	 *     $PARAM_NAME%: {
@@ -121,28 +121,28 @@ function Helper(input, container, emptySingleContainer)
 	 */
 	function setupFunc()
 	{
-		input.val($(this).data('func'));
+		input.val($(this).data("func"));
 	}
 
 	function check(val)
 	{
-		let funcName = val.split(' ')[0];
+		let funcName = val.split(" ")[0];
 
-		return typeof FUNC[funcName] != 'undefined';
+		return typeof FUNC[funcName] != "undefined";
 	}
 
 	function show(objWithDescription)
 	{
-		let title = objWithDescription.title || '';
+		let title = objWithDescription.title || "";
 
 		emptySingleContainer(container);
 
-		container.append($('<span>').html(title + ' = ').addClass('object-name'))
-			.append($('<span>').addClass('open-curly-brace'));
+		container.append($("<span>").html(title + " = ").addClass("object-name"))
+			.append($("<span>").addClass("open-curly-brace"));
 
-		let data = $('<ol>').addClass('single-data');
+		let data = $("<ol>").addClass("single-data");
 
-		if (typeof objWithDescription.func != 'undefined')
+		if (typeof objWithDescription.func != "undefined")
 		{// show all func with description
 			let li;
 
@@ -150,12 +150,12 @@ function Helper(input, container, emptySingleContainer)
 			{
 				if (objWithDescription.func.hasOwnProperty(i))
 				{
-					li = $('<li>').append(
-						$('<span>').html(i).addClass('object-name')
-					).append($('<span>').html(' [setup]').data('func', i).click(setupFunc))
-						.append($('<span>').html(' : '))
+					li = $("<li>").append(
+						$("<span>").html(i).addClass("object-name")
+					).append($("<span>").html(" [setup]").data("func", i).click(setupFunc))
+						.append($("<span>").html(" : "))
 						.append(
-							$('<span>').html(objWithDescription.func[i].description)
+							$("<span>").html(objWithDescription.func[i].description)
 						);
 				}
 				data.append(li);
@@ -165,11 +165,11 @@ function Helper(input, container, emptySingleContainer)
 		{// show all params for this command
 			let li;
 
-			li = $('<li>').append(
-				$('<span>').html('description').addClass('object-name')
-			).append($('<span>').html(' : '))
+			li = $("<li>").append(
+				$("<span>").html("description").addClass("object-name")
+			).append($("<span>").html(" : "))
 				.append(
-					$('<span>').html(objWithDescription.description)
+					$("<span>").html(objWithDescription.description)
 				);
 
 			data.append(li);
@@ -178,11 +178,11 @@ function Helper(input, container, emptySingleContainer)
 			{
 				if (objWithDescription.params.hasOwnProperty(i))
 				{
-					li = $('<li>').append(
-						$('<span>').html(i).addClass('object-name')
-					).append($('<span>').html(' : '))
+					li = $("<li>").append(
+						$("<span>").html(i).addClass("object-name")
+					).append($("<span>").html(" : "))
 						.append(
-							$('<span>').html(objWithDescription.params[i])
+							$("<span>").html(objWithDescription.params[i])
 						);
 				}
 				data.append(li);
@@ -191,7 +191,7 @@ function Helper(input, container, emptySingleContainer)
 
 		container.append(data);
 
-		container.append($('<span>').addClass('close-curly-brace'));
+		container.append($("<span>").addClass("close-curly-brace"));
 	}
 
 	function on()
@@ -200,23 +200,23 @@ function Helper(input, container, emptySingleContainer)
 		{
 			isHelpMode = true;
 
-			input.on('input.help', function () {
-				let params = input.val().split(' ');
+			input.on("input.help", function () {
+				let params = input.val().split(" ");
 				let cmd = params.shift();
 
-				if (params.length > 0 || typeof FUNC[cmd] !== 'undefined')
+				if (params.length > 0 || typeof FUNC[cmd] !== "undefined")
 				{// choose param
-					if (typeof FUNC[cmd] === 'undefined' || typeof FUNC[cmd].params === 'undefined')
+					if (typeof FUNC[cmd] === "undefined" || typeof FUNC[cmd].params === "undefined")
 					{
 						show({
-							title: 'Unknown command',
+							title: "Unknown command",
 							func: FUNC
 						});
 					}
 					else
 					{
 						show({
-							title: 'Existing params.',
+							title: "Existing params.",
 							description: FUNC[cmd].description,
 							params: FUNC[cmd].params
 						});
@@ -224,26 +224,26 @@ function Helper(input, container, emptySingleContainer)
 				}
 				else
 				{// choose cmd
-					let regExp_EqualStartOfFuncName = new RegExp('^' + cmd, 'i');
+					let regExp_EqualStartOfFuncName = new RegExp("^" + cmd, "i");
 
 					let allowedFunc = filter(FUNC, function (name) {
 						return regExp_EqualStartOfFuncName.test(name);
 					});
 
 					show({
-						title: 'Choose command',
+						title: "Choose command",
 						func: allowedFunc
 					});
 				}
 			});
 
 			runOnKeys(function () {
-				let params = input.val().split(' ');
+				let params = input.val().split(" ");
 				let cmd = params.shift();
 
 				if (params.length == 0)
 				{
-					let regExp_EqualStartOfFuncName = new RegExp('^' + cmd, 'i');
+					let regExp_EqualStartOfFuncName = new RegExp("^" + cmd, "i");
 
 					let allowedFunc = Object.keys(FUNC).filter(function (name) {
 						return regExp_EqualStartOfFuncName.test(name);
@@ -264,8 +264,8 @@ function Helper(input, container, emptySingleContainer)
 		{
 			isHelpMode = false;
 
-			input.off('.help');
-			$(document).off('.help');
+			input.off(".help");
+			$(document).off(".help");
 		}
 	}
 
@@ -279,8 +279,8 @@ function Helper(input, container, emptySingleContainer)
 function Adm()
 {
     let select = {
-        left: '0',
-        right: '0'
+        left: "0",
+        right: "0"
     };
 
     let singleSel = {
@@ -294,42 +294,42 @@ function Adm()
         }
     };
 
-	let cmdEl = $('#cmd');
+	let cmdEl = $("#cmd");
 
     let singleContainer = {
-        left: $('#leftSingleContainer'),
-        right: $('#rightSingleContainer')
+        left: $("#leftSingleContainer"),
+        right: $("#rightSingleContainer")
     };
 
     let mainContainer = {
-        left: $('#leftMainContainer'),
-        right: $('#rightMainContainer')
+        left: $("#leftMainContainer"),
+        right: $("#rightMainContainer")
     };
 
     let mainFiends = {
-        user: ['name', 'prop'],
-        book: ['title', 'author', 'owner'],
-        invite: ['value', 'counter']
+        user: ["name", "prop"],
+        book: ["title", "author", "owner"],
+        invite: ["value", "counter"]
     };
 
     let btn = {
         left: {
-            user: $('.btn.item-menu.left-side[data-select=user]'),
-            book: $('.btn.item-menu.left-side[data-select=book]'),
-            invite: $('.btn.item-menu.left-side[data-select=invite]'),
-            0: $('#0')
+            user: $(".btn.item-menu.left-side[data-select=user]"),
+            book: $(".btn.item-menu.left-side[data-select=book]"),
+            invite: $(".btn.item-menu.left-side[data-select=invite]"),
+            0: $("#0")
 
         },
         right: {
-            user: $('.btn.item-menu.right-side[data-select=user]'),
-            book: $('.btn.item-menu.right-side[data-select=book]'),
-            invite: $('.btn.item-menu.right-side[data-select=invite]'),
-            0: $('#0')
+            user: $(".btn.item-menu.right-side[data-select=user]"),
+            book: $(".btn.item-menu.right-side[data-select=book]"),
+            invite: $(".btn.item-menu.right-side[data-select=invite]"),
+            0: $("#0")
         }
     };
 
 
-	this.help = new Helper(cmdEl, singleContainer['right'], emptySingleContainer);
+	this.help = new Helper(cmdEl, singleContainer["right"], emptySingleContainer);
 
 	this.help.on();
 
@@ -339,14 +339,14 @@ function Adm()
 
 	function ok(msg)
 	{
-		console.log('OK: ' + msg);
+		console.log("OK: " + msg);
 	}
 
     function getById()
     {
-        let id = $(this).data('id');
-        let col = $(this).data('col');
-        let side = $(this).closest('.side').data('side');
+        let id = $(this).data("id");
+        let col = $(this).data("col");
+        let side = $(this).closest(".side").data("side");
 
 
 	    loadInSingleContainer(side, id, col);
@@ -357,8 +357,8 @@ function Adm()
 	 */
 	function showAllElemsOfArray()
 	{
-		$('.hidden-array-elem', $(this).closest('li')).each(function (){
-			$(this).removeClass('hidden-array-elem');
+		$(".hidden-array-elem", $(this).closest("li")).each(function (){
+			$(this).removeClass("hidden-array-elem");
 		});
 
 		$(this).hide();
@@ -366,17 +366,17 @@ function Adm()
 
     function deleteById()
     {
-        let id = $(this).data('id');
-        let col = $(this).data('col');
-        let side = $(this).closest('.side').data('side');
+        let id = $(this).data("id");
+        let col = $(this).data("col");
+        let side = $(this).closest(".side").data("side");
         let data = {
             id: id,
             col: col
         };
 
         $.ajax({
-            method: 'DELETE',
-            url: '/admin/delete/_' + col + '/_' + id,
+            method: "DELETE",
+            url: "/admin/delete/_" + col + "/_" + id,
             data: JSON.stringify(data)
         }).done(function() {
             thus.reloadDataOnPage();
@@ -388,23 +388,23 @@ function Adm()
 	 */
     function addDataFromSingleContainerInDB()
     {
-        let elms = $(this).closest('.single').find('input');
+        let elms = $(this).closest(".single").find("input");
         let data = {};
-        let col = $(this).data('col');
+        let col = $(this).data("col");
 
         elms.each(function () {
-            data[$(this).attr('name')] = $(this).val().length > 0 ? $(this).val() : undefined;
+            data[$(this).attr("name")] = $(this).val().length > 0 ? $(this).val() : undefined;
         });
 
         $.ajax({
-            method: 'POST',
-            url: '/admin/add/_' + col,
+            method: "POST",
+            url: "/admin/add/_" + col,
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8"
         }).done(function() {
             thus.reloadDataOnPage();
         }).fail(function() {
-            console.error('Error');
+            console.error("Error");
         });
     }
 
@@ -416,12 +416,12 @@ function Adm()
 	 */
     function parseObjectToHTML(data, lvl)
     {
-        if (typeof lvl == 'undefined')
+        if (typeof lvl == "undefined")
         {
             lvl = 0;
         }
 
-        let txt = $('<ol>').addClass('single-data');
+        let txt = $("<ol>").addClass("single-data");
         let li;
 
         for (let i in data)
@@ -430,39 +430,39 @@ function Adm()
             {
                 switch (typeof data[i])
                 {
-	                case 'number' :
+	                case "number" :
                 	        // equal string
-                    case 'string' :
-                                    li = $('<li>').html('<span class="object-name">' + i + '</span> : <span>' + data[i] + '</span>');
+                    case "string" :
+                                    li = $("<li>").html("<span class="object-name">" + i + "</span> : <span>" + data[i] + "</span>");
 
                                     txt.append(li);
 
                                     break;
 
-                    // It's array or object
-                    case 'object' :
-                    	            if (typeof data[i][0] === 'undefined')
+                    // It"s array or object
+                    case "object" :
+                    	            if (typeof data[i][0] === "undefined")
 	                                {// object
-		                                li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
-			                                .append($('<span>').addClass('open-curly-brace'))
+		                                li = $("<li>").append($("<span>").html(i + " = ").addClass("object-name"))
+			                                .append($("<span>").addClass("open-curly-brace"))
 			                                .append(parseObjectToHTML(data[i], lvl + 1));
 		                                txt.append(li);
 
-		                                txt.append($('<span>').addClass('close-curly-brace'));
+		                                txt.append($("<span>").addClass("close-curly-brace"));
 	                                }
 	                                else
 	                                {// array
-		                                let showAllBtn = $('<span>').html('[show]').click(showAllElemsOfArray).addClass();
-										let countOfElems = $('<span>').html('(' + data[i].length + 'elems)');
+		                                let showAllBtn = $("<span>").html("[show]").click(showAllElemsOfArray).addClass();
+										let countOfElems = $("<span>").html("(" + data[i].length + "elems)");
 
-		                                li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
+		                                li = $("<li>").append($("<span>").html(i + " = ").addClass("object-name"))
 			                                .append(showAllBtn)
 			                                .append(countOfElems)
-			                                .append($('<span>').addClass('open-square-bracket'))
+			                                .append($("<span>").addClass("open-square-bracket"))
 			                                .append(parseArrayToHTML(data[i], lvl + 1));
 		                                txt.append(li);
 
-		                                txt.append($('<span>').addClass('close-square-bracket'));
+		                                txt.append($("<span>").addClass("close-square-bracket"));
 	                                }
 
                                     break;
@@ -481,12 +481,12 @@ function Adm()
 	 */
 	function parseArrayToHTML(data, lvl)
 	{
-		if (typeof lvl == 'undefined')
+		if (typeof lvl == "undefined")
 		{
 			lvl = 0;
 		}
 
-		let txt = $('<ol>').addClass('single-data').addClass('array-data');
+		let txt = $("<ol>").addClass("single-data").addClass("array-data");
 		let li;
 		let isLastElem = false;
 
@@ -501,35 +501,35 @@ function Adm()
 
 				switch (typeof data[i])
 				{
-					case 'number' :
+					case "number" :
 					// equal string
-					case 'string' :
-						li = $('<li>').html('<span>' + data[i] + '</span>').addClass('elems-of-array').addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? 'hidden' : '');
+					case "string" :
+						li = $("<li>").html("<span>" + data[i] + "</span>").addClass("elems-of-array").addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? "hidden" : "");
 
 						txt.append(li);
 
 						break;
 
-					// It's array or object
-					case 'object' :
-						if (typeof data[i][0] === 'undefined')
+					// It"s array or object
+					case "object" :
+						if (typeof data[i][0] === "undefined")
 						{// object
-							li = $('<li>').addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? 'hidden-array-elem' : '')
-								.append($('<span>').addClass('open-curly-brace'))
+							li = $("<li>").addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? "hidden-array-elem" : "")
+								.append($("<span>").addClass("open-curly-brace"))
 								.append(parseObjectToHTML(data[i], lvl + 1))
-								.append($('<span>').addClass('close-curly-brace').addClass('elems-of-array' + (isLastElem ? ' last-elems-of-array' : '')));
+								.append($("<span>").addClass("close-curly-brace").addClass("elems-of-array" + (isLastElem ? " last-elems-of-array" : "")));
 							txt.append(li);
 
 						}
 						else
 						{// array
-							let showAllBtn = $('<span>').html('[show]').click(showAllElemsOfArray).addClass();
+							let showAllBtn = $("<span>").html("[show]").click(showAllElemsOfArray).addClass();
 
-							li = $('<li>').addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? 'hidden' : '')
+							li = $("<li>").addClass(i + 1 > MAX_DISPLAY_ARRAY_ELEMS ? "hidden" : "")
 								.append(showAllBtn)
-								.append($('<span>').addClass('open-square-bracket'))
+								.append($("<span>").addClass("open-square-bracket"))
 								.append(parseArrayToHTML(data[i], lvl + 1))
-								.append($('<span>').addClass('close-square-bracket').addClass('elems-of-array' + (isLastElem ? ' last-elems-of-array' : '')));
+								.append($("<span>").addClass("close-square-bracket").addClass("elems-of-array" + (isLastElem ? " last-elems-of-array" : "")));
 							txt.append(li);
 						}
 
@@ -556,17 +556,17 @@ function Adm()
         Invite - value, counter
          */
 
-        let txt = $('<ol>').addClass('main-container');
+        let txt = $("<ol>").addClass("main-container");
 
         for (let i = 0; i < d.length; ++i)
         {
-            let li = $('<li>').addClass('object');
+            let li = $("<li>").addClass("object");
 
-            let idEl = $('<span>').html('[id]').data('id', d[i]._id).data('col', sel)
+            let idEl = $("<span>").html("[id]").data("id", d[i]._id).data("col", sel)
                 .click(getById);
             li.append(idEl);
 
-            let delEl = $('<span>').html('[del]').data('id', d[i]._id).data('col', sel)
+            let delEl = $("<span>").html("[del]").data("id", d[i]._id).data("col", sel)
                 .click(deleteById);
             li.append(delEl);
 
@@ -575,21 +575,21 @@ function Adm()
                 if (mainFiends[sel].hasOwnProperty(k))
                 {
                     if (d[i] && d[i][mainFiends[sel][k]] &&
-                            typeof d[i][mainFiends[sel][k]] === 'string' || typeof d[i][mainFiends[sel][k]] === 'number')
+                            typeof d[i][mainFiends[sel][k]] === "string" || typeof d[i][mainFiends[sel][k]] === "number")
                     {
-                        let span = $('<span class="object-name">' + mainFiends[sel][k] + '</span> : <span class="object-value">' + d[i][mainFiends[sel][k]]
-                                        + '</span> <span class="invisibility">!</span>');
+                        let span = $("<span class="object-name">" + mainFiends[sel][k] + "</span> : <span class="object-value">" + d[i][mainFiends[sel][k]]
+                                        + "</span> <span class="invisibility">!</span>");
 
                         li.append(span);
                     }
-                    else if (d[i] && d[i][mainFiends[sel][k]] && typeof d[i][mainFiends[sel][k]] === 'object')
+                    else if (d[i] && d[i][mainFiends[sel][k]] && typeof d[i][mainFiends[sel][k]] === "object")
                     {
                         for (let kk in d[i][mainFiends[sel][k]])
                         {
                             if (d[i][mainFiends[sel][k]].hasOwnProperty(kk))
                             {
-                                let span = $('<span class="object-name">' + mainFiends[sel][k] + '.' + kk + '</span> : <span class="object-value">'
-                                            + d[i][mainFiends[sel][k]][kk] + '</span> <span class="invisibility">!</span>');
+                                let span = $("<span class="object-name">" + mainFiends[sel][k] + "." + kk + "</span> : <span class="object-value">"
+                                            + d[i][mainFiends[sel][k]][kk] + "</span> <span class="invisibility">!</span>");
 
                                 li.append(span);
                             }
@@ -606,56 +606,56 @@ function Adm()
 
 
 
-    function parseSchema(data, lvl = 0, pref = '')
+    function parseSchema(data, lvl = 0, pref = "")
     {
-        let txt = $('<ol>').addClass('single-data');
+        let txt = $("<ol>").addClass("single-data");
         let li;
 
         for (let i in data)
         {
-            if (data.hasOwnProperty(i) && i[0] != '_')
+            if (data.hasOwnProperty(i) && i[0] != "_")
             {
                 switch (typeof data[i])
                 {
-                    case 'number' :
+                    case "number" :
 						// number as string
-                    case 'string' :
-                        let def = '';
+                    case "string" :
+                        let def = "";
 
-                        if (data.hasOwnProperty('__' + i) && typeof data['__' + i] != 'undefined')
+                        if (data.hasOwnProperty("__" + i) && typeof data["__" + i] != "undefined")
                         {
-                            if (data['__' + i] === 'array')
+                            if (data["__" + i] === "array")
                             {
-                                def = '-';
+                                def = "-";
                             }
                             else
                             {
-                                def = data['__' + i];
+                                def = data["__" + i];
                             }
                         }
 
-                        if (def != '-')
+                        if (def != "-")
                         {
-                            li = $('<li>').html('<span class="object-name">' + i + '</span> : <input name="' + (pref + i) + '" value = "' + def + '">');
+                            li = $("<li>").html("<span class="object-name">" + i + "</span> : <input name="" + (pref + i) + "" value = "" + def + "">");
 
                             txt.append(li);
                         }
                         break;
-	                case 'array' :
+	                case "array" :
 		                // all arrays is object
-                    case 'object' :
-                        if (data.hasOwnProperty('__' + i) && typeof data['__' + i] != 'undefined' && data['__' + i] === 'array')
+                    case "object" :
+                        if (data.hasOwnProperty("__" + i) && typeof data["__" + i] != "undefined" && data["__" + i] === "array")
                         {
 
                         }
                         else
                         {
-                            li = $('<li>').append($('<span>').html(i + ' = ').addClass('object-name'))
-                                .append($('<span>').addClass('open-curly-brace'))
-                                .append(parseSchema(data[i], lvl + 1, pref + i + '.'));
+                            li = $("<li>").append($("<span>").html(i + " = ").addClass("object-name"))
+                                .append($("<span>").addClass("open-curly-brace"))
+                                .append(parseSchema(data[i], lvl + 1, pref + i + "."));
                             txt.append(li);
 
-                            txt.append($('<span>').addClass('close-curly-brace'));
+                            txt.append($("<span>").addClass("close-curly-brace"));
                         }
 
                         break;
@@ -685,37 +685,37 @@ function Adm()
 	    }
 	    else
 	    {
-		    reloadDataOnSide('left');
-		    reloadDataOnSide('right');
+		    reloadDataOnSide("left");
+		    reloadDataOnSide("right");
 	    }
     };
 
     function showMessage(data)
     {
-    	let el = singleContainer['left'];
+    	let el = singleContainer["left"];
 
 	    emptySingleContainer(el);
 
-	    el.append($('<span>').html(data.cmdLine + ' = ').addClass('object-name'))
-		    .append($('<span>').addClass('open-curly-brace'));
+	    el.append($("<span>").html(data.cmdLine + " = ").addClass("object-name"))
+		    .append($("<span>").addClass("open-curly-brace"));
 
 	    data.cmdLine = undefined;
 
-	    el.append(parseObjectToHTML(data)).attr('class', 'single')
-		    .append($('<span>').addClass('close-curly-brace'));
+	    el.append(parseObjectToHTML(data)).attr("class", "single")
+		    .append($("<span>").addClass("close-curly-brace"));
     }
 
 	function addDataInSingleContainer(data, el, nowSelect)
 	{
 		emptySingleContainer(el);
-		let delEl = $('<span>').html('[del]').data('id', data._id).data('col', nowSelect)
+		let delEl = $("<span>").html("[del]").data("id", data._id).data("col", nowSelect)
 			.click(deleteById);
 
-		el.append($('<span>').html(nowSelect + ' = ').addClass('object-name'))
+		el.append($("<span>").html(nowSelect + " = ").addClass("object-name"))
 			.append(delEl)
-			.append($('<span>').addClass('open-curly-brace'));
-		el.append(parseObjectToHTML(data)).attr('class', 'single-' + nowSelect + ' single')
-			.append($('<span>').addClass('close-curly-brace'));
+			.append($("<span>").addClass("open-curly-brace"));
+		el.append(parseObjectToHTML(data)).attr("class", "single-" + nowSelect + " single")
+			.append($("<span>").addClass("close-curly-brace"));
 
 	}
 
@@ -728,8 +728,8 @@ function Adm()
 	{
 		let nowSelect = col;
 		$.ajax({
-			method: 'GET',
-			url: '/admin/get/_' + nowSelect + '/_' + _id
+			method: "GET",
+			url: "/admin/get/_" + nowSelect + "/_" + _id
 		}).done(function(data){
 
 			addDataInSingleContainer(data, singleContainer[side], nowSelect);
@@ -739,7 +739,7 @@ function Adm()
 				col: nowSelect
 			};
 		}).fail(function() {
-			console.error('Error');
+			console.error("Error");
 
 			emptySingleContainer(singleContainer[side]);
 			singleSel[side].id = 0;
@@ -751,13 +751,13 @@ function Adm()
 	{
 		let nowSelect = select[side];
 		$.ajax({
-			method: 'GET',
-			url: '/admin/get/_' + nowSelect + '/all/'
+			method: "GET",
+			url: "/admin/get/_" + nowSelect + "/all/"
 		}).done(function(d){
 			emptySingleContainer(mainContainer[side]);
 			mainContainer[side].append(parseArrayOfObjectToHTMLForMainPage(d, nowSelect));
 		}).fail(function() {
-			console.error('Error');
+			console.error("Error");
 		});
 	}
 
@@ -765,8 +765,8 @@ function Adm()
     this.show = function (id, side, sel) {
         if (sel)
         {
-            btn[side][select[side]].removeClass('select');
-            btn[side][sel].addClass('select');
+            btn[side][select[side]].removeClass("select");
+            btn[side][sel].addClass("select");
 
             select[side] = sel;
 
@@ -776,10 +776,10 @@ function Adm()
         {
             switch (id)
             {
-                case 'Add':
+                case "Add":
                             thus.add(side);
                             break;
-				case 'refresh':
+				case "refresh":
 		                    thus.reloadDataOnPage(side);
 		                    break;
             }
@@ -791,8 +791,8 @@ function Adm()
 		console.log(cmd);
 
 		$.ajax({
-			method: 'POST',
-			url: '/admin/cmd',
+			method: "POST",
+			url: "/admin/cmd",
 			data: JSON.stringify({
 				cmd: cmd
 			}),
@@ -800,35 +800,35 @@ function Adm()
 		}).done(function(data) {
 				thus.reloadDataOnPage();
 
-				if (data && data != '')
+				if (data && data != "")
 				{
 					data.cmdLine = cmd;
 
 					showMessage(data);
 				}
 
-				ok('command');
+				ok("command");
 		}).fail(function(){
-			assert(false, 'sendCommand');
+			assert(false, "sendCommand");
 		});
 	}
 
 
 	this.cmd = function() {
 		let cmd = cmdEl.val();
-		cmdEl.val('');
+		cmdEl.val("");
 
 		switch (cmd)
 		{
-			case 'help on':
+			case "help on":
 							this.help.on();
 
 							break;
-			case 'help off':
+			case "help off":
 							this.help.off();
 
 							break;
-			case '':
+			case "":
 							break;
 			default:
 
@@ -847,33 +847,33 @@ function Adm()
         else
         {// sideOrCol is col, default side is left
             //col = col;
-            side = side || 'left';
+            side = side || "left";
         }
 
         $.ajax({
-            url: '/admin/get/schema/_' + col,
-            method: 'GET'
+            url: "/admin/get/schema/_" + col,
+            method: "GET"
         }).done(function (d) {
             singleContainer[side].empty();
 
-            let addEl = $('<span>').html('[add]').data('id', d._id).data('col', col)
+            let addEl = $("<span>").html("[add]").data("id", d._id).data("col", col)
                 .click(addDataFromSingleContainerInDB);
-			let resetEl = $('<span>').html('[reset]').data('id', d._id).data('col', col)
+			let resetEl = $("<span>").html("[reset]").data("id", d._id).data("col", col)
 				.click(resetSingleContainer(side, col));
 
-            singleContainer[side].append($('<span>').html(col + ' = ').addClass('object-name'))
+            singleContainer[side].append($("<span>").html(col + " = ").addClass("object-name"))
                 .append(addEl)
 	            .append(resetEl)
-                .append($('<span>').addClass('open-curly-brace'));
-            singleContainer[side].append(parseSchema(d, col)).attr('class', 'single-' + col + ' single')
-                .append($('<span>').addClass('close-curly-brace'));
+                .append($("<span>").addClass("open-curly-brace"));
+            singleContainer[side].append(parseSchema(d, col)).attr("class", "single-" + col + " single")
+                .append($("<span>").addClass("close-curly-brace"));
 
             singleSel[side] = {
                 id: 0,
                 col: 0
             };
         }).fail(function() {
-            console.log('Error');
+            console.log("Error");
         });
     };
 

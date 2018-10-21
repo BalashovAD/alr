@@ -1,10 +1,10 @@
 "use strict";
 
-//let debug = require('debug')('book');
+//let debug = require("debug")("book");
 let debug = console.log.bind(console);
-import JsFile from './jsFile/filejs';
-import JsFileFb from './jsFile/filejs-fb';
-let Player = require('./player').Player;
+import JsFile from "./jsFile/filejs";
+import JsFileFb from "./jsFile/filejs-fb";
+let Player = require("./player").Player;
 
 JsFile.defineEngine(JsFileFb);
 
@@ -27,27 +27,27 @@ let __book = function(idElem, interfaceFunc) {
     let info = {};
     let user = undefined;
 
-	let error = interfaceFunc['error'];
-	let msg = interfaceFunc['msg'];
+	let error = interfaceFunc["error"];
+	let msg = interfaceFunc["msg"];
 
     let bookDoc;
-    let bookEl = $('#' + idElem);
-    let slider = $('#slider_btn');
-    let footnote = $('#footnote');
-    let sliderHeight = $('#slider').height() - slider.height();
-    let hiddenEl = $('#hidden_' + idElem);
+    let bookEl = $("#" + idElem);
+    let slider = $("#slider_btn");
+    let footnote = $("#footnote");
+    let sliderHeight = $("#slider").height() - slider.height();
+    let hiddenEl = $("#hidden_" + idElem);
     let lineSize;
     let lineCnt;
     let json;
-    let fs = $('#listOfBooks ol');
+    let fs = $("#listOfBooks ol");
     let thus = this;
     let offsetBook = 0;
     let height = 0;
     let __ = [];
     let maxPos = 0;
     let bookId = 0;
-    let sliderMarks = $('#slider > #marks');
-    let sliderBookMarks = $('#slider > #userMarks');
+    let sliderMarks = $("#slider > #marks");
+    let sliderBookMarks = $("#slider > #userMarks");
 
     let screen = {
         pos: 0,
@@ -87,12 +87,12 @@ let __book = function(idElem, interfaceFunc) {
 // init interface function, no DOM
 	this.player = new Player(scrollOneString);
 // no ajax
-    this['__int__bookmark'] = interfaceFunc['bookmark'](thus);
-    this['__int__loading'] = interfaceFunc['loading'](thus);
-    this['__int__controllerLeft'] = interfaceFunc['controllerLeft'](thus);
-	let __int__playerInit = interfaceFunc['playerInit'](this.player);
+    this["__int__bookmark"] = interfaceFunc["bookmark"](thus);
+    this["__int__loading"] = interfaceFunc["loading"](thus);
+    this["__int__controllerLeft"] = interfaceFunc["controllerLeft"](thus);
+	let __int__playerInit = interfaceFunc["playerInit"](this.player);
 // set settings
-    this['__int__ajaxSettings'] = interfaceFunc['ajaxSettings'](thus);
+    this["__int__ajaxSettings"] = interfaceFunc["ajaxSettings"](thus);
 
 	this.player.init(__int__playerInit);
 // ajax part
@@ -105,41 +105,41 @@ let __book = function(idElem, interfaceFunc) {
  */
 	this.selectEl = (function() {
 		let nowSelect = {
-			'user-sel': undefined,
-			'jump': undefined,
-			'another-state': undefined
+			"user-sel": undefined,
+			"jump": undefined,
+			"another-state": undefined
 		};
 
 		return function (id, state) {
-			state = state || 'another-state';
+			state = state || "another-state";
 
 			if (!nowSelect.hasOwnProperty(state))
 			{
-				state = 'another-state';
+				state = "another-state";
 			}
 
-			if (typeof id == 'undefined' || id == -1)
+			if (typeof id == "undefined" || id == -1)
 			{
-				if (typeof nowSelect[state] != 'undefined')
+				if (typeof nowSelect[state] != "undefined")
 				{
-					__[nowSelect[state]].removeClass('select');
-					__[nowSelect[state]].attr('select-state', '');
+					__[nowSelect[state]].removeClass("select");
+					__[nowSelect[state]].attr("select-state", "");
 
 					nowSelect[state] = undefined;
 				}
 			}
 			else
 			{
-				if (typeof nowSelect[state] != 'undefined')
+				if (typeof nowSelect[state] != "undefined")
 				{
-					__[nowSelect[state]].removeClass('select');
+					__[nowSelect[state]].removeClass("select");
 
-					__[nowSelect[state]].attr('select-state', '');
+					__[nowSelect[state]].attr("select-state", "");
 				}
 
 				nowSelect[state] = +id;
-				__[nowSelect[state]].addClass('select');
-				__[nowSelect[state]].attr('select-state', state);
+				__[nowSelect[state]].addClass("select");
+				__[nowSelect[state]].attr("select-state", state);
 			}
 		};
 	})();
@@ -152,11 +152,11 @@ let __book = function(idElem, interfaceFunc) {
     {
         if (arguments.length)
         {// set top
-            slider.css('top', id / maxPos * sliderHeight);
+            slider.css("top", id / maxPos * sliderHeight);
         }
         else
         {// get top
-            return Math.floor(slider.cssInt('top') / sliderHeight * maxPos);
+            return Math.floor(slider.cssInt("top") / sliderHeight * maxPos);
         }
     }
 
@@ -171,7 +171,7 @@ let __book = function(idElem, interfaceFunc) {
     {
         setTimeout(()=>{
             load[name] = false;
-        }, timeout[name + 'load'] || 1000);
+        }, timeout[name + "load"] || 1000);
     }
 
     this.addBookmark = function(pos, title, text) {
@@ -181,7 +181,7 @@ let __book = function(idElem, interfaceFunc) {
             text: text
         });
 
-        if (mode['online'])
+        if (mode["online"])
         {
             thus.save();
         }
@@ -203,35 +203,35 @@ let __book = function(idElem, interfaceFunc) {
                 }
             };
 
-            if (mode['online'])
+            if (mode["online"])
             {
                 if (!load.bookmark)
                 {
                     load.bookmark = true;
 
                     $.ajax({
-                        method: 'POST',
-                        url: '/book/bookmark/edit/_' + bookId,
+                        method: "POST",
+                        url: "/book/bookmark/edit/_" + bookId,
                         data: JSON.stringify(dd),
                         contentType: "application/json; charset=utf-8"
                     }).done(function () {
-                        msg('Bookmark was deleted');
+                        msg("Bookmark was deleted");
 
                         resolve(id);
                     }).fail(function () {
-	                    reject('System error');
+	                    reject("System error");
                     }).always(function() {
-                        setLoadValueFalse('bookmark');
+                        setLoadValueFalse("bookmark");
                     });
                 }
                 else
                 {
-	                reject('Queue');
+	                reject("Queue");
                 }
             }
             else
             {
-	            reject('Ur in offline mode');
+	            reject("Ur in offline mode");
             }
         });
 
@@ -244,36 +244,36 @@ let __book = function(idElem, interfaceFunc) {
                 markId: id
             };
 
-            if (mode['online'])
+            if (mode["online"])
             {
                 if (!load.bookmark)
                 {
                     load.bookmark = true;
 
                     $.ajax({
-                        method: 'POST',
-                        url: '/book/bookmark/delete/_' + bookId,
+                        method: "POST",
+                        url: "/book/bookmark/delete/_" + bookId,
                         data: JSON.stringify(dd),
                         contentType: "application/json; charset=utf-8"
                     }).done(function () {
-                        msg('Bookmark was deleted');
+                        msg("Bookmark was deleted");
 
 	                    resolve(id);
 
                     }).fail(function () {
-	                    reject('System error');
+	                    reject("System error");
                     }).always(function() {
-                        setLoadValueFalse('bookmark');
+                        setLoadValueFalse("bookmark");
                     });
                 }
                 else
                 {
-	                reject('Queue');
+	                reject("Queue");
                 }
             }
             else
             {
-	            reject('Ur in offline mode');
+	            reject("Ur in offline mode");
             }
         });
 
@@ -282,7 +282,7 @@ let __book = function(idElem, interfaceFunc) {
 
     this.reloadBookmark = function() {
         let prom = new Promise(function(resolve, reject){
-            if (mode['online'])
+            if (mode["online"])
             {
                 if (bookId)
                 {
@@ -291,31 +291,31 @@ let __book = function(idElem, interfaceFunc) {
                         load.reloadBookmark = true;
 
                         $.ajax({
-                            method: 'GET',
-                            url: '/book/bookmark/get/_' + bookId
+                            method: "GET",
+                            url: "/book/bookmark/get/_" + bookId
                         }).done (function(d) {
                             loadBookmarks(d);
 
 	                        resolve();
                         }).fail(function() {
-	                        reject('System error');
+	                        reject("System error");
                         }).always(() => {
-                            setLoadValueFalse('reloadBookmark');
+                            setLoadValueFalse("reloadBookmark");
                         });
                     }
                     else
                     {
-	                    reject('Ur already reload');
+	                    reject("Ur already reload");
                     }
                 }
                 else
                 {
-	                reject('Ur must open the book');
+	                reject("Ur must open the book");
                 }
             }
             else
             {
-	            reject('Ur in offline mode');
+	            reject("Ur in offline mode");
             }
         });
 
@@ -331,7 +331,7 @@ let __book = function(idElem, interfaceFunc) {
         let prom = new Promise(function(resolve, reject){
 	        if (!thus.isSaved())
 	        {
-		        if (mode['online'])
+		        if (mode["online"])
 		        {
 			        if (bookId)
 			        {
@@ -340,7 +340,7 @@ let __book = function(idElem, interfaceFunc) {
 					        load.save = true;
 
 					        // disable edit/delete bookmarks
-					        $('.bookmarks > .btn-bookmark-edit').data('disable', 'true');
+					        $(".bookmarks > .btn-bookmark-edit").data("disable", "true");
 
 					        let tmpSave = screen.pos;
 
@@ -356,8 +356,8 @@ let __book = function(idElem, interfaceFunc) {
 
 					        // JSON
 					        $.ajax({
-						        method: 'POST',
-						        url: './book/save/_' + bookId,
+						        method: "POST",
+						        url: "./book/save/_" + bookId,
 						        data: JSON.stringify(dd),
 						        contentType: "application/json; charset=utf-8"
 					        }).done(function () {
@@ -369,8 +369,8 @@ let __book = function(idElem, interfaceFunc) {
 						        if (dd.bookmarks.length > 0)
 						        {
 							        $.ajax({
-								        method: 'GET',
-								        url: '/book/bookmark/get/_' + bookId
+								        method: "GET",
+								        url: "/book/bookmark/get/_" + bookId
 							        }).done (function(d) {
 								        loadBookmarks(d);
 
@@ -390,23 +390,23 @@ let __book = function(idElem, interfaceFunc) {
 							        }
 						        }
 					        }).fail(function(){
-						        error('System error');
+						        error("System error");
 
 						        reject();
 					        }).always(()=> {
-						        setLoadValueFalse('save');
+						        setLoadValueFalse("save");
 					        });
 				        }
 				        else
 				        {
-					        msg('Ur already save');
+					        msg("Ur already save");
 
 					        reject();
 				        }
 			        }
 			        else
 			        {
-				        //error('U must open book');
+				        //error("U must open book");
 
 				        try {
 					        resolve();
@@ -417,7 +417,7 @@ let __book = function(idElem, interfaceFunc) {
 		        }
 		        else
 		        {
-			        msg('Ur in offline mode');
+			        msg("Ur in offline mode");
 
 			        reject();
 		        }
@@ -441,20 +441,20 @@ let __book = function(idElem, interfaceFunc) {
      * Emmit when checkConnect false
      */
     this.swapOnlineMode = function () {
-        mode['online'] = !mode['online'];
-        if (mode['online'])
+        mode["online"] = !mode["online"];
+        if (mode["online"])
         {
-            $('.online').removeClass('offline');
-            debug('Online mode');
+            $(".online").removeClass("offline");
+            debug("Online mode");
 
             setTimeout(checkConnect, 1000 * 60);
             thus.save();
         }
         else
         {
-            $('.online').addClass('offline');
+            $(".online").addClass("offline");
 
-            debug('Offline mode');
+            debug("Offline mode");
         }
     };
 
@@ -463,14 +463,14 @@ let __book = function(idElem, interfaceFunc) {
      * Add or remove class night on #book
      */
     this.swapNightMode = function () {
-        mode['night'] = !mode['night'];
-        if (mode['night'])
+        mode["night"] = !mode["night"];
+        if (mode["night"])
         {
-            bookEl.addClass('night');
+            bookEl.addClass("night");
         }
         else
         {
-            bookEl.removeClass('night');
+            bookEl.removeClass("night");
         }
     };
 
@@ -482,7 +482,7 @@ let __book = function(idElem, interfaceFunc) {
      */
     function loadBookmarks(bm)
     {
-        let lb = $('#listOfBookmarks');
+        let lb = $("#listOfBookmarks");
 
 
         //debug(bm);
@@ -512,17 +512,17 @@ let __book = function(idElem, interfaceFunc) {
                     <a class="icon btn-bookmark-edit online">E</a>
                     <a class="icon btn-bookmark-save online">S</a>
                     <a class="icon btn-bookmark-delete online">D</a>
-                </div>`).addClass('bookmark').data('pos', bm[k].pos);
+                </div>`).addClass("bookmark").data("pos", bm[k].pos);
 
                 lb.append(tmp);
 
-                let el = $('<div></div>')
-                    .addClass('mark-user')
-                    .css('top', bm[k].pos / maxPos * sliderHeight)
-                    .data('pos', bm[k].pos)
+                let el = $("<div></div>")
+                    .addClass("mark-user")
+                    .css("top", bm[k].pos / maxPos * sliderHeight)
+                    .data("pos", bm[k].pos)
                     .click(function() {
-                        thus.jmp($(this).data('pos'));
-	                    thus.selectEl($(this).data('pos'), 'jump');
+                        thus.jmp($(this).data("pos"));
+	                    thus.selectEl($(this).data("pos"), "jump");
                     });
 
                 sliderBookMarks.append(el);
@@ -546,7 +546,7 @@ let __book = function(idElem, interfaceFunc) {
         let prom = new Promise(function(resolve, reject)
         {
 
-            if (mode['online'])
+            if (mode["online"])
             {
                 if (id && id != 0)
                 {
@@ -557,28 +557,28 @@ let __book = function(idElem, interfaceFunc) {
                         thus.save(true);
 
                         $.get({
-                            url: './book/info/_' + id
+                            url: "./book/info/_" + id
                         }).done(function (d) {
                             info = d;
 
                             $.get({
-                                url: './store/book/get/_' + info._id,
+                                url: "./store/book/get/_" + info._id,
                                 xhrFields: {
-                                    responseType: 'arraybuffer'
+                                    responseType: "arraybuffer"
                                 }
                             }).done(function (fl) {
                                 thus.__int__loading.play();
 
                                 let blobWithBook = new Blob([fl], {
-                                    type: 'application/x-fictionbook+xml'
+                                    type: "application/x-fictionbook+xml"
                                 });
 
 	                            window.blobb = blobWithBook;
 
 
                                 let fb2 = new JsFile(blobWithBook, {
-                                    type: 'application/x-fictionbook+xml',
-                                    workerPath: '/js/workers/'
+                                    type: "application/x-fictionbook+xml",
+                                    workerPath: "/js/workers/"
                                 });
 
                                 fb2.read().then(function (doc) {
@@ -593,12 +593,12 @@ let __book = function(idElem, interfaceFunc) {
                                     maxPos = 0;
 
                                     // book
-                                    $('.jf-page > *').each(function (i) {
+                                    $(".jf-page > *").each(function (i) {
                                         let tt = $(this);
 
-                                        tt.attr('id', 'p_' + i);
-                                        tt.addClass('h-l');
-                                        tt.data('id', i);
+                                        tt.attr("id", "p_" + i);
+                                        tt.addClass("h-l");
+                                        tt.data("id", i);
 
                                         __[i] = tt;
                                         ++maxPos;
@@ -607,21 +607,21 @@ let __book = function(idElem, interfaceFunc) {
                                     // mark
                                     sliderMarks.empty();
 
-                                    let el0 = $('<div></div>')
-                                        .addClass('mark-div')
+                                    let el0 = $("<div></div>")
+                                        .addClass("mark-div")
                                         .click(function () {
                                             thus.jmp(0);
-	                                        thus.selectEl(0, 'jump');
+	                                        thus.selectEl(0, "jump");
                                         });
 
                                     sliderMarks.append(el0);
 
 
-                                    $('.jf-page > div.h-l').each(function () {
-                                        let id = $(this).data('id');
+                                    $(".jf-page > div.h-l").each(function () {
+                                        let id = $(this).data("id");
 
                                         if ($(this).next().children() && $(this).next().children()[0] &&
-                                                $(this).next().children()[0].tagName === 'A' &&
+                                                $(this).next().children()[0].tagName === "A" &&
                                             $(this).next().children()[0].name)
                                         {
                                             // number of footnote
@@ -629,16 +629,16 @@ let __book = function(idElem, interfaceFunc) {
                                         }
                                         else
                                         {
-                                            if ($(this).attr('class').indexOf('title') >= 0)
+                                            if ($(this).attr("class").indexOf("title") >= 0)
                                             {
                                                 if (id > 10)
                                                 {
-                                                    let el = $('<div></div>')
-                                                        .addClass('mark-div')
-                                                        .css('top', id / maxPos * sliderHeight)
+                                                    let el = $("<div></div>")
+                                                        .addClass("mark-div")
+                                                        .css("top", id / maxPos * sliderHeight)
                                                         .click(function () {
                                                             thus.jmp(id);
-	                                                        thus.selectEl(id, 'jump');
+	                                                        thus.selectEl(id, "jump");
                                                         });
 
                                                     sliderMarks.append(el);
@@ -648,22 +648,22 @@ let __book = function(idElem, interfaceFunc) {
                                     });
 
                                     // footnote
-                                    $('.jf-page a').click(function(){
-                                        let id = $(this).attr('href').substr(1);
+                                    $(".jf-page a").click(function(){
+                                        let id = $(this).attr("href").substr(1);
                                         let num = $(this).html();
-                                        let text = '';
+                                        let text = "";
 
-                                        $('#book a[name=' + id + ']').each(function () {
-                                            text += $(this).closest('p.h-l').html();
-                                            text += '<br>';
+                                        $("#book a[name=" + id + "]").each(function () {
+                                            text += $(this).closest("p.h-l").html();
+                                            text += "<br>";
                                         });
 
-                                        thus.__int__controllerLeft('navigate');
+                                        thus.__int__controllerLeft("navigate");
 
                                         footnote.empty();
                                         let el = $(`<div class="footnote">
-	                                                    <p style="text-align: center">${num || ''}</p>
-	                                                    <p>${text || ''}</p>
+	                                                    <p style="text-align: center">${num || ""}</p>
+	                                                    <p>${text || ""}</p>
 	                                                </div>
                                         `);
                                         footnote.append(el);
@@ -671,9 +671,9 @@ let __book = function(idElem, interfaceFunc) {
                                         return false;
                                     });
 
-                                    $('.jf-page a').dblclick(function() {
-                                        let id = $(this).attr('href').substr(1);
-                                        let pos = $('a[name=' + id + ']').closest('p.h-l').data('id');
+                                    $(".jf-page a").dblclick(function() {
+                                        let id = $(this).attr("href").substr(1);
+                                        let pos = $("a[name=" + id + "]").closest("p.h-l").data("id");
 
                                         thus.jmp(pos);
                                     });
@@ -692,7 +692,7 @@ let __book = function(idElem, interfaceFunc) {
                                     bookId = id;
 
                                     thus.__int__loading.stop();
-                                    msg(info.title + ' was load.');
+                                    msg(info.title + " was load.");
 
                                     try {
                                         resolve();
@@ -701,28 +701,28 @@ let __book = function(idElem, interfaceFunc) {
                                     }
                                 }, function (e) {
                                     thus.__int__loading.stop();
-                                    error('Can not read this file. ' + e);
+                                    error("Can not read this file. " + e);
 	                                reject();
                                 });
                             }).fail(function () {
-                                error('This book did not load.');
+                                error("This book did not load.");
 	                            reject();
                             }).always(()=> {
-                                setLoadValueFalse('book');
+                                setLoadValueFalse("book");
                             });
                         }).fail(function () {
-                            setLoadValueFalse('book');
+                            setLoadValueFalse("book");
 
                             //bookEl.empty();
-                            //bookEl.append($('<span>Can not load file.</span>'));
+                            //bookEl.append($("<span>Can not load file.</span>"));
 
-                            error('Info did not get.');
+                            error("Info did not get.");
 	                        reject();
                         });
                     }
                     else
                     {
-                        msg('Ur loading book now');
+                        msg("Ur loading book now");
 	                    reject();
                     }
                 }
@@ -733,37 +733,37 @@ let __book = function(idElem, interfaceFunc) {
     };
 
     this.deleteBook = function (id, title) {
-        if (mode['online'])
+        if (mode["online"])
         {
-            if (confirm('rU sure u want delete this book{title: ' + title + '} '))
+            if (confirm("rU sure u want delete this book{title: " + title + "} "))
             {
                 if (!load.del) {
                     load.del = true;
 
                     $.ajax({
-                        url: './store/book/delete/_' + id,
-                        method: 'POST'
+                        url: "./store/book/delete/_" + id,
+                        method: "POST"
                     }).done(function () {
-                        msg('Book has been deleted.');
+                        msg("Book has been deleted.");
 
                         //thus.save(true);
 
                         location.reload();
                     }).fail(function () {
-                        error('You can not delete this book.');
+                        error("You can not delete this book.");
                     }).always(()=> {
-                        setLoadValueFalse('del');
+                        setLoadValueFalse("del");
                     });
                 }
                 else {
-                    msg('Ur already delete book');
+                    msg("Ur already delete book");
                 }
             }
         }
     };
 /*
     this.scrollEl = function(id) {
-        let top = $('#p_' + id).offset().top - offset_book;
+        let top = $("#p_" + id).offset().top - offset_book;
         $(document).scrollTop(top);
     };
 
@@ -885,12 +885,12 @@ let __book = function(idElem, interfaceFunc) {
     function scrollEl(id, scroll) {
         $(document).scrollTop(0);
 
-        if (typeof scroll == 'undefined')
+        if (typeof scroll == "undefined")
         {
             scroll = 0;
         }
 
-        if (typeof id == 'undefined')
+        if (typeof id == "undefined")
         {
             id = screen.pos;
         }
@@ -950,7 +950,7 @@ let __book = function(idElem, interfaceFunc) {
 
         sliderTop(screen.pos);
 
-        //debug('New pos = %d, now show %d elems', screen.pos, screen.now);
+        //debug("New pos = %d, now show %d elems", screen.pos, screen.now);
     }
     /**
      *
@@ -982,12 +982,12 @@ let __book = function(idElem, interfaceFunc) {
                 let hV = 0;
                 let shV = 0;
 
-                //debug(' POS = ' + id); debug('!!!!' + (maxPos == __.length));
+                //debug(" POS = " + id); debug("!!!!" + (maxPos == __.length));
 
                 // how much i must show
 
 	            do {
-		            //debug('curr = ' + (id + shV)); debug('H = ' + hV);
+		            //debug("curr = " + (id + shV)); debug("H = " + hV);
 		            hV += __[(id + shV)].innerHeight();
 		            ++shV;
 	            } while (hV < height * _coef + scroll && id + shV < maxPos);
@@ -1057,7 +1057,7 @@ let __book = function(idElem, interfaceFunc) {
                 {
                     if (shV > 0)
                     {
-	                    let elapsed = hV - height * _coef + scroll; debug('-------NEW elapsed. scroll = ' + elapsed);
+	                    let elapsed = hV - height * _coef + scroll; debug("-------NEW elapsed. scroll = " + elapsed);
 
 	                    if (elapsed >= 0)
 	                    {
@@ -1102,21 +1102,21 @@ let __book = function(idElem, interfaceFunc) {
         }
         else
         {// id <- slider
-            thus.jmp(sliderPos(slider.cssInt('top')));
+            thus.jmp(sliderPos(slider.cssInt("top")));
             sliderTop(screen.pos);
         }
     };
 
     function checkConnect() {
-        if (mode['online'])
+        if (mode["online"])
         {
-            $.get('./echo/_')
+            $.get("./echo/_")
                 .done(() => {
                     setTimeout(checkConnect, ECHO_TIMEOUT);
                 }).fail(() => {
-                if (mode['online'])
+                if (mode["online"])
                 {
-                    $('#onlineMode').trigger('click');
+                    $("#onlineMode").trigger("click");
                 }
             });
         }
@@ -1127,13 +1127,13 @@ let __book = function(idElem, interfaceFunc) {
 
     this.getUserInfo = function() {
         let prom = new Promise(function(resolve, reject) {
-            if (mode['online'])
+            if (mode["online"])
             {
                 if (!load.user)
                 {
                     load.user = true;
 
-                    $.get('/login/info').done(function (t) {
+                    $.get("/login/info").done(function (t) {
                         user = t;
 
                         try {
@@ -1188,51 +1188,51 @@ let __book = function(idElem, interfaceFunc) {
     this.getFiles = function() {
         thus.ready(function() {
             fs.empty();
-            fs.append($('<ol>'));
+            fs.append($("<ol>"));
 
             for (let t in user.books)
             {
 	            //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop,JSUnfilteredForInLoop
-	            let appEl = $('<div>')
-                                .html(user.books[t].author + ' : ' + user.books[t].title)
-                                .data('id', user.books[t].id)
-                                .addClass('fs')
-                                .addClass('online');
+	            let appEl = $("<div>")
+                                .html(user.books[t].author + " : " + user.books[t].title)
+                                .data("id", user.books[t].id)
+                                .addClass("fs")
+                                .addClass("online");
 
 	            //noinspection JSUnfilteredForInLoop,JSUnfilteredForInLoop
-	            let iconDel = $('<span>')
-                    .html('X')
-                    .addClass('fs-del')
-                    .addClass('online')
-                    .data('id', user.books[t].id)
-                    .data('title', user.books[t].title);
+	            let iconDel = $("<span>")
+                    .html("X")
+                    .addClass("fs-del")
+                    .addClass("online")
+                    .data("id", user.books[t].id)
+                    .data("title", user.books[t].title);
 
 
-                let li = $('<li>').append(appEl);
-                let divControl = $('<div>').addClass('fs-control').append(iconDel);
+                let li = $("<li>").append(appEl);
+                let divControl = $("<div>").addClass("fs-control").append(iconDel);
 
 
                 li.append(divControl);
                 fs.append(li);
             }
 
-            $('.fs').click(function () {
-                let id = $(this).data('id');
+            $(".fs").click(function () {
+                let id = $(this).data("id");
                 thus.getBook(id);
             });
 
-            $('.fs-del').click(function (e) {
+            $(".fs-del").click(function (e) {
                 e.stopPropagation();
 
-                let id = $(this).data('id');
-                let title = $(this).data('title');
+                let id = $(this).data("id");
+                let title = $(this).data("title");
                 thus.deleteBook(id, title);
             });
         });
     };
 
     this.recalc = function() {
-        lineSize = (+bookEl.css('line-height').slice(0, -2));
+        lineSize = (+bookEl.css("line-height").slice(0, -2));
         height = hiddenEl.height();
         lineCnt = Math.floor(hiddenEl.height() / lineSize);
         offsetBook = bookEl.offset().top;
@@ -1245,14 +1245,14 @@ let __book = function(idElem, interfaceFunc) {
 
     this.recalc();
     this.getUserInfo().then(() => {
-        if (user.lastBook != '0')
+        if (user.lastBook != "0")
         {
             thus.getBook(user.lastBook);
         }
     }, error);
 
 	window.onbeforeunload = function(e) {
-        if (mode['online'])
+        if (mode["online"])
         {
             if (!thus.isSaved())
             {
@@ -1263,9 +1263,9 @@ let __book = function(idElem, interfaceFunc) {
         }
         else
         {
-            e.returnValue = `U don't save pos (${ Math.abs(screen.pos - saved.pos) }) and u have ${ saved.bookmarkCount } bookmarks`;
+            e.returnValue = `U don"t save pos (${ Math.abs(screen.pos - saved.pos) }) and u have ${ saved.bookmarkCount } bookmarks`;
 
-            return `U don't save pos (${ Math.abs(screen.pos - saved.pos) }) and u have ${ saved.bookmarkCount } bookmarks`;
+            return `U don"t save pos (${ Math.abs(screen.pos - saved.pos) }) and u have ${ saved.bookmarkCount } bookmarks`;
         }
     };
 // GETTER

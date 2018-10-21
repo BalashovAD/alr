@@ -1,20 +1,20 @@
 "use strict";
-let app = require('express')();
-let cookieParser = require('cookie-parser');
-let path = require('path');
-let fs = require('fs');
+let app = require("express")();
+let cookieParser = require("cookie-parser");
+let path = require("path");
+let fs = require("fs");
 
-let debug = require('debug')('sniffer:book');
+let debug = require("debug")("sniffer:book");
 
 app.use(cookieParser());
 
-let checkAccess = require('./login').checkAccess;
-let Book = require('./mongo').Book;
+let checkAccess = require("./login").checkAccess;
+let Book = require("./db/mongo").Book;
 
 /**
  * Check existence of a folder{pp}
  * if not exist then create
- * It's async version
+ * It"s async version
  * @param pp - string, path of folder
  * @param next - cb
  * @throw err if can not create directory or fs error
@@ -33,11 +33,11 @@ function checkFolder(pp, next)
                 if (err)
                 {
                     //TODO: emmit system error
-                    throw new Error('System error{fs.mkdir}. path = ' + pp);
+                    throw new Error("System error{fs.mkdir}. path = " + pp);
                 }
                 else
                 {
-                    debug('Create folder: path = ' + pp);
+                    debug("Create folder: path = " + pp);
                     next();
                 }
             });
@@ -54,11 +54,11 @@ function checkFolder(pp, next)
                     if (err)
                     {
                         //TODO: emmit system error
-                        throw new Error('System error{fs.mkdir}. path = ' + pp);
+                        throw new Error("System error{fs.mkdir}. path = " + pp);
                     }
                     else
                     {
-                        debug('Create folder: path = ' + pp);
+                        debug("Create folder: path = " + pp);
                         next();
                     }
                 });
@@ -67,13 +67,13 @@ function checkFolder(pp, next)
     });
 }
 
-checkFolder('./files');
+checkFolder("./files");
 
-app.use(require('body-parser').json());
+app.use(require("body-parser").json());
 
 // Access for USER
-app.all('*', (req, res, next) => {
-    if (req.user.checkAccess('addBook'))
+app.all("*", (req, res, next) => {
+    if (req.user.checkAccess("addBook"))
     {
         next();
     }
@@ -81,28 +81,28 @@ app.all('*', (req, res, next) => {
     {
         res.status(401).json({
             err: 1,
-            errmsg: 'No access'
+            errmsg: "No access"
         }).end();
     }
 });
 
-app.get('/', (req, res) => {
-    res.set('Content-Type', 'text/html');
+app.get("/", (req, res) => {
+    res.set("Content-Type", "text/html");
 
-    res.render('addBook.jade', {
-        title: 'Add book',
+    res.render("addBook.jade", {
+        title: "Add book",
         name: req.user.name,
-	    error: (req.query || {})['error']
+	    error: (req.query || {})["error"]
     });
 });
 
 let fileCounter = 0;
 
 
-app.post('/add/*', function(req, res, next){
-    if (req.user.name && req.user.name != '0')
+app.post("/add/*", function(req, res, next){
+    if (req.user.name && req.user.name !== "0")
     {
-        checkFolder('./files/' + req.user.name, next);
+        checkFolder("./files/" + req.user.name, next);
     }
     else
     {
@@ -110,20 +110,18 @@ app.post('/add/*', function(req, res, next){
     }
 });
 
-let Busboy = require('busboy');
-let inspect = require('util').inspect;
+let Busboy = require("busboy");
+let inspect = require("util").inspect;
 let MAX_FILE_SIZE_IN_MB = 2.4;
 let MAX_FILE_SIZE = MAX_FILE_SIZE_IN_MB * 1024 * 1024;
 
 function getFile(req, res, next)
 {
-
     let date = Date.now();
 
+    let lnk = path.join(req.user.name, req.user.name + "__" + date + "_" + fileCounter + ".fb2");
 
-    let lnk = path.join(req.user.name, req.user.name + '__' + date + '_' + fileCounter + ".fb2");
-
-    let pp = path.join(__dirname, '/files/', lnk);
+    let pp = path.join(__dirname, "/files/", lnk);
 
     req.lnkBook = lnk;
 
@@ -141,13 +139,12 @@ function getFile(req, res, next)
     let isDelete = false;
 	let len = 0;
 
-    busboy.on('file', function(fieldName, file, filename, encoding, mimetype) {
-
+    busboy.on("file", function(fieldName, file, filename, encoding, mimetype) {
         debug(JSON.stringify({fieldName, filename, encoding, mimetype}));
 
-        if (fieldName == 'book')
+        if (fieldName === "book")
         {
-            file.on('data', function(data) {
+            file.on("data", function(data) {
                 len += data.length;
                 if (len > MAX_FILE_SIZE)
                 {
@@ -156,8 +153,8 @@ function getFile(req, res, next)
             });
 
 
-            file.on('limit', function() {
-                debug('Out of limits. FIle = ' + filename);
+            file.on("limit", function() {
+                debug("Out of limits. FIle = " + filename);
 
                 isDelete = true;
             });
@@ -167,22 +164,22 @@ function getFile(req, res, next)
         }
     });
 
-    busboy.on('field', function(field, val) {
-        debug('Field [' + field + ']: value: ' + inspect(val));
+    busboy.on("field", function(field, val) {
+        debug("Field [" + field + "]: value: " + inspect(val));
 
         req.body[field] = val;
     });
 
-    busboy.on('aborted', function() {
+    busboy.on("aborted", function() {
         req.status(403).end();
     });
 
-    busboy.on('finish', function() {
+    busboy.on("finish", function() {
         if (isDelete)
         {
             fs.unlink(pp);
 
-            res.status(500).redirect('/book/?error=File size limit. Max size = ' + MAX_FILE_SIZE_IN_MB + 'MB.');
+            res.status(500).redirect("/book/?error=File size limit. Max size = " + MAX_FILE_SIZE_IN_MB + "MB.");
         }
         else
         {
@@ -198,63 +195,35 @@ function getFile(req, res, next)
  * @body title
  * @body author
  */
-app.post('/add/', getFile, function(req, res) {
+app.post("/add/", getFile, function(req, res) {
     let title = req.body.title || "";
     let author = req.body.author || "";
 // TODO: form upload
-
-    debug('Path = ' + req.lnkBook);
-
+    debug(`Add book, path: ${req.lnkBook}`);
 
 	Book.addBook({
         title: title,
         author: author,
         owner: req.user.name,
         lnk: req.lnkBook
-    }, db_cb);
-
-/*
-    fileBook.mv(pp, function(err) {
-        if (err)
-        {
-            res.status(500).redirect('/book/');
-        }
-        else
-        {
-            addBook({
-                title: title,
-                author: author,
-                owner: req.user.name,
-                lnk: lnk
-            }, db_cb);
-        }
+    }).then(() => {
+        res.status(200).redirect("/");
+    }, (err) => {
+        debug(`Cannot add book: ${err}`);
+        res.status(500).redirect("/book/");
     });
-// TODO: convert files to fb2
-*/
-    function db_cb(err)
-    {
-        if (err)
-        {
-            res.status(500).redirect('/book/');
-        }
-        else
-        {
-            res.status(200).redirect('/');
-        }
-    }
-
 });
 
 
-app.post('/save/_:id', (req, res, next) => {
+app.post("/save/_:id", (req, res, next) => {
     let ss = {};
     let id = req.params.id;
-    let allowedParams = ['pos', 'bookmarks'];
+    let allowedParams = ["pos", "bookmarks"];
 
-    debug('Save book _id = %s, user = %s', id, req.user.name);
+    debug("Save book _id = %s, user = %s", id, req.user.name);
 
     // If no book
-    if (typeof id == 'undefined' || id == 0)
+    if (typeof id === "undefined" || id === 0)
     {
         res.status(301).end();
 
@@ -272,108 +241,114 @@ app.post('/save/_:id', (req, res, next) => {
 	    }
     }
 
-    debug(ss);
-
-	Book.saveBook(id, req.user.name, ss, (err, t) => {
-        if (err)
+    debug(`saveBook: user(${req.user.toString()}) try to save book ${id}, ${ss}`);
+    if (req.user.ownBook(id))
+    {
+        if (req.user.saveBook(id, ss))
         {
-            debug(err);
-
-            res.status(500).end();
+            res.status(200).end();
         }
         else
         {
-            if (t)
-            {
-                res.status(200).end();
-            }
-            else
-            {
-                res.status(401).end();
-            }
+            res.status(500).end();
         }
-    });
+    }
+    else
+    {
+        debug(`user(${req.user.toString()}) doesn't own this book ${id}`);
+        res.status(403).end();
+    }
 });
 
 /** Bookmark
  *  @param :id - book id
  *  @body markId
  */
-app.post('/bookmark/delete/_:id', function(req, res){
+app.post("/bookmark/delete/_:id", function(req, res){
     let id = req.params.id;
     let markId = req.body.markId;
 
-    debug('Delete bookmark. bookId = %s, markId = %s', id, markId);
+    debug("Delete bookmark. bookId = %s, markId = %s", id, markId);
 
-    if (typeof markId == 'undefined')
+    if (typeof markId == "undefined")
     {
-        res.status(401).end();
+        res.status(400).end();
 
         return;
     }
 
-    Book.deleteBookmark(id, req.user.name, markId, function(err){
-        if (err)
-        {
-            res.status(401).end();
-        }
-        else
-        {
+    if (req.user.ownBook(id))
+    {
+        Book.deleteBookmark(id, markId).then(() => {
             res.status(200).end();
-        }
-    });
+        }, (err) => {
+            debug(`delete bookmark failed! book: ${id}, bookmark: ${markId}, err: ${err}`);
+            res.status(500).end();
+        });
+    }
+    else
+    {
+        res.status(403).end();
+    }
 });
 
-app.post('/bookmark/edit/_:id', function(req, res){
+app.post("/bookmark/edit/_:id", function(req, res){
     let id = req.params.id;
     let mark = req.body.mark;
 
-    debug('/bookmark/edit/_:id  :id = %s, mark = %s', id, JSON.stringify(mark));
+    debug("/bookmark/edit/_:id  :id = %s, mark = %s", id, JSON.stringify(mark));
 
-    Book.editBookmark(id, req.user.name, mark, function(err){
-        if (err)
-        {
-            res.status(401).end();
-        }
-        else
-        {
+    if (req.user.ownBook(id))
+    {
+        Book.editBookmark(id, mark).then(() => {
             res.status(200).end();
-        }
-    });
+        }, (err) => {
+            debug(`delete bookmark failed! book: ${id}, bookmark: ${markId}, err: ${err}`);
+            res.status(500).end();
+        });
+    }
+    else
+    {
+        res.status(403).end();
+    }
 });
 
-app.get('/bookmark/get/_:id', function(req, res) {
+app.get("/bookmark/get/_:id", function(req, res) {
     let id = req.params.id;
 
-    debug('/bookmark/get/_:id  :id = %s', id);
+    debug("/bookmark/get/_:id  :id = %s", id);
 
-    Book.getBook(id, req.user.name, function(err, t) {
-        if (err)
-        {
-            res.status(401).json(err).end();
-        }
-        else
-        {
+    if (req.user.ownBook(id))
+    {
+        Book.getBook(id).then((t) => {
             res.json(t.bookmarks).end();
-        }
-    });
+        }, (err) => {
+            res.status(500).json(err).end();
+        });
+    }
+    else
+    {
+        res.status(403).end();
+    }
 });
 
 // Get info about book
 // :id - book id in db
-app.get('/info/_:id', function(req, res) {
+app.get("/info/_:id", function(req, res) {
     let id = req.params.id;
 
-    Book.getBook(id, req.user.name, function(err, t) {
-        if (err)
-        {
-            res.status(401).json(err).end();
-        }
-        else
-        {
+    if (req.user.ownBook(id))
+    {
+        Book.getBook(id).then((t) => {
             res.json(t).end();
-        }
-    });
+        }, (err) => {
+            res.status(500).json(err).end();
+        });
+    }
+    else
+    {
+        res.status(403).end();
+    }
 });
 
 module.exports.app = app;

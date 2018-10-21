@@ -1,56 +1,57 @@
 "use strict";
-let debug = require('debug')('sniffer:store');
+let debug = require("debug")("sniffer:store");
 
-let path = require('path');
+let path = require("path");
 
 
 let resolve = [];
-resolve[0] = 'adm';
+resolve[0] = "adm";
 
-let app = require('express')();
-let LVL = require('./login').LVL;
-let checkAccess = require('./login').checkAccess;
-let Book = require('./mongo').Book;
+let app = require("express")();
+let LVL = require("./login").LVL;
+let checkAccess = require("./login").checkAccess;
+let Book = require("./db/mongo").Book;
 
-let cookieParser = require('cookie-parser');
+let cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
 
 
-app.all('*', function(req, res, next) {
-
+app.all("*", function(req, res, next) {
     debug(req.originalUrl);
 
-    if (req.user.checkAccess('user'))
+    if (req.user.checkAccess("user"))
     {
-        debug(req.user.name);
+        debug(`Enter store: ${req.user.toString()}`);
 
         next();
     }
     else
     {
-        res.status(401).end();
+        res.status(403).end();
     }
 });
 
 // :id - book id
-app.post('/book/delete/_:id', function (req, res) {
+app.post("/book/delete/_:id", function (req, res) {
     let id = req.params.id;
 
-	Book.deleteBook(id, req.user.name, function (err) {
-        if (err)
-        {
-            res.status(500).json(err).end();
-        }
-        else
-        {
+    if (req.user.ownBook(id))
+    {
+        Book.deleteBook(id, req.user.name).then(() => {
             res.status(200).end();
-        }
-    });
+        }, (err) => {
+            res.status(500).json(err).end();
+        });
+    }
+    else
+    {
+        res.status(403).end();
+    }
 });
 
 // :id - book id
-app.get('/book/get/_(:id)', function(req, res) {
+app.get("/book/get/_(:id)", function(req, res) {
     let id = req.params.id;
 
     let cb = function(err, book) {
@@ -62,14 +63,14 @@ app.get('/book/get/_(:id)', function(req, res) {
         {
             if (book && book.link)
             {
-                debug(path.join(__dirname, './files/', book.link));
+                debug(path.join(__dirname, "./files/", book.link));
 
-                res.sendFile(path.join(__dirname, 'files', book.link), function (err) {
+                res.sendFile(path.join(__dirname, "files", book.link), function (err) {
                     if (err)
                     {
-                        if (err.code === "ECONNABORT" && res.statusCode == 304) {
+                        if (err.code === "ECONNABORT" && res.statusCode === 304) {
                             // No problem, 304 means client cache hit, so no data sent.
-                            debug('304 cache hit for ' + book.link);
+                            debug("304 cache hit for " + book.link);
                         }
                         else
                         {
@@ -82,7 +83,7 @@ app.get('/book/get/_(:id)', function(req, res) {
                     }
                     else
                     {
-                        debug('Sent:', book.link);
+                        debug("Sent:", book.link);
                     }
                 });
             }
@@ -90,19 +91,19 @@ app.get('/book/get/_(:id)', function(req, res) {
             {
                 res.status(500).json({
                     err: 1,
-                    errmsg: 'Database error'
+                    errmsg: "Database error"
                 }).end();
             }
         }
     };
 
-    if (req.lvl <= LVL['MOD'])
+    if (req.user.ownBook(id) || req.user.checkAccess("book"))
     {
-	    Book.getBook(id, req.user.name, cb, true);
+	    Book.getBook(id).then((book) => {cb(undefined, book)}, (err) => {cb(err)});
     }
     else
     {
-        Book.getBook(id, req.user.name, cb);
+        res.status(403).end();
     }
 });
 

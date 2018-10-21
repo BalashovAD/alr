@@ -1,5 +1,5 @@
 (function webpackUniversalModuleDefinition(root, factory) {
-    if(typeof exports === 'object' && typeof module === 'object')
+    if(typeof exports === "object" && typeof module === "object")
         module.exports = factory(require("./filejs"));
 
 })(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
@@ -49,7 +49,7 @@
         /* 0 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -97,7 +97,7 @@
 
             function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-            function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+            function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn"t been initialised - super() hasn"t been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
             function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
@@ -109,8 +109,8 @@
              */
 
             var files = {
-                extension: ['fb2'],
-                mime: ['application/x-fictionbook+xml']
+                extension: ["fb2"],
+                mime: ["application/x-fictionbook+xml"]
             };
 
             var FbEngine = function (_Engine) {
@@ -139,7 +139,7 @@
                 }
 
                 _createClass(FbEngine, null, [{
-                    key: 'test',
+                    key: "test",
                     value: function test(file) {
                         return Boolean(file && Engine.validateFile(file, files));
                     }
@@ -162,7 +162,7 @@
         /* 2 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -204,21 +204,21 @@
 
             var forEach = [].forEach;
             var descriptionProcessors = {
-                'publish-info': {
+                "publish-info": {
                     parser: _parsePublishInfo2.default
                 },
-                'title-info': {
-                    name: 'fileInfo',
+                "title-info": {
+                    name: "fileInfo",
                     parser: _parseFileInfo2.default
                 },
-                'src-title-info': {
-                    name: 'originalFileInfo',
+                "src-title-info": {
+                    name: "originalFileInfo",
                     parser: _parseFileInfo2.default
                 },
-                'document-info': {
+                "document-info": {
                     parser: _parseDocumentInfo2.default
                 },
-                'custom-info': {
+                "custom-info": {
                     parser: _parseCustomInfo2.default
                 }
             };
@@ -236,16 +236,16 @@
                         meta: {
                             name: _this.fileName
                         },
-                        binaryItems: (0, _parseBinaryItems2.default)(xml.querySelectorAll('binary'))
+                        binaryItems: (0, _parseBinaryItems2.default)(xml.querySelectorAll("binary"))
                     };
                     var page = Document.elementPrototype;
-                    var node = xml.querySelector('FictionBook');
+                    var node = xml.querySelector("FictionBook");
 
                     forEach.call(node && node.childNodes || [], function (node) {
                         var localName = node.localName;
 
 
-                        if (localName === 'description') {
+                        if (localName === "description") {
                             forEach.call(node.childNodes || [], function (node) {
                                 var localName = node.localName;
 
@@ -271,7 +271,7 @@
                                 })];
                                 page.children.push(element);
                             }
-                        } else if (localName === 'body') {
+                        } else if (localName === "body") {
                             this.parsePages(node, documentData, page.children);
                         }
                     }, _this);
@@ -287,7 +287,7 @@
         /* 3 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -298,9 +298,9 @@
 
                 [].forEach.call(nodes || [], function (node) {
                     var attrs = node.attributes || {};
-                    var contentType = attrs['content-type'] && attrs['content-type'].value;
+                    var contentType = attrs["content-type"] && attrs["content-type"].value;
                     if (attrs.id && attrs.id.value && contentType && node.textContent) {
-                        result[attrs.id.value] = 'data:' + contentType + ';base64,' + node.textContent;
+                        result[attrs.id.value] = "data:" + contentType + ";base64," + node.textContent;
                     }
                 });
 
@@ -311,7 +311,7 @@
         /* 4 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -339,7 +339,7 @@
                     var localName = node.localName;
 
                     if (localName) {
-                        info[formatPropertyName(localName)] = node.textContent || '';
+                        info[formatPropertyName(localName)] = node.textContent || "";
                     }
                 });
 
@@ -350,7 +350,7 @@
         /* 5 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -382,34 +382,34 @@
                 [].forEach.call(xml && xml.childNodes || [], function (node) {
                     var localName = node.localName;
                     var _node$textContent = node.textContent;
-                    var textContent = _node$textContent === undefined ? '' : _node$textContent;
+                    var textContent = _node$textContent === undefined ? "" : _node$textContent;
 
 
                     switch (localName) {
-                        case 'genre':
+                        case "genre":
                             info[localName] = info[localName] || [];
                             info[localName].push(textContent);
                             break;
-                        case 'keywords':
+                        case "keywords":
                             info[localName] = textContent.split(/\s*,\s*/);
                             break;
-                        case 'annotation':
+                        case "annotation":
                             info[localName] = this.parseBlock(node, documentData);
                             break;
-                        case 'translator':
+                        case "translator":
                             info[localName] = (0, _getPersonInfo2.default)(node);
                             break;
-                        case 'coverpage':
-                            var imageNode = node.querySelector('image');
-                            var href = imageNode.attributes['xlink:href'] && imageNode.attributes['xlink:href'].value || '';
+                        case "coverpage":
+                            var imageNode = node.querySelector("image");
+                            var href = imageNode.attributes["xlink:href"] && imageNode.attributes["xlink:href"].value || "";
                             info[localName] = {
-                                image: href.replace('#', '')
+                                image: href.replace("#", "")
                             };
                             break;
-                        case 'sequence':
+                        case "sequence":
                             var number = node.attributes.number && node.attributes.number.value;
                             info[localName] = {
-                                name: node.attributes.name ? node.attributes.name.value || '' : '',
+                                name: node.attributes.name ? node.attributes.name.value || "" : "",
                                 number: isNaN(number) ? 0 : Number(number)
                             };
                             break;
@@ -427,7 +427,7 @@
         /* 6 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -455,7 +455,7 @@
                 [].forEach.call(xml && xml.childNodes || [], function (_ref) {
                     var localName = _ref.localName;
                     var _ref$textContent = _ref.textContent;
-                    var textContent = _ref$textContent === undefined ? '' : _ref$textContent;
+                    var textContent = _ref$textContent === undefined ? "" : _ref$textContent;
 
                     if (localName) {
                         info[formatPropertyName(localName)] = textContent;
@@ -469,7 +469,7 @@
         /* 7 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -496,35 +496,35 @@
                 [].forEach.call(xml && xml.childNodes || [], function (node) {
                     var localName = node.localName;
                     var _node$textContent = node.textContent;
-                    var textContent = _node$textContent === undefined ? '' : _node$textContent;
+                    var textContent = _node$textContent === undefined ? "" : _node$textContent;
 
                     switch (localName) {
-                        case 'author':
+                        case "author":
                             info[localName] = (0, _getPersonInfo2.default)(node);
                             break;
-                        case 'id':
+                        case "id":
                             info[localName] = textContent;
                             break;
-                        case 'version':
+                        case "version":
                             info[localName] = textContent;
                             break;
-                        case 'publisher':
+                        case "publisher":
                             info[localName] = textContent;
                             break;
-                        case 'history':
+                        case "history":
                             info[localName] = this.parseBlock(node, documentData);
                             break;
-                        case 'date':
+                        case "date":
                             info[localName] = textContent;
                             break;
-                        case 'src-url':
+                        case "src-url":
                             info.sourceUrl = textContent;
                             break;
-                        case 'src-ocr':
+                        case "src-ocr":
                             info.originalAuthor = textContent;
                             break;
-                        case 'program-used':
-                            info.programs = textContent.split(',').map(function (program) {
+                        case "program-used":
+                            info.programs = textContent.split(",").map(function (program) {
                                 return program.trim();
                             });
                             break;
@@ -538,21 +538,21 @@
         /* 8 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
 
             exports.default = function (xml) {
-                return xml && xml.textContent || '';
+                return xml && xml.textContent || "";
             };
 
             /***/ },
         /* 9 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -583,23 +583,23 @@
                 var documentData = options.documentData;
                 var imageName = options.imageName;
 
-                var attrValue = node.attributes && node.attributes['xlink:href'] && node.attributes['xlink:href'].value;
+                var attrValue = node.attributes && node.attributes["xlink:href"] && node.attributes["xlink:href"].value;
 
                 if (!imageName && attrValue) {
-                    result.properties.src = documentData.binaryItems[attrValue.replace('#', '')];
+                    result.properties.src = documentData.binaryItems[attrValue.replace("#", "")];
                 } else {
                     result.properties.src = documentData.binaryItems[imageName];
                 }
 
-                if (node.attributes && node.attributes['l:href'] && node.attributes['l:href'].value)
+                if (node.attributes && node.attributes["l:href"] && node.attributes["l:href"].value)
                 {
-                    attrValue = node.attributes['l:href'].value;
-                    result.properties.src = documentData.binaryItems[attrValue.replace('#', '')];
+                    attrValue = node.attributes["l:href"].value;
+                    result.properties.src = documentData.binaryItems[attrValue.replace("#", "")];
                 }
 
-                result.properties.tagName = 'IMG';
-                result.properties.src = result.properties.src || '';
-                result.properties.alt = attrValue || '';
+                result.properties.tagName = "IMG";
+                result.properties.src = result.properties.src || "";
+                result.properties.alt = attrValue || "";
 
                 return result;
             }
@@ -608,7 +608,7 @@
         /* 10 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -652,7 +652,7 @@
 
                     var createDocument = function createDocument(result) {
                         var domParser = new DOMParser();
-                        resolve(_this.createDocument(domParser.parseFromString(result, 'application/xml')));
+                        resolve(_this.createDocument(domParser.parseFromString(result, "application/xml")));
                     };
 
                     _this.readFileEntry(fileEntry).then(function (result) {
@@ -684,16 +684,16 @@
         /* 11 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
             var encodings = {
-                'windows-1251': 'cp1251'
+                "windows-1251": "cp1251"
             };
 
-            var defaultEncoding = exports.defaultEncoding = 'utf8';
+            var defaultEncoding = exports.defaultEncoding = "utf8";
 
             /**
              *
@@ -710,7 +710,7 @@
         /* 12 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -741,37 +741,37 @@
                 [].forEach.call(xml && xml.childNodes || [], function (node) {
                     var localName = node.localName;
 
-                    if (localName === 'title') {
+                    if (localName === "title") {
                         var res = this.parseBlock(node, documentData);
-                        res.properties.className = 'title';
+                        res.properties.className = "title";
 
                         list.push(res);
-                    } else if (localName === 'section') {
+                    } else if (localName === "section") {
                         this.parsePages(node, documentData, list);
-                    } else if (localName === 'poem') {
+                    } else if (localName === "poem") {
                         this.parsePages(node, documentData, list);
-                    } else if (localName === 'stanza') {
+                    } else if (localName === "stanza") {
                         var res = this.parseBlockElement({
                             node: node,
                             documentData: documentData
                         });
-                        res.properties.className = 'stanza';
+                        res.properties.className = "stanza";
 
                         list.push(res);
-                    } else if (localName === 'cite') {
+                    } else if (localName === "cite") {
                         var res = this.parseBlockElement({
                             node: node,
                             documentData: documentData
                         });
-                        res.properties.className = 'cite';
+                        res.properties.className = "cite";
 
                         list.push(res);
-                    } else if (localName === 'epigraph') {
+                    } else if (localName === "epigraph") {
                         var res = this.parseBlockElement({
                             node: node,
                             documentData: documentData
                         });
-                        res.properties.className = 'epigraph';
+                        res.properties.className = "epigraph";
 
                         list.push(res);
                     } else if (localName) {
@@ -784,11 +784,11 @@
 
                 if (attributes.id && attributes.id.value && list[0]) {
                     var el = Document.elementPrototype;
-                    el.properties.tagName = 'A';
+                    el.properties.tagName = "A";
                     el.properties.name = attributes.id.value;
 
                     var it = list.length - 1;
-                    while (it >= 0 && list[it].properties.tagName != 'DIV')
+                    while (it >= 0 && list[it].properties.tagName != "DIV")
                     {
                         list[it].children.unshift(el);
                         --it;
@@ -800,7 +800,7 @@
         /* 13 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -836,36 +836,36 @@
 
 
                 switch (localName) {
-                    case 'p':
+                    case "p":
                         result = this.parseParagraph({ node: node });
-                        //result.properties.class = 'tag-p';
+                        //result.properties.class = "tag-p";
 
                         break;
-                    case 'empty-line':
+                    case "empty-line":
                         result = Document.elementPrototype;
-                        result.properties.tagName = 'BR';
+                        result.properties.tagName = "BR";
                         break;
-                    case 'subtitle':
+                    case "subtitle":
                         result = this.parseParagraph({ node: node });
-                        result.style.textAlign = 'center';
+                        result.style.textAlign = "center";
                         break;
-                    case 'image':
+                    case "image":
                         result = (0, _parseImage2.default)({
                             node: node,
                             documentData: documentData
                         });
 
                         break;
-                    case 'v':
+                    case "v":
                         result = this.parseParagraph({ node: node });
-                        result.style.textAlign = 'center';
-                        result.style.fontStyle  = 'italic';
-                        result.style.color = 'purple';
+                        result.style.textAlign = "center";
+                        result.style.fontStyle  = "italic";
+                        result.style.color = "purple";
 
                         break;
-                    case 'text-author':
+                    case "text-author":
                         result = this.parseParagraph({ node: node });
-                        result.properties.className = 'text-author';
+                        result.properties.className = "text-author";
 
                         break;
                     default:
@@ -881,7 +881,7 @@
         /* 14 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -914,7 +914,7 @@
         /* 15 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -947,7 +947,7 @@
                 var attrValue = undefined;
                 var node = params.node;
                 var result = Document.elementPrototype;
-                result.properties.tagName = 'P';
+                result.properties.tagName = "P";
 
                 if (!node) {
                     return result;
@@ -956,27 +956,27 @@
                 var children = [].slice.call(node && node.childNodes || [], 0);
                 children.forEach(function (child) {
                     var _child$textContent = child.textContent;
-                    var textContent = _child$textContent === undefined ? '' : _child$textContent;
+                    var textContent = _child$textContent === undefined ? "" : _child$textContent;
                     var localName = child.localName;
                     var _child$attributes = child.attributes;
                     var attributes = _child$attributes === undefined ? {} : _child$attributes;
 
-                    if (localName === 'a') {
+                    if (localName === "a") {
                         element = (0, _parseLinkElement2.default)(child);
                     } else {
                         element = Document.elementPrototype;
-                        element.properties.tagName = 'SPAN';
+                        element.properties.tagName = "SPAN";
                         element.properties.textContent = textContent;
-                        element.properties.className = 'tag-span';
+                        element.properties.className = "tag-span";
 
-                        if (localName === 'strong') {
-                            element.style.fontWeight = 'bold';
-                        } else if (localName === 'emphasis') {
-                            element.style.fontStyle = 'italic';
+                        if (localName === "strong") {
+                            element.style.fontWeight = "bold";
+                        } else if (localName === "emphasis") {
+                            element.style.fontStyle = "italic";
                         }
                     }
 
-                    attrValue = attributes['xml:lang'] && attributes['xml:lang'].value;
+                    attrValue = attributes["xml:lang"] && attributes["xml:lang"].value;
                     if (attrValue) {
                         element.properties.lang = attrValue;
                     }
@@ -984,7 +984,7 @@
                     result.children.push(element);
                 });
 
-                attrValue = node.attributes && node.attributes['xml:lang'] && node.attributes['xml:lang'].value;
+                attrValue = node.attributes && node.attributes["xml:lang"] && node.attributes["xml:lang"].value;
                 if (attrValue) {
                     result.properties.lang = attrValue;
                 }
@@ -1002,7 +1002,7 @@
         /* 16 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1028,15 +1028,15 @@
                 var node = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
                 var result = Document.elementPrototype;
-                var href = node.attributes['l:href'] || node.attributes['xlink:href'];
-                var link = href && href.value || '';
+                var href = node.attributes["l:href"] || node.attributes["xlink:href"];
+                var link = href && href.value || "";
 
-                result.properties.tagName = 'A';
+                result.properties.tagName = "A";
                 result.properties.textContent = node.textContent;
                 result.properties.href = link;
 
-                if (link && link[0] !== '#') {
-                    result.properties.target = '_blank';
+                if (link && link[0] !== "#") {
+                    result.properties.target = "_blank";
                 }
 
                 return result;

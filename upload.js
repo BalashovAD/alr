@@ -1,18 +1,18 @@
-'use strict';
-let debug = require('debug')('sniffer:upload');
+"use strict";
+let debug = require("debug")("sniffer:upload");
 
 let resolve = [];
-resolve[0] = 'adm';
+resolve[0] = "adm";
 
-let app = require('express')();
+let app = require("express")();
 
-let cookieParser = require('cookie-parser');
+let cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
 
-app.get('/', function(req, res, next){
+app.get("/", function(req, res, next){
 
-    if (req.user.checkAccess('addBook'))
+    if (req.user.checkAccess("addBook"))
     {
         next();
     }
@@ -22,19 +22,19 @@ app.get('/', function(req, res, next){
     }
 });
 
-app.get('/index', function(req, res){
-    res.set('Content-Type', 'text/html');
+app.get("/index", function(req, res){
+    res.set("Content-Type", "text/html");
 
-    res.render('upload.jade', {
+    res.render("upload.jade", {
         name: req.cookies.userName,
-        title: 'Upload'
+        title: "Upload"
     });
 });
 
-app.post('/upload/', function(req, res){
-    res.set('Content-Type', 'text/html');
+app.post("/upload/", function(req, res){
+    res.set("Content-Type", "text/html");
 
-    res.render('upload.jade', {
+    res.render("upload.jade", {
         name: req.cookies.userName,
         title: req.param.filename
     });

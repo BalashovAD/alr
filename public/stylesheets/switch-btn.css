@@ -10,17 +10,17 @@
 }
 
 .switch-wrapper[data-text=online]:after {
-	content: 'Online';
+	content: "Online";
 }
 
 .switch-wrapper.offline-mode:after {
-	content: 'Offline';
+	content: "Offline";
 }
 
 .switch-wrapper:after {
-	content: 'Day';
+	content: "Day";
 }
 
 .switch-wrapper.night-mode:after {
-	content: 'Night';
+	content: "Night";
 }

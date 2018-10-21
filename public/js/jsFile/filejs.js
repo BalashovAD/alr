@@ -1,9 +1,9 @@
 (function webpackUniversalModuleDefinition(root, factory) {
-    if(typeof exports === 'object' && typeof module === 'object')
+    if(typeof exports === "object" && typeof module === "object")
         module.exports = factory();
-    else if(typeof define === 'function' && define.amd)
+    else if(typeof define === "function" && define.amd)
         define([], factory);
-    else if(typeof exports === 'object')
+    else if(typeof exports === "object")
         exports["JsFile"] = factory();
     else
         root["JsFile"] = factory();
@@ -54,7 +54,7 @@
         /* 0 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -92,7 +92,7 @@
 
             var documentEngines = [];
             var mimeTypes = [];
-            var version =  true ? ("0.1.16") : '';
+            var version =  true ? ("0.1.16") : "";
             (0, _object2.default)();
             (0, _string2.default)();
 
@@ -103,7 +103,7 @@
                     this.file = file;
                     this.read = _read2.default;
                     this.config = {
-                        workerPath: 'js/workers/'
+                        workerPath: "js/workers/"
                     };
 
                     for (var k in config) {
@@ -114,7 +114,7 @@
                 }
 
                 _createClass(JsFile, [{
-                    key: 'findEngine',
+                    key: "findEngine",
                     value: function findEngine() {
                         var file = this.file;
                         var result = null;
@@ -129,7 +129,7 @@
                         return result;
                     }
                 }], [{
-                    key: 'removeEngine',
+                    key: "removeEngine",
                     value: function removeEngine(Engine) {
                         if (!Engine) {
                             documentEngines.length = 0;
@@ -191,7 +191,7 @@
 
                 var engineMimeTypes = Engine.mimeTypes;
 
-                if (typeof Engine.test === 'function' && Array.isArray(engineMimeTypes)) {
+                if (typeof Engine.test === "function" && Array.isArray(engineMimeTypes)) {
                     mimeTypes.push.apply(mimeTypes, engineMimeTypes);
                     return documentEngines.push(Engine);
                 }
@@ -205,7 +205,7 @@
         /* 1 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -216,13 +216,13 @@
                  * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/merge
                  */
                 if (!Object.merge) {
-                    Object.defineProperty(Object, 'merge', {
+                    Object.defineProperty(Object, "merge", {
                         enumerable: false,
                         configurable: true,
                         writable: true,
                         value: function value(target) {
                             if (target === undefined || target === null) {
-                                throw new TypeError('Cannot convert first argument to object');
+                                throw new TypeError("Cannot convert first argument to object");
                             }
 
                             var to = Object(target);
@@ -269,7 +269,7 @@
         /* 3 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -307,7 +307,7 @@
                 var engine = new Engine(file, this.config);
                 var parser = engine[engine.parser] || engine.parser;
 
-                if (typeof parser === 'function') {
+                if (typeof parser === "function") {
                     return parser.call(engine);
                 }
 
@@ -318,7 +318,7 @@
         /* 4 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -326,33 +326,33 @@
             /**
              * @description error objects
              */
-            var invalidFileType = exports.invalidFileType = 'Invalid file type. It must be an instance of File or Blob';
-            var invalidLoadFile = exports.invalidLoadFile = 'Can\'t load the file';
-            var invalidReadFile = exports.invalidReadFile = 'Can\'t read the file';
-            var requiredTechnologies = exports.requiredTechnologies = 'Doesn\'t have required technologies';
-            var invalidParser = exports.invalidParser = 'Doesn\'t have a parser';
-            var invalidReadArchive = exports.invalidReadArchive = 'Can\'t read the archive';
-            var notFoundMethodCreateDocument = exports.notFoundMethodCreateDocument = 'Method `createDocument` not found';
+            var invalidFileType = exports.invalidFileType = "Invalid file type. It must be an instance of File or Blob";
+            var invalidLoadFile = exports.invalidLoadFile = "Can\"t load the file";
+            var invalidReadFile = exports.invalidReadFile = "Can\"t read the file";
+            var requiredTechnologies = exports.requiredTechnologies = "Doesn\"t have required technologies";
+            var invalidParser = exports.invalidParser = "Doesn\"t have a parser";
+            var invalidReadArchive = exports.invalidReadArchive = "Can\"t read the archive";
+            var notFoundMethodCreateDocument = exports.notFoundMethodCreateDocument = "Method `createDocument` not found";
 
             /***/ },
         /* 5 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
 
             exports.default = function () {
-                return Boolean(typeof File !== 'undefined' && typeof Blob !== 'undefined' && typeof FileReader !== 'undefined' && typeof ArrayBuffer !== 'undefined' && typeof Uint8Array !== 'undefined' && typeof DataView !== 'undefined' && Blob.prototype.slice);
+                return Boolean(typeof File !== "undefined" && typeof Blob !== "undefined" && typeof FileReader !== "undefined" && typeof ArrayBuffer !== "undefined" && typeof Uint8Array !== "undefined" && typeof DataView !== "undefined" && Blob.prototype.slice);
             };
 
             /***/ },
         /* 6 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -384,8 +384,8 @@
 
                     this._data = {
                         meta: (0, _merge2.default)({
-                            name: '',
-                            language: ''
+                            name: "",
+                            language: ""
                         }, attrs.meta),
                         content: [],
                         styles: []
@@ -417,18 +417,18 @@
                 }
 
                 _createClass(Document, [{
-                    key: 'html',
+                    key: "html",
                     value: function html(options) {
                         var html = new _index2.default(options);
                         return html.buildDocument(this._data);
                     }
                 }, {
-                    key: 'json',
+                    key: "json",
                     value: function json() {
                         return (0, _merge2.default)(this._data);
                     }
                 }, {
-                    key: 'page',
+                    key: "page",
                     value: function page(index) {
                         return (0, _merge2.default)(this._data.content[index]);
                     }
@@ -443,13 +443,13 @@
                         return {
                             children: [],
                             style: {
-                                position: 'relative',
-                                boxSizing: 'border-box'
+                                position: "relative",
+                                boxSizing: "border-box"
                             },
                             properties: {
-                                tagName: 'DIV',
-                                textContent: '',
-                                class: ''
+                                tagName: "DIV",
+                                textContent: "",
+                                class: ""
                             }
                         };
                     }
@@ -521,7 +521,7 @@
         /* 7 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -562,7 +562,7 @@
                     _classCallCheck(this, Html);
 
                     this.options = (0, _merge2.default)({
-                        pageClassName: 'jf-page'
+                        pageClassName: "jf-page"
                     }, options);
 
                     this.setStyles = _setStyles2.default;
@@ -571,7 +571,7 @@
                 }
 
                 _createClass(Html, [{
-                    key: 'buildDocument',
+                    key: "buildDocument",
                     value: function buildDocument() {
                         var params = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
                         var content = params.content;
@@ -641,7 +641,7 @@
         /* 9 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -650,7 +650,7 @@
             exports.default = function (el) {
                 var data = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-                var numberBlock = document.createElement('div');
+                var numberBlock = document.createElement("div");
                 var _data$properties = data.properties;
                 var header = _data$properties.header;
                 var pageNumber = _data$properties.pageNumber;
@@ -660,8 +660,8 @@
                     return el;
                 }
 
-                el.style.position = 'relative';
-                numberBlock.style.position = 'absolute';
+                el.style.position = "relative";
+                numberBlock.style.position = "absolute";
                 numberBlock.style.top = 0;
                 var rule = header.style.height;
                 if (rule) {
@@ -683,7 +683,7 @@
         /* 10 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -692,24 +692,24 @@
             exports.default = function (styles) {
                 var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-                var el = document.createElement('style');
-                var pageClassName = options.pageClassName ? '.' + options.pageClassName : '';
-                var src = '';
+                var el = document.createElement("style");
+                var pageClassName = options.pageClassName ? "." + options.pageClassName : "";
+                var src = "";
 
                 styles.forEach(function (_ref) {
                     var properties = _ref.properties;
                     var selector = _ref.selector;
 
-                    var declaration = '';
+                    var declaration = "";
                     properties = (0, _prepareStyleProperties2.default)(properties);
                     for (var prop in properties) {
                         if (properties.hasOwnProperty(prop)) {
-                            declaration += (0, _toHyphenCase2.default)(prop) + ': ' + properties[prop] + ';\n';
+                            declaration += (0, _toHyphenCase2.default)(prop) + ": " + properties[prop] + ";\n";
                         }
                     }
 
                     if (declaration) {
-                        src += pageClassName + ' ' + selector.split(',').join(', ' + pageClassName + ' ') + ' {\n                ' + declaration + '\n            }\n';
+                        src += pageClassName + " " + selector.split(",").join(", " + pageClassName + " ") + " {\n                " + declaration + "\n            }\n";
                     }
                 });
 
@@ -734,21 +734,21 @@
         /* 11 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
 
             exports.default = function (str) {
-                return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+                return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
             };
 
             /***/ },
         /* 12 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -762,7 +762,7 @@
                     if (properties.hasOwnProperty(prop)) {
                         var value = properties[prop];
 
-                        if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+                        if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "object") {
                             if (value.unit) {
                                 result[prop] = value.value + value.unit;
                             }
@@ -779,7 +779,7 @@
         /* 13 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -837,7 +837,7 @@
         /* 15 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -867,7 +867,7 @@
                 var clone = [];
 
                 arr.forEach(function (item, index) {
-                    if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && item !== null) {
+                    if ((typeof item === "undefined" ? "undefined" : _typeof(item)) === "object" && item !== null) {
                         if (Array.isArray(item)) {
                             clone[index] = deepCloneArray(item);
                         } else if (isSpecificValue(item)) {
@@ -892,7 +892,7 @@
             function merge() {
                 var target = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-                if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) === 'object') {
+                if ((typeof target === "undefined" ? "undefined" : _typeof(target)) === "object") {
                     for (var _len = arguments.length, sources = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                         sources[_key - 1] = arguments[_key];
                     }
@@ -908,7 +908,7 @@
                                     continue;
                                 }
 
-                                if ((typeof srcValue === 'undefined' ? 'undefined' : _typeof(srcValue)) !== 'object' || srcValue === null) {
+                                if ((typeof srcValue === "undefined" ? "undefined" : _typeof(srcValue)) !== "object" || srcValue === null) {
                                     target[key] = srcValue;
                                     continue;
                                 }
@@ -923,7 +923,7 @@
                                     continue;
                                 }
 
-                                if ((typeof targetValue === 'undefined' ? 'undefined' : _typeof(targetValue)) !== 'object' || targetValue === null || Array.isArray(targetValue)) {
+                                if ((typeof targetValue === "undefined" ? "undefined" : _typeof(targetValue)) !== "object" || targetValue === null || Array.isArray(targetValue)) {
                                     target[key] = merge({}, srcValue);
                                     continue;
                                 }
@@ -943,7 +943,7 @@
         /* 16 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1013,14 +1013,14 @@
 
             function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-            var halfTabAsSpaces = '  ';
+            var halfTabAsSpaces = "  ";
 
             var Engine = function () {
                 function Engine(file, config) {
                     _classCallCheck(this, Engine);
 
                     this.file = file;
-                    this.fileName = this.file && this.file.name || '';
+                    this.fileName = this.file && this.file.name || "";
                     this.config = {};
 
                     for (var k in config) {
@@ -1031,20 +1031,20 @@
                 }
 
                 _createClass(Engine, [{
-                    key: 'isValid',
+                    key: "isValid",
                     value: function isValid() {
                         return this.constructor.test(this.file);
                     }
                 }], [{
-                    key: 'getCharFromHex',
+                    key: "getCharFromHex",
                     value: function getCharFromHex(hex) {
                         var code = parseInt(hex, 16);
-                        return !isNaN(code) ? String.fromCharCode(code) : '';
+                        return !isNaN(code) ? String.fromCharCode(code) : "";
                     }
                 }, {
-                    key: 'replaceSpaces',
+                    key: "replaceSpaces",
                     value: function replaceSpaces(str) {
-                        return String(str || '').replace(/\s{2,}/g, halfTabAsSpaces);
+                        return String(str || "").replace(/\s{2,}/g, halfTabAsSpaces);
                     }
 
                     /**
@@ -1053,7 +1053,7 @@
                      */
 
                 }, {
-                    key: 'test',
+                    key: "test",
                     value: function test() {
                         return false;
                     }
@@ -1065,7 +1065,7 @@
             Object.defineProperties(Engine.prototype, {
                 parser: {
                     writable: true,
-                    value: 'readSingleFile'
+                    value: "readSingleFile"
                 },
                 readFileEntry: {
                     writable: true,
@@ -1116,25 +1116,25 @@
                     value: (0, _clone2.default)(_colorsList2.default)
                 },
                 emDash: {
-                    value: '—'
+                    value: "—"
                 },
                 enDash: {
-                    value: '–'
+                    value: "–"
                 },
                 halfTabAsSpaces: {
                     value: halfTabAsSpaces
                 },
                 tabAsSpaces: {
-                    value: '    '
+                    value: "    "
                 },
                 space: {
-                    value: ' '
+                    value: " "
                 },
                 nbsp: {
-                    value: ' '
+                    value: " "
                 },
                 nbHyphen: {
-                    value: 'Ò'
+                    value: "Ò"
                 }
             });
 
@@ -1144,33 +1144,33 @@
         /* 17 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
 
             exports.default = function (dataUri) {
-                var filename = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+                var filename = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
 
                 var extensionData = /[A-Za-z]+$/.exec(filename);
                 var mime = extensionData && mimeTypesByExtension[extensionData[0].toLowerCase()];
 
-                return !mime ? dataUri : dataUri.replace(/data:[^;]*;/, 'data:' + mime + ';');
+                return !mime ? dataUri : dataUri.replace(/data:[^;]*;/, "data:" + mime + ";");
             };
 
             var mimeTypesByExtension = {
-                png: 'image/png',
-                jpg: 'image/jpeg',
-                jpeg: 'image/jpeg',
-                pjpeg: 'image/pjpeg',
-                ico: 'image/x-icon',
-                gif: 'image/gif',
-                svg: 'image/svg+xml',
-                woff: 'application/font-woff',
-                tif: 'image/tiff',
-                tiff: 'image/tiff',
-                wbmp: 'image/vnd.wap.wbmp'
+                png: "image/png",
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                pjpeg: "image/pjpeg",
+                ico: "image/x-icon",
+                gif: "image/gif",
+                svg: "image/svg+xml",
+                woff: "application/font-woff",
+                tif: "image/tiff",
+                tiff: "image/tiff",
+                wbmp: "image/vnd.wap.wbmp"
             };
 
             /**
@@ -1185,7 +1185,7 @@
         /* 18 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1199,9 +1199,9 @@
                 }
 
                 var fileType = file.type;
-                var fileNameData = String(file.name).split('.');
+                var fileNameData = String(file.name).split(".");
                 var len = fileNameData.length;
-                var fileExtension = len > 1 ? fileNameData[len - 1] : '';
+                var fileExtension = len > 1 ? fileNameData[len - 1] : "";
                 var mime = files.mime;
                 var extension = files.extension;
 
@@ -1232,14 +1232,14 @@
         /* 19 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
 
             exports.default = function (value) {
-                value = Number(String(value).replace(/,/g, '.').replace(/[^0-9.]+/g, ''));
+                value = Number(String(value).replace(/,/g, ".").replace(/[^0-9.]+/g, ""));
                 return !isNaN(value) ? value : 0;
             };
 
@@ -1247,7 +1247,7 @@
         /* 20 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1266,7 +1266,7 @@
                 var config = _ref$config === undefined ? {} : _ref$config;
 
                 return new Promise(function (resolve, reject) {
-                    _jstask2.default.run(config.workerPath + 'readFile.js', params, function (response) {
+                    _jstask2.default.run(config.workerPath + "readFile.js", params, function (response) {
                         if (!response || response.error) {
                             return reject(response && response.error || new Error(_errors.invalidReadFile));
                         }
@@ -1290,10 +1290,10 @@
         /* 21 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
-            var maxWorkersCount = typeof navigator !== 'undefined' && navigator.hardwareConcurrency || 4;
-            var invalidWorker = "Can't run the worker";
+            var maxWorkersCount = typeof navigator !== "undefined" && navigator.hardwareConcurrency || 4;
+            var invalidWorker = "Can"t run the worker";
             var queue = [];
             var createdWorkersCount = 0;
 
@@ -1315,7 +1315,7 @@
                     var worker = new Worker(taskOptions.url);
 
                     worker.onmessage = function (e) {
-                        if (typeof taskOptions.resolve === 'function') {
+                        if (typeof taskOptions.resolve === "function") {
                             taskOptions.resolve(e.data || {});
                         }
 
@@ -1324,7 +1324,7 @@
                     };
 
                     worker.onerror = function () {
-                        if (typeof taskOptions.reject === 'function') {
+                        if (typeof taskOptions.reject === "function") {
                             taskOptions.reject(new Error(invalidWorker));
                         }
 
@@ -1360,7 +1360,7 @@
         /* 22 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1380,7 +1380,7 @@
                     _this.readFileEntry({
                         file: _this.file
                     }).then(function (result) {
-                        if (typeof _this.createDocument !== 'function') {
+                        if (typeof _this.createDocument !== "function") {
                             throw new Error(_errors.notFoundMethodCreateDocument);
                         }
 
@@ -1395,25 +1395,25 @@
         /* 23 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
             });
 
             exports.default = function (value) {
-                if (!value || typeof value !== 'string') {
+                if (!value || typeof value !== "string") {
                     return defaultColor;
                 }
 
-                value = value.replace(/\s+/g, '');
+                value = value.replace(/\s+/g, "");
 
                 if (/^#/.test(value)) {
                     return value.toUpperCase();
                 }
 
-                if (!isNaN(Number('0x' + value))) {
-                    return '#' + value.toUpperCase();
+                if (!isNaN(Number("0x" + value))) {
+                    return "#" + value.toUpperCase();
                 }
 
                 value = value.toLowerCase();
@@ -1440,7 +1440,7 @@
         /* 24 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1450,158 +1450,158 @@
              * @private
              */
             exports.default = {
-                black: '#000000',
-                navy: '#000080',
-                darkblue: '#00008B',
-                mediumblue: '#0000CD',
-                blue: '#0000FF',
-                darkgreen: '#006400',
-                green: '#008000',
-                teal: '#008080',
-                darkcyan: '#008B8B',
-                deepskyblue: '#00BFFF',
-                darkturquoise: '#00CED1',
-                mediumspringgreen: '#00FA9A',
-                lime: '#00FF00',
-                springgreen: '#00FF7F',
-                aqua: '#00FFFF',
-                cyan: '#00FFFF',
-                midnightblue: '#191970',
-                dodgerblue: '#1E90FF',
-                lightseagreen: '#20B2AA',
-                forestgreen: '#228B22',
-                seagreen: '#2E8B57',
-                darkslategray: '#2F4F4F',
-                limegreen: '#32CD32',
-                mediumseagreen: '#3CB371',
-                turquoise: '#40E0D0',
-                royalblue: '#4169E1',
-                steelblue: '#4682B4',
-                darkslateblue: '#483D8B',
-                mediumturquoise: '#48D1CC',
-                white: '#FFFFFF',
-                indigo: '#4B0082',
-                darkolivegreen: '#556B2F',
-                cadetblue: '#5F9EA0',
-                cornflowerblue: '#6495ED',
-                mediumaquamarine: '#66CDAA',
-                dimgray: '#696969',
-                slateblue: '#6A5ACD',
-                olivedrab: '#6B8E23',
-                slategray: '#708090',
-                lightslategray: '#778899',
-                mediumslateblue: '#7B68EE',
-                lawngreen: '#7CFC00',
-                chartreuse: '#7FFF00',
-                aquamarine: '#7FFFD4',
-                maroon: '#800000',
-                purple: '#800080',
-                olive: '#808000',
-                gray: '#808080',
-                skyblue: '#87CEEB',
-                lightskyblue: '#87CEFA',
-                blueviolet: '#8A2BE2',
-                darkred: '#8B0000',
-                darkmagenta: '#8B008B',
-                saddlebrown: '#8B4513',
-                darkseagreen: '#8FBC8F',
-                lightgreen: '#90EE90',
-                mediumpurple: '#9370D8',
-                darkviolet: '#9400D3',
-                palegreen: '#98FB98',
-                darkorchid: '#9932CC',
-                yellowgreen: '#9ACD32',
-                sienna: '#A0522D',
-                brown: '#A52A2A',
-                darkgray: '#A9A9A9',
-                lightblue: '#ADD8E6',
-                greenyellow: '#ADFF2F',
-                paleturquoise: '#AFEEEE',
-                lightsteelblue: '#B0C4DE',
-                powderblue: '#B0E0E6',
-                firebrick: '#B22222',
-                darkgoldenrod: '#B8860B',
-                mediumorchid: '#BA55D3',
-                rosybrown: '#BC8F8F',
-                darkkhaki: '#BDB76B',
-                silver: '#C0C0C0',
-                mediumvioletred: '#C71585',
-                indianred: '#CD5C5C',
-                peru: '#CD853F',
-                chocolate: '#D2691E',
-                tan: '#D2B48C',
-                lightgray: '#D3D3D3',
-                palevioletred: '#D87093',
-                thistle: '#D8BFD8',
-                orchid: '#DA70D6',
-                goldenrod: '#DAA520',
-                crimson: '#DC143C',
-                gainsboro: '#DCDCDC',
-                plum: '#DDA0DD',
-                burlywood: '#DEB887',
-                lightcyan: '#E0FFFF',
-                lavender: '#E6E6FA',
-                darksalmon: '#E9967A',
-                violet: '#EE82EE',
-                palegoldenrod: '#EE82EE',
-                airforceblue: '#5D8AA8',
-                aliceblue: '#F0F8FF',
-                alizarincrimson: '#E32636',
-                almond: '#EFDECD',
-                amaranth: '#E52B50',
-                lightcoral: '#F08080',
-                khaki: '#F0E68C',
-                honeydew: '#F0FFF0',
-                azure: '#F0FFFF',
-                sandybrown: '#F4A460',
-                wheat: '#F5DEB3',
-                beige: '#F5F5DC',
-                whitesmoke: '#F5F5F5',
-                mintcream: '#F5FFFA',
-                ghostwhite: '#F8F8FF',
-                salmon: '#FA8072',
-                antiqueWhite: '#FAEBD7',
-                linen: '#FAF0E6',
-                lightgoldenrodyellow: '#FAFAD2',
-                oldlace: '#FDF5E6',
-                red: '#FF0000',
-                fuchsia: '#FF00FF',
-                magenta: '#FF00FF',
-                deeppink: '#FF1493',
-                orangered: '#FF4500',
-                tomato: '#FF6347',
-                hotpink: '#FF69B4',
-                coral: '#FF7F50',
-                darkorange: '#FF8C00',
-                lightSalmon: '#FFA07A',
-                orange: '#FFA500',
-                lightpink: '#FFB6C1',
-                pink: '#FFC0CB',
-                gold: '#FFD700',
-                peachpuff: '#FFDAB9',
-                navajowhite: '#FFDEAD',
-                moccasin: '#FFE4B5',
-                bisque: '#FFE4C4',
-                mistyrose: '#FFE4E1',
-                blanchedalmond: '#FFEBCD',
-                papayawhip: '#FFEFD5',
-                lavenderblush: '#FFF0F5',
-                seashell: '#FFF5EE',
-                cornsilk: '#FFF8DC',
-                lemonchiffon: '#FFFACD',
-                floralwhite: '#FFFAF0',
-                snow: '#FFFAFA',
-                yellow: '#FFFF00',
-                lightyellow: '#FFFFE0',
-                ivory: '#FFFFF0',
-                none: 'inherit'
+                black: "#000000",
+                navy: "#000080",
+                darkblue: "#00008B",
+                mediumblue: "#0000CD",
+                blue: "#0000FF",
+                darkgreen: "#006400",
+                green: "#008000",
+                teal: "#008080",
+                darkcyan: "#008B8B",
+                deepskyblue: "#00BFFF",
+                darkturquoise: "#00CED1",
+                mediumspringgreen: "#00FA9A",
+                lime: "#00FF00",
+                springgreen: "#00FF7F",
+                aqua: "#00FFFF",
+                cyan: "#00FFFF",
+                midnightblue: "#191970",
+                dodgerblue: "#1E90FF",
+                lightseagreen: "#20B2AA",
+                forestgreen: "#228B22",
+                seagreen: "#2E8B57",
+                darkslategray: "#2F4F4F",
+                limegreen: "#32CD32",
+                mediumseagreen: "#3CB371",
+                turquoise: "#40E0D0",
+                royalblue: "#4169E1",
+                steelblue: "#4682B4",
+                darkslateblue: "#483D8B",
+                mediumturquoise: "#48D1CC",
+                white: "#FFFFFF",
+                indigo: "#4B0082",
+                darkolivegreen: "#556B2F",
+                cadetblue: "#5F9EA0",
+                cornflowerblue: "#6495ED",
+                mediumaquamarine: "#66CDAA",
+                dimgray: "#696969",
+                slateblue: "#6A5ACD",
+                olivedrab: "#6B8E23",
+                slategray: "#708090",
+                lightslategray: "#778899",
+                mediumslateblue: "#7B68EE",
+                lawngreen: "#7CFC00",
+                chartreuse: "#7FFF00",
+                aquamarine: "#7FFFD4",
+                maroon: "#800000",
+                purple: "#800080",
+                olive: "#808000",
+                gray: "#808080",
+                skyblue: "#87CEEB",
+                lightskyblue: "#87CEFA",
+                blueviolet: "#8A2BE2",
+                darkred: "#8B0000",
+                darkmagenta: "#8B008B",
+                saddlebrown: "#8B4513",
+                darkseagreen: "#8FBC8F",
+                lightgreen: "#90EE90",
+                mediumpurple: "#9370D8",
+                darkviolet: "#9400D3",
+                palegreen: "#98FB98",
+                darkorchid: "#9932CC",
+                yellowgreen: "#9ACD32",
+                sienna: "#A0522D",
+                brown: "#A52A2A",
+                darkgray: "#A9A9A9",
+                lightblue: "#ADD8E6",
+                greenyellow: "#ADFF2F",
+                paleturquoise: "#AFEEEE",
+                lightsteelblue: "#B0C4DE",
+                powderblue: "#B0E0E6",
+                firebrick: "#B22222",
+                darkgoldenrod: "#B8860B",
+                mediumorchid: "#BA55D3",
+                rosybrown: "#BC8F8F",
+                darkkhaki: "#BDB76B",
+                silver: "#C0C0C0",
+                mediumvioletred: "#C71585",
+                indianred: "#CD5C5C",
+                peru: "#CD853F",
+                chocolate: "#D2691E",
+                tan: "#D2B48C",
+                lightgray: "#D3D3D3",
+                palevioletred: "#D87093",
+                thistle: "#D8BFD8",
+                orchid: "#DA70D6",
+                goldenrod: "#DAA520",
+                crimson: "#DC143C",
+                gainsboro: "#DCDCDC",
+                plum: "#DDA0DD",
+                burlywood: "#DEB887",
+                lightcyan: "#E0FFFF",
+                lavender: "#E6E6FA",
+                darksalmon: "#E9967A",
+                violet: "#EE82EE",
+                palegoldenrod: "#EE82EE",
+                airforceblue: "#5D8AA8",
+                aliceblue: "#F0F8FF",
+                alizarincrimson: "#E32636",
+                almond: "#EFDECD",
+                amaranth: "#E52B50",
+                lightcoral: "#F08080",
+                khaki: "#F0E68C",
+                honeydew: "#F0FFF0",
+                azure: "#F0FFFF",
+                sandybrown: "#F4A460",
+                wheat: "#F5DEB3",
+                beige: "#F5F5DC",
+                whitesmoke: "#F5F5F5",
+                mintcream: "#F5FFFA",
+                ghostwhite: "#F8F8FF",
+                salmon: "#FA8072",
+                antiqueWhite: "#FAEBD7",
+                linen: "#FAF0E6",
+                lightgoldenrodyellow: "#FAFAD2",
+                oldlace: "#FDF5E6",
+                red: "#FF0000",
+                fuchsia: "#FF00FF",
+                magenta: "#FF00FF",
+                deeppink: "#FF1493",
+                orangered: "#FF4500",
+                tomato: "#FF6347",
+                hotpink: "#FF69B4",
+                coral: "#FF7F50",
+                darkorange: "#FF8C00",
+                lightSalmon: "#FFA07A",
+                orange: "#FFA500",
+                lightpink: "#FFB6C1",
+                pink: "#FFC0CB",
+                gold: "#FFD700",
+                peachpuff: "#FFDAB9",
+                navajowhite: "#FFDEAD",
+                moccasin: "#FFE4B5",
+                bisque: "#FFE4C4",
+                mistyrose: "#FFE4E1",
+                blanchedalmond: "#FFEBCD",
+                papayawhip: "#FFEFD5",
+                lavenderblush: "#FFF0F5",
+                seashell: "#FFF5EE",
+                cornsilk: "#FFF8DC",
+                lemonchiffon: "#FFFACD",
+                floralwhite: "#FFFAF0",
+                snow: "#FFFAFA",
+                yellow: "#FFFF00",
+                lightyellow: "#FFFFE0",
+                ivory: "#FFFFF0",
+                none: "inherit"
             };
 
             /***/ },
         /* 25 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1610,14 +1610,14 @@
             exports.default = function (attribute) {
                 var value = attribute && attribute.value || attribute;
 
-                return [true, 'true', 'on', 'yes', '1', 1].indexOf(value) >= 0;
+                return [true, "true", "on", "yes", "1", 1].indexOf(value) >= 0;
             };
 
             /***/ },
         /* 26 */
         /***/ function(module, exports) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1632,18 +1632,18 @@
                  * Transform property sub parts to Camel notation. my-property => myProperty
                  * @type {string}
                  */
-                var src = String(value || '').replace(/^[0-9a-zA-Z-_]+:/, '').replace(/-+([^-]?)/g, function (f, part) {
-                    return part && part.toUpperCase() || '';
+                var src = String(value || "").replace(/^[0-9a-zA-Z-_]+:/, "").replace(/-+([^-]?)/g, function (f, part) {
+                    return part && part.toUpperCase() || "";
                 });
 
-                return src.charAt(0)[options.capitalize ? 'toUpperCase' : 'toLowerCase']() + src.slice(1);
+                return src.charAt(0)[options.capitalize ? "toUpperCase" : "toLowerCase"]() + src.slice(1);
             };
 
             /***/ },
         /* 27 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1674,7 +1674,7 @@
                         useWebWorkers: true,
                         workerScriptsPath: _this.config.workerPath
                     }).then(function (result) {
-                        if (typeof _this.createDocument !== 'function') {
+                        if (typeof _this.createDocument !== "function") {
                             throw new Error(_errors.notFoundMethodCreateDocument);
                         }
 
@@ -1689,7 +1689,7 @@
         /* 28 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -1728,7 +1728,7 @@
                          */
                         reader.size = file.size;
 
-                        createWorker('inflater', function (worker) {
+                        createWorker("inflater", function (worker) {
                             // look for End of central directory record
                             seekEOCDR(reader, function (dataView) {
                                 var dataLength = dataView.getUint32(16, true);
@@ -1771,7 +1771,7 @@
                                             entry.filename = decodeASCII(filename);
                                         }
 
-                                        if (!entry.directory && entry.filename[entry.filename.length - 1] === '/') {
+                                        if (!entry.directory && entry.filename[entry.filename.length - 1] === "/") {
                                             entry.directory = true;
                                         }
 
@@ -1829,7 +1829,7 @@
              3. The names of the authors may not be used to endorse or promote products
              derived from this software without specific prior written permission.
 
-             THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+             THIS SOFTWARE IS PROVIDED ``AS IS"" AND ANY EXPRESSED OR IMPLIED WARRANTIES,
              INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
              FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
              INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
@@ -1899,7 +1899,7 @@
             NOOP.prototype.flush = function flush() {};
 
             function blobSlice(blob, index, length) {
-                if (index < 0 || length < 0 || index + length > blob.size) throw new RangeError('offset:' + index + ', length:' + length + ', size:' + blob.size);
+                if (index < 0 || length < 0 || index + length > blob.size) throw new RangeError("offset:" + index + ", length:" + length + ", size:" + blob.size);
                 if (blob.slice) return blob.slice(index, index + length);else if (blob.webkitSlice) return blob.webkitSlice(index, index + length);else if (blob.mozSlice) return blob.mozSlice(index, index + length);else if (blob.msSlice) return blob.msSlice(index, index + length);
             }
 
@@ -2123,7 +2123,7 @@
                     crc;
 
                 function onflush() {
-                    worker.removeEventListener('message', onmessage, false);
+                    worker.removeEventListener("message", onmessage, false);
                     onend(outputSize, crc);
                 }
 
@@ -2133,17 +2133,17 @@
                         err = message.error;
                     if (err) {
                         err.toString = function () {
-                            return 'Error: ' + this.message;
+                            return "Error: " + this.message;
                         };
                         onreaderror(err);
                         return;
                     }
                     if (message.sn !== sn) return;
-                    if (typeof message.codecTime === 'number') worker.codecTime += message.codecTime; // should be before onflush()
-                    if (typeof message.crcTime === 'number') worker.crcTime += message.crcTime;
+                    if (typeof message.codecTime === "number") worker.codecTime += message.codecTime; // should be before onflush()
+                    if (typeof message.crcTime === "number") worker.crcTime += message.crcTime;
 
                     switch (message.type) {
-                        case 'append':
+                        case "append":
                             if (data) {
                                 outputSize += data.length;
                                 writer.writeUint8Array(data, function () {
@@ -2151,7 +2151,7 @@
                                 }, onwriteerror);
                             } else step();
                             break;
-                        case 'flush':
+                        case "flush":
                             crc = message.crc;
                             if (data) {
                                 outputSize += data.length;
@@ -2160,15 +2160,15 @@
                                 }, onwriteerror);
                             } else onflush();
                             break;
-                        case 'progress':
+                        case "progress":
                             if (onprogress) onprogress(index + message.loaded, size);
                             break;
-                        case 'importScripts': //no need to handle here
-                        case 'newTask':
-                        case 'echo':
+                        case "importScripts": //no need to handle here
+                        case "newTask":
+                        case "echo":
                             break;
                         default:
-                            console.warn('zip.js:launchWorkerProcess: unknown message: ', message);
+                            console.warn("zip.js:launchWorkerProcess: unknown message: ", message);
                     }
                 }
 
@@ -2179,7 +2179,7 @@
                         reader.readUint8Array(offset + index, Math.min(CHUNK_SIZE, size - index), function (array) {
                             if (onprogress) onprogress(index, size);
                             var msg = index === 0 ? initialMessage : { sn: sn };
-                            msg.type = 'append';
+                            msg.type = "append";
                             msg.data = array;
 
                             // posting a message with transferables will fail on IE10
@@ -2193,13 +2193,13 @@
                     } else {
                         worker.postMessage({
                             sn: sn,
-                            type: 'flush'
+                            type: "flush"
                         });
                     }
                 }
 
                 outputSize = 0;
-                worker.addEventListener('message', onmessage, false);
+                worker.addEventListener("message", onmessage, false);
                 step();
             }
 
@@ -2207,8 +2207,8 @@
                 var chunkIndex = 0,
                     index,
                     outputSize = 0,
-                    crcInput = crcType === 'input',
-                    crcOutput = crcType === 'output',
+                    crcInput = crcType === "input",
+                    crcOutput = crcType === "output",
                     crc = new Crc32();
 
                 function step() {
@@ -2258,11 +2258,11 @@
             }
 
             function inflate(worker, sn, reader, writer, offset, size, computeCrc32, onend, onprogress, onreaderror, onwriteerror) {
-                var crcType = computeCrc32 ? 'output' : 'none';
+                var crcType = computeCrc32 ? "output" : "none";
                 if (zip.useWebWorkers) {
                     var initialMessage = {
                         sn: sn,
-                        codecClass: 'Inflater',
+                        codecClass: "Inflater",
                         crcType: crcType
                     };
                     launchWorkerProcess(worker, initialMessage, reader, writer, offset, size, onprogress, onend, onreaderror, onwriteerror);
@@ -2270,12 +2270,12 @@
             }
 
             function deflate(worker, sn, reader, writer, level, onend, onprogress, onreaderror, onwriteerror) {
-                var crcType = 'input';
+                var crcType = "input";
                 if (zip.useWebWorkers) {
                     var initialMessage = {
                         sn: sn,
                         options: { level: level },
-                        codecClass: 'Deflater',
+                        codecClass: "Deflater",
                         crcType: crcType
                     };
                     launchWorkerProcess(worker, initialMessage, reader, writer, 0, reader.size, onprogress, onend, onreaderror, onwriteerror);
@@ -2283,11 +2283,11 @@
             }
 
             function copy(worker, sn, reader, writer, offset, size, computeCrc32, onend, onprogress, onreaderror, onwriteerror) {
-                var crcType = 'input';
+                var crcType = "input";
                 if (zip.useWebWorkers && computeCrc32) {
                     var initialMessage = {
                         sn: sn,
-                        codecClass: 'NOOP',
+                        codecClass: "NOOP",
                         crcType: crcType
                     };
                     launchWorkerProcess(worker, initialMessage, reader, writer, offset, size, onprogress, onend, onreaderror, onwriteerror);
@@ -2300,7 +2300,7 @@
                 var i,
                     out = "",
                     charCode,
-                    extendedASCII = ["Ç", "ü", "é", "â", "ä", "à", "å", "ç", "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å", "É", "æ", "Æ", "ô", "ö", "ò", "û", "ù", "ÿ", "Ö", "Ü", "ø", "£", "Ø", "×", "ƒ", "á", "í", "ó", "ú", "ñ", "Ñ", "ª", "º", "¿", "®", "¬", "½", "¼", "¡", "«", "»", '_', '_', '_', "¦", "¦", "Á", "Â", "À", "©", "¦", "¦", '+', '+', "¢", "¥", '+', '+', '-', '-', '+', '-', '+', "ã", "Ã", '+', '+', '-', '-', "¦", '-', '+', "¤", "ð", "Ð", "Ê", "Ë", "È", 'i', "Í", "Î", "Ï", '+', '+', '_', '_', "¦", "Ì", '_', "Ó", "ß", "Ô", "Ò", "õ", "Õ", "µ", "þ", "Þ", "Ú", "Û", "Ù", "ý", "Ý", "¯", "´", "­", "±", '_', "¾", "¶", "§", "÷", "¸", "°", "¨", "·", "¹", "³", "²", '_', ' '];
+                    extendedASCII = ["Ç", "ü", "é", "â", "ä", "à", "å", "ç", "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å", "É", "æ", "Æ", "ô", "ö", "ò", "û", "ù", "ÿ", "Ö", "Ü", "ø", "£", "Ø", "×", "ƒ", "á", "í", "ó", "ú", "ñ", "Ñ", "ª", "º", "¿", "®", "¬", "½", "¼", "¡", "«", "»", "_", "_", "_", "¦", "¦", "Á", "Â", "À", "©", "¦", "¦", "+", "+", "¢", "¥", "+", "+", "-", "-", "+", "-", "+", "ã", "Ã", "+", "+", "-", "-", "¦", "-", "+", "¤", "ð", "Ð", "Ê", "Ë", "È", "i", "Í", "Î", "Ï", "+", "+", "_", "_", "¦", "Ì", "_", "Ó", "ß", "Ô", "Ò", "õ", "Õ", "µ", "þ", "Þ", "Ú", "Û", "Ù", "ý", "Ý", "¯", "´", "­", "±", "_", "¾", "¶", "§", "÷", "¸", "°", "¨", "·", "¹", "³", "²", "_", " "];
                 for (i = 0; i < str.length; i++) {
                     charCode = str.charCodeAt(i) & 0xFF;
                     if (charCode > 127) out += extendedASCII[charCode - 128];else out += String.fromCharCode(charCode);
@@ -2525,7 +2525,7 @@
                 };
 
                 if (!zip.useWebWorkers) callback(zipWriter);else {
-                    createWorker('deflater', function (worker) {
+                    createWorker("deflater", function (worker) {
                         zipWriter._worker = worker;
                         callback(zipWriter);
                     }, function (err) {
@@ -2535,7 +2535,7 @@
             }
 
             function resolveURLs(urls) {
-                var a = document.createElement('a');
+                var a = document.createElement("a");
                 return urls.map(function (url) {
                     a.href = url;
                     return a.href;
@@ -2543,31 +2543,31 @@
             }
 
             var DEFAULT_WORKER_SCRIPTS = {
-                deflater: ['z-worker.js', 'deflate.js'],
-                inflater: ['z-worker.js', 'inflate.js']
+                deflater: ["z-worker.js", "deflate.js"],
+                inflater: ["z-worker.js", "inflate.js"]
             };
             function createWorker(type, callback, onerror) {
                 if (zip.workerScripts !== null && zip.workerScriptsPath !== null) {
-                    onerror(new Error('Either zip.workerScripts or zip.workerScriptsPath may be set, not both.'));
+                    onerror(new Error("Either zip.workerScripts or zip.workerScriptsPath may be set, not both."));
                     return;
                 }
                 var scripts;
                 if (zip.workerScripts) {
                     scripts = zip.workerScripts[type];
                     if (!Array.isArray(scripts)) {
-                        onerror(new Error('zip.workerScripts.' + type + ' is not an array!'));
+                        onerror(new Error("zip.workerScripts." + type + " is not an array!"));
                         return;
                     }
                     scripts = resolveURLs(scripts);
                 } else {
                     scripts = DEFAULT_WORKER_SCRIPTS[type].slice(0);
-                    scripts[0] = (zip.workerScriptsPath || '') + scripts[0];
+                    scripts[0] = (zip.workerScriptsPath || "") + scripts[0];
                 }
                 var worker = new Worker(scripts[0]);
                 // record total consumed time by inflater/deflater/crc32 in this worker
                 worker.codecTime = worker.crcTime = 0;
-                worker.postMessage({ type: 'importScripts', scripts: scripts.slice(1) });
-                worker.addEventListener('message', onmessage);
+                worker.postMessage({ type: "importScripts", scripts: scripts.slice(1) });
+                worker.addEventListener("message", onmessage);
                 function onmessage(ev) {
                     var msg = ev.data;
                     if (msg.error) {
@@ -2575,15 +2575,15 @@
                         onerror(msg.error);
                         return;
                     }
-                    if (msg.type === 'importScripts') {
-                        worker.removeEventListener('message', onmessage);
-                        worker.removeEventListener('error', errorHandler);
+                    if (msg.type === "importScripts") {
+                        worker.removeEventListener("message", onmessage);
+                        worker.removeEventListener("error", errorHandler);
                         callback(worker);
                     }
                 }
 
                 // catch entry script loading error and other unhandled errors
-                worker.addEventListener('error', errorHandler);
+                worker.addEventListener("error", errorHandler);
                 function errorHandler(err) {
                     worker.terminate();
                     onerror(err);
@@ -2619,7 +2619,7 @@
         /* 30 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true
@@ -2651,14 +2651,14 @@
                 }
 
                 _createClass(Entry, [{
-                    key: 'testCrc32',
+                    key: "testCrc32",
                     value: function testCrc32(crc32) {
                         var dataCrc32 = getDataHelper(4);
                         dataCrc32.view.setUint32(0, crc32);
                         return this.crc32 === dataCrc32.view.getUint32(0);
                     }
                 }, {
-                    key: 'getData',
+                    key: "getData",
                     value: function getData() {
                         var _this = this;
 
@@ -2726,7 +2726,7 @@
                 value: true
             });
             // jscs:disable
-            var mask = /^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i;
+            var mask = /^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&"\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&"\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&"\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&"\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&"\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i;
 
             // jscs:enable
 
@@ -2738,7 +2738,7 @@
         /* 32 */
         /***/ function(module, exports, __webpack_require__) {
 
-            'use strict';
+            "use strict";
 
             Object.defineProperty(exports, "__esModule", {
                 value: true

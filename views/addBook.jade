@@ -2,7 +2,7 @@ doctype html
 html(lang="en")
     head
         title= title
-        link(rel='stylesheet', href='/stylesheets/addBook.css')
+        link(rel="stylesheet", href="/stylesheets/addBook.css")
     body
         div.outer
             div.inner
@@ -10,7 +10,7 @@ html(lang="en")
                     ul
                         li
                             h2
-                                = 'Add book (User: ' + name + ')'
+                                = "Add book (User: " + name + ")"
                             if error
                                 h5.error= error
                         li
@@ -24,5 +24,5 @@ html(lang="en")
                             input(name="book", type="file")
                         li
                             button(type="submit", class="submit")
-                                = 'Submit'
+                                = "Submit"
 

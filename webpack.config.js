@@ -1,18 +1,18 @@
-'use strict';
-let path = require('path');
-let webpack = require('webpack');
+"use strict";
+let path = require("path");
+let webpack = require("webpack");
 
 module.exports = {
-	context: path.join(__dirname, 'public', 'js'),
+	context: path.join(__dirname, "public", "js"),
 	entry: {
-		bookReader: './init.js',
-		login: './login-page.js',
-		registration: './registration.js',
-		adminPanel: './adminPanel.js'
+		bookReader: "./init.js",
+		login: "./login-page.js",
+		registration: "./registration.js",
+		adminPanel: "./adminPanel.js"
 	},
 	output: {
-		path: path.join(__dirname, 'public', 'js', 'build'),
-		filename: '[name].js',
+		path: path.join(__dirname, "public", "js", "build"),
+		filename: "[name].js",
 		library: "__" // TODO: _ -> tictactoe
 	},
 	watch: true,
@@ -21,7 +21,7 @@ module.exports = {
 	},
 	resolve: {
 		modulesDirectories: [
-			path.join(__dirname, 'node_modules')
+			path.join(__dirname, "node_modules")
 		]
 	},
 	plugins: [
@@ -35,13 +35,13 @@ module.exports = {
 		loaders: [{
 				test: /\.js$/,
 				include: [
-					path.resolve(__dirname, 'public', 'js')
+					path.resolve(__dirname, "public", "js")
 				],
-				exclude: path.resolve(__dirname, '/node_modules/'),
-				loader: 'babel?presets[]=es2015'
+				exclude: path.resolve(__dirname, "/node_modules/"),
+				loader: "babel?presets[]=es2015"
 			}, {
 				test: /\.png$/,
-				loader: 'file?name=/../images/[name].[ext]'
+				loader: "file?name=/../images/[name].[ext]"
 			}
 		]
 	},

@@ -1,8 +1,8 @@
 "use strict";
-let app = require('express')();
-let cookieParser = require('cookie-parser');
+let app = require("express")();
+let cookieParser = require("cookie-parser");
 
-let debug = require('debug')('sniffer:login');
+let debug = require("debug")("sniffer:login");
 
 app.use(cookieParser());
 
@@ -17,16 +17,18 @@ const LVL = {
 };
 
 const ACCESS_LVL = {
-    registration: LVL['GUEST'],
-    addBook: LVL['USER'],
-    user: LVL['USER'],
-    moder: LVL['MOD'],
-    admin: LVL['ADMIN']
+    registration: LVL["GUEST"],
+    memory: LVL["ADMIN"],
+    addBook: LVL["USER"],
+    book: LVL["MOD"],
+    user: LVL["USER"],
+    moder: LVL["MOD"],
+    admin: LVL["ADMIN"]
 };
 
-let User = require('./mongo').User;
+let User = require("./db/mongo").User;
 
-let Invite = require('./mongo').Invite;
+let Invite = require("./db/mongo").Invite;
 
 
 function checkAccess (lvl, str)
@@ -34,20 +36,20 @@ function checkAccess (lvl, str)
     return (lvl <= ACCESS_LVL[str]);
 }
 
-app.use(require('body-parser').json());
+app.use(require("body-parser").json());
 
 function getLinkFromQuery(link)
 {
-	const allowed = ['share', 'admin'];
-	if (typeof link == 'undefined')
+	const allowed = ["share", "admin"];
+	if (typeof link == "undefined")
 	{
-		return '';
+		return "";
 	}
 	else
 	{
-		if (link.indexOf('..') >= 0)
+		if (link.indexOf("..") >= 0)
 		{
-			return '';
+			return "";
 		}
 		else
 		{
@@ -61,13 +63,13 @@ function getLinkFromQuery(link)
 		}
 	}
 
-	return '';
+	return "";
 }
 
 // Login
 // user/psw
 // TODO: psw -> hash(psw)
-app.get('/_:user/_(:psw)?', function(req, res){
+app.get("/_:user/_(:psw)?", function(req, res){
     let name = req.params.user;
     let psw = req.params.psw;
 	res.query = res.query || {};
@@ -75,7 +77,7 @@ app.get('/_:user/_(:psw)?', function(req, res){
     User.checkUserNameAndPsw(name, psw, function (err, data) {
         if (!err && data)
         {
-            res.cookie('user', data.prop.secret);
+            res.cookie("user", data.prop.secret);
 
             res.status(200).json({
 	            link: getLinkFromQuery(res.query.link)
@@ -83,11 +85,11 @@ app.get('/_:user/_(:psw)?', function(req, res){
         }
         else
         {
-            debug('Tried to login (user = ' + name + ', ip = ' + req.userIp + ' )');
+            debug("Tried to login (user = " + name + ", ip = " + req.userIp + " )");
             debug(err);
 
             res.status(402).json({
-	            link: 'error.jade'
+	            link: "error.jade"
             }).end();
         }
     });
@@ -95,19 +97,19 @@ app.get('/_:user/_(:psw)?', function(req, res){
 
 // exit
 //
-app.get('/exit/_:user/', function(req, res){
+app.get("/exit/_:user/", function(req, res){
     let name = req.params.user;
 
     if (req.user.isLogin())
     {
-        debug('Exit (user = ' + req.user.name + ')');
+        debug("Exit (user = " + req.user.name + ")");
 
-        res.clearCookie('user', {
-            path: '/'
+        res.clearCookie("user", {
+            path: "/"
         });
 
-	    res.clearCookie('connect.sid', {
-		    path: '/'
+	    res.clearCookie("connect.sid", {
+		    path: "/"
 	    });
 
 	    req.user.exit();
@@ -115,12 +117,12 @@ app.get('/exit/_:user/', function(req, res){
 	    req.user.setDeleteMode();
 
         res.status(200).json({
-	        link: 'login.jade'
+	        link: "login.jade"
         }).end();
     }
     else
     {
-        debug('Tried to exit (user = ' + name + ', ip = ' + req.userIp + ' )');
+        debug("Tried to exit (user = " + name + ", ip = " + req.userIp + " )");
 
         res.status(402).end();
     }
@@ -128,8 +130,8 @@ app.get('/exit/_:user/', function(req, res){
 
 // Registration
 // now access only for all
-app.post('/add/*', (req, res, next) => {
-    if (req.user.checkAccess('registration'))
+app.post("/add/*", (req, res, next) => {
+    if (req.user.checkAccess("registration"))
     {
         next();
     }
@@ -137,7 +139,7 @@ app.post('/add/*', (req, res, next) => {
     {
         res.status(402).json({
             err: -1,
-            errmsg: 'No access'
+            errmsg: "No access"
         });
 
         res.end();
@@ -147,21 +149,21 @@ app.post('/add/*', (req, res, next) => {
 
 // TODO: psw -> hash(psw)
 // TODO: regExp(user)
-app.post('/add/', (req, res, next) => {
+app.post("/add/", (req, res, next) => {
     let user = req.body.name;
     let psw = req.body.psw;
 	let invite = req.body.invite;
 
-    debug('User ' + req.user.name + ' create user;');
-    debug('user = %s, psw = %s', user, psw);
+    debug("User " + req.user.name + " create user;");
+    debug("user = %s, psw = %s", user, psw);
 
-    if (req.user.checkAccess('registration'))
+    if (req.user.checkAccess("registration"))
     {
         Invite.getInvite(invite, function (err, inv) {
 	        if (err || inv === null)
 	        {
 		        res.status(403).json({
-			        errmsg: 'Wrong invite'
+			        errmsg: "Wrong invite"
 		        }).end();
 	        }
 	        else
@@ -203,7 +205,7 @@ app.post('/add/', (req, res, next) => {
     else
     {
         res.status(403).json({
-            errmsg: 'U must be admin'
+            errmsg: "U must be admin"
         }).end();
 
         return false;
@@ -212,7 +214,7 @@ app.post('/add/', (req, res, next) => {
 
 // Get db document
 // :user - only u
-app.get('/info', function (req, res) {
+app.get("/info", function (req, res) {
     if (req.user.name != 0)
     {
         User.getUser(req.user.name, function(err, t) {

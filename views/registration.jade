@@ -2,7 +2,7 @@ doctype html
 html(lang="en")
     head
         title= title
-        link(rel='stylesheet', href='/stylesheets/addBook.css')
+        link(rel="stylesheet", href="/stylesheets/addBook.css")
     body
         div.outer
             div.inner
@@ -10,7 +10,7 @@ html(lang="en")
                     ul
                         li
                             h2
-                                = 'Sign up'
+                                = "Sign up"
                             h5.error
                         li
                             label User
@@ -26,9 +26,9 @@ html(lang="en")
                             input(name="invite", type="text")
                         li
                             button(type="submit", class="submit", id="btnSignUp")
-                                = 'Sign up'
+                                = "Sign up"
         div#failReg
 
         div#okReg
 
-        script(src='/js/build/registration.js', defer)
+        script(src="/js/build/registration.js", defer)

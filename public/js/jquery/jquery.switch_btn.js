@@ -32,12 +32,12 @@
 /*
  * Meant to be used on a <input type="checkbox">, this widget will replace the receiver element with an iPhone-style
  * switch button with two states: "on" and "off".
- * Labels of the states are customizable, as are their presence and position. The receiver element's "checked" attribute
+ * Labels of the states are customizable, as are their presence and position. The receiver element"s "checked" attribute
  * is updated according to the state of the switch, so that it can be used in a <form>.
  *
  */
 
-import {jQuery} from 'jquery';
+import {jQuery} from "jquery";
 
 (function($) {
 
@@ -125,7 +125,7 @@ import {jQuery} from 'jquery';
             switch(this.options.labels_placement) {
                 case "both":
                 {
-                    // Don't move anything if labels are already in place
+                    // Don"t move anything if labels are already in place
                     if(this.button_bg.prev() !== this.off_label || this.button_bg.next() !== this.on_label)
                     {
                         // Detach labels form DOM and place them correctly
@@ -144,7 +144,7 @@ import {jQuery} from 'jquery';
 
                 case "left":
                 {
-                    // Don't move anything if labels are already in place
+                    // Don"t move anything if labels are already in place
                     if(this.button_bg.prev() !== this.on_label || this.on_label.prev() !== this.off_label)
                     {
                         // Detach labels form DOM and place them correctly
@@ -162,7 +162,7 @@ import {jQuery} from 'jquery';
 
                 case "right":
                 {
-                    // Don't move anything if labels are already in place
+                    // Don"t move anything if labels are already in place
                     if(this.button_bg.next() !== this.off_label || this.off_label.next() !== this.on_label)
                     {
                         // Detach labels form DOM and place them correctly
@@ -184,7 +184,7 @@ import {jQuery} from 'jquery';
             this.on_label.html(this.options.on_label);
             this.off_label.html(this.options.off_label);
 
-            // Refresh button's dimensions
+            // Refresh button"s dimensions
             this.button_bg.width(this.options.width);
             this.button_bg.height(this.options.height);
             this.button.width(this.options.button_width);
@@ -256,8 +256,8 @@ import {jQuery} from 'jquery';
         },
 
         _toggleSwitch: function(isInitializing) {
-            // Don't toggle the switch if it is set to readonly or disabled, unless it is initializing and animating itself
-            if( !isInitializing && (this.element.attr('readonly') == 'readonly' || this.element.prop('disabled')) )
+            // Don"t toggle the switch if it is set to readonly or disabled, unless it is initializing and animating itself
+            if( !isInitializing && (this.element.attr("readonly") == "readonly" || this.element.prop("disabled")) )
                 return;
 
             this.options.checked = !this.options.checked;
@@ -283,7 +283,7 @@ import {jQuery} from 'jquery';
                 }
                 this.button_bg.addClass("checked");
                 //execute on state callback if its supplied
-                if(typeof this.options.on_callback === 'function') this.options.on_callback.call(this);
+                if(typeof this.options.on_callback === "function") this.options.on_callback.call(this);
             }
             else {
                 // Update the underlying checkbox state
@@ -304,7 +304,7 @@ import {jQuery} from 'jquery';
                 }
                 this.button_bg.removeClass("checked");
                 //execute off state callback if its supplied
-                if(typeof this.options.off_callback === 'function') this.options.off_callback.call(this);
+                if(typeof this.options.off_callback === "function") this.options.off_callback.call(this);
             }
             // Animate the switch
             this.button.animate({ left: newLeft }, 250, "easeInOutCubic");

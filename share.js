@@ -1,25 +1,25 @@
 "use strict";
-let app = require('express')();
-let cookieParser = require('cookie-parser');
+let app = require("express")();
+let cookieParser = require("cookie-parser");
 
-let fs = require('fs');
+let fs = require("fs");
 
-let debug = require('debug')('sniffer:book');
+let debug = require("debug")("sniffer:book");
 
 app.use(cookieParser());
 
-let checkAccess = require('./login').checkAccess;
+let checkAccess = require("./login").checkAccess;
 
 
 
 
 
 
-app.use(require('body-parser').json());
+app.use(require("body-parser").json());
 
 // Access for USER
-app.all('*', (req, res, next) => {
-	if (req.user.checkAccess('addBook'))
+app.all("*", (req, res, next) => {
+	if (req.user.checkAccess("addBook"))
 	{
 		next();
 	}
@@ -27,7 +27,7 @@ app.all('*', (req, res, next) => {
 	{
 		res.status(401).json({
 			err: 1,
-			errmsg: 'No access'
+			errmsg: "No access"
 		}).end();
 	}
 });

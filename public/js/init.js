@@ -2,15 +2,15 @@
 let file;
 //let JsFile;
 
-let debug = require('debug')('app:init');
-import {__book} from './book';
-import {__login} from './login';
+let debug = require("debug")("app:init");
+import {__book} from "./book";
+import {__login} from "./login";
 
-localStorage.debug = 'app:book';
+localStorage.debug = "app:book";
 
 // GLOBAL VARIABLE
 //let __IS_LOGIN__ = false;
-//let __NAME__ = '0';
+//let __NAME__ = "0";
 
 // CONSTS
 const time_resize = 1000;
@@ -22,7 +22,7 @@ const EPSILON = 0.001;
 
 let __loading = function() {
     let cnt = 1;
-    let el = $('#loading');
+    let el = $("#loading");
 
     this.play = function() {
         ++ cnt;
@@ -79,7 +79,7 @@ let delay_fn = function (cb, cd) {
 
 let __msg = new function() {
     let num_of_errors = 0;
-    let el = $('#msg');
+    let el = $("#msg");
 
     el.click(function(){
         el.hide();
@@ -87,23 +87,23 @@ let __msg = new function() {
 
     this.error = function(mm){
         num_of_errors++;
-        console.log('Error #' + num_of_errors + ' : ' + mm);
+        console.log("Error #" + num_of_errors + " : " + mm);
 
         // screen
         el.html(mm);
-        el.removeClass('msg');
-        el.addClass('error');
+        el.removeClass("msg");
+        el.addClass("error");
 
         el.show();
     };
 
     this.msg = function(mm){
-        console.log('Message : ' + mm);
+        console.log("Message : " + mm);
 
         // screen
         el.html(mm);
-        el.addClass('msg');
-        el.removeClass('error');
+        el.addClass("msg");
+        el.removeClass("error");
 
 
         el.show();
@@ -119,10 +119,10 @@ let msg = __msg.msg;
 
 function __initPlayer(player)
 {
-	let container = $('#player');
-	let btnPlay = $('#btnPlay', container);
-	let btnStop = $('#btnStop', container);
-	let containerForSlider = $('#containerForSliderDelay', container);
+	let container = $("#player");
+	let btnPlay = $("#btnPlay", container);
+	let btnStop = $("#btnStop", container);
+	let containerForSlider = $("#containerForSliderDelay", container);
 	let prev;
 
 	function init(player, MAX_DELAY, SHIFT_DELAY, DEFAULT_DELAY)
@@ -130,15 +130,15 @@ function __initPlayer(player)
 		let buttons = $(document.createDocumentFragment());
 
 		for (let valueOfDelay = -MAX_DELAY; valueOfDelay <= MAX_DELAY; valueOfDelay += SHIFT_DELAY) {
-			let el = $('<div>').addClass('value-of-delay').attr('val', valueOfDelay);
+			let el = $("<div>").addClass("value-of-delay").attr("val", valueOfDelay);
 
 			if (Math.abs(valueOfDelay - DEFAULT_DELAY) <= SHIFT_DELAY / 2) {
-				el.addClass('select');
+				el.addClass("select");
 			}
 
 			if (Math.abs(Math.ceil(valueOfDelay) - valueOfDelay) < SHIFT_DELAY / 2)
 			{
-				el.addClass('notch');
+				el.addClass("notch");
 			}
 
 			buttons.append(el);
@@ -146,17 +146,17 @@ function __initPlayer(player)
 
 		containerForSlider.append(buttons);
 
-		prev = $('.value-of-delay.select', container);
+		prev = $(".value-of-delay.select", container);
 
-		$('.value-of-delay').click(function () {
-			let val = $(this).attr('val');
+		$(".value-of-delay").click(function () {
+			let val = $(this).attr("val");
 
-			if (val != prev.attr('val'))
+			if (val != prev.attr("val"))
 			{
 				player.setDelay(val);
 
-				prev.removeClass('select');
-				$(this).addClass('select');
+				prev.removeClass("select");
+				$(this).addClass("select");
 
 				prev = $(this);
 			}
@@ -176,16 +176,16 @@ function __initPlayer(player)
 
 function __initBookmark(book)
 {
-    let submit = $('#submitBookmark');
-    let choose = $('#chooseAnotherPosBookmark');
-    let title = $('#titleOfBookmark');
-    let text = $('#textOfBookmark');
-    let pos = $('#posOnMouseBookmark');
-    let reload = $('#reloadBookmark');
+    let submit = $("#submitBookmark");
+    let choose = $("#chooseAnotherPosBookmark");
+    let title = $("#titleOfBookmark");
+    let text = $("#textOfBookmark");
+    let pos = $("#posOnMouseBookmark");
+    let reload = $("#reloadBookmark");
 
     function bookCb(e) {
-        let el = $(e.target).closest('.h-l');
-        let id = ((el.attr('id') || '0').split('_') || [, 0])[1] || '';
+        let el = $(e.target).closest(".h-l");
+        let id = ((el.attr("id") || "0").split("_") || [, 0])[1] || "";
 
         pos.val(id);
 
@@ -195,12 +195,12 @@ function __initBookmark(book)
 
         text.val();
 
-        book.selectEl(id, 'user-sel');
+        book.selectEl(id, "user-sel");
     }
 
     choose.click(function() {
         // SELECT POS
-        $('#book').one('click.pos', bookCb);
+        $("#book").one("click.pos", bookCb);
     });
 
     submit.click(function() {
@@ -208,64 +208,64 @@ function __initBookmark(book)
         {
             book.addBookmark(pos.val(), title.val(), text.val());
 
-	        book.selectEl(-1, 'user-sel');
+	        book.selectEl(-1, "user-sel");
 
-            pos.val(''); title.val(''); text.val('');
+            pos.val(""); title.val(""); text.val("");
         }
 	    else
         {
-	        error('Choose position');
+	        error("Choose position");
         }
     });
 
     reload.click(function() {
         book.reloadBookmark().then(function(){
-            msg('Bookmark was reload')
+            msg("Bookmark was reload")
         }, error);
     });
 
     let deleteBookmark = function (id){
-        $('.bookmark[data-id=' + id + ']').remove();
+        $(".bookmark[data-id=" + id + "]").remove();
     };
 
 
     let reset = function() {
-        $('.bookmark .btn-bookmark-goto').click(function () {
-            let pos = $(this).closest('.bookmark').data('pos');
+        $(".bookmark .btn-bookmark-goto").click(function () {
+            let pos = $(this).closest(".bookmark").data("pos");
 
             if (!isNaN(pos))
             {
                 book.jmp(pos);
 
-	            book.selectEl(pos, 'jump');
+	            book.selectEl(pos, "jump");
             }
         });
 
-        $('.bookmark .btn-bookmark-edit').click(function () {
-            if ($(this).data('disable') != 'true')
+        $(".bookmark .btn-bookmark-edit").click(function () {
+            if ($(this).data("disable") != "true")
             {
-                let el = $(this).closest('.bookmark');
+                let el = $(this).closest(".bookmark");
 
-                $(el).find('div.contenteditable').attr('contenteditable', 'true');
+                $(el).find("div.contenteditable").attr("contenteditable", "true");
             }
         });
 
-        $('.bookmark .btn-bookmark-save').click(function () {
-            let el = $(this).closest('.bookmark');
+        $(".bookmark .btn-bookmark-save").click(function () {
+            let el = $(this).closest(".bookmark");
 
-            $(el).find('div.contenteditable').attr('contenteditable', 'false');
+            $(el).find("div.contenteditable").attr("contenteditable", "false");
 
-            book.editBookmark(el.data('id'), $(el).find('.bookmark-pos').html(),
-                $(el).find('.bookmark-title').html(), $(el).find('.bookmark-text').html()
+            book.editBookmark(el.data("id"), $(el).find(".bookmark-pos").html(),
+                $(el).find(".bookmark-title").html(), $(el).find(".bookmark-text").html()
             ).then(function(){
-                msg('Bookmark was edited');
+                msg("Bookmark was edited");
             }, error);
         });
 
-        $('.bookmark .btn-bookmark-delete').click(function() {
-            let el = $(this).closest('.bookmark');
+        $(".bookmark .btn-bookmark-delete").click(function() {
+            let el = $(this).closest(".bookmark");
 
-            let id = $(el).data('id');
+            let id = $(el).data("id");
 
             book.deleteBookmark(id).then(function(t) {
                 deleteBookmark(t);
@@ -285,7 +285,7 @@ let clock = new (function (){
         return ("0" + time.getHours()).slice(-2)   + ":" +
             ("0" + time.getMinutes()).slice(-2);
     };
-    let tm = $('#time');
+    let tm = $("#time");
     let cnt;
 
     let tmF = function(){
@@ -309,11 +309,11 @@ let clock = new (function (){
 })();
 
 function __controllerLeft(book) {
-    let now = 'files';
+    let now = "files";
 
     function controllerLeft(id) {
 
-        if (now == id || id == '')
+        if (now == id || id == "")
         {
             // do nothing
         }
@@ -321,7 +321,7 @@ function __controllerLeft(book) {
         {
             now = id;
 
-            if (id[0] == '#')
+            if (id[0] == "#")
             {
                 id = id.substring(1);
 
@@ -332,8 +332,8 @@ function __controllerLeft(book) {
                 return true;
             }
 
-            $('.left').hide();
-            let elms = $('#' + id);
+            $(".left").hide();
+            let elms = $("#" + id);
 
             if (elms && elms.length != 0)
             {
@@ -341,7 +341,7 @@ function __controllerLeft(book) {
             }
             else
             {
-                $('#file').show();
+                $("#file").show();
             }
         }
     }
@@ -356,8 +356,8 @@ $(document).ready(function() {
 
 // .css-center-1-line
     function cssCenter1Line() {
-        $('.css-center-1-line').each(function () {
-            $(this).css('line-height', $(this).css('height'));
+        $(".css-center-1-line").each(function () {
+            $(this).css("line-height", $(this).css("height"));
         });
     }
 
@@ -370,7 +370,7 @@ $(document).ready(function() {
 
 // BOOK
 
-    let book = new __book('book', {
+    let book = new __book("book", {
         bookmark: __initBookmark,
         loading: __loading,
         ajaxSettings: __ajaxSettings,
@@ -384,53 +384,53 @@ $(document).ready(function() {
 
     book.ready(function(book) {
 // ONLINE/OFFLINE MODE
-        $('#onlineMode').on('change', function() {
-	        let context = $(this).closest('.switch-wrapper');
-	        let now = context.data('text');
+        $("#onlineMode").on("change", function() {
+	        let context = $(this).closest(".switch-wrapper");
+	        let now = context.data("text");
 
-	        if (now == 'online')
+	        if (now == "online")
 	        {
-		        context.addClass('offline-mode');
-		        context.data('text', 'offline');
+		        context.addClass("offline-mode");
+		        context.data("text", "offline");
 	        }
 	        else
 	        {
-		        context.removeClass('offline-mode');
-		        context.data('text', 'online');
+		        context.removeClass("offline-mode");
+		        context.data("text", "online");
 	        }
 
             book.swapOnlineMode();
         });
 // NIGHT/DAY MODE
-        $('#nightMode').on('change', function() {
-	        let context = $(this).closest('.switch-wrapper');
-	        let now = context.data('text');
+        $("#nightMode").on("change", function() {
+	        let context = $(this).closest(".switch-wrapper");
+	        let now = context.data("text");
 
-	        if (now == 'day')
+	        if (now == "day")
 	        {
-		        context.addClass('night-mode');
-		        context.data('text', 'night');
+		        context.addClass("night-mode");
+		        context.data("text", "night");
 	        }
 	        else
 	        {
-		        context.removeClass('night-mode');
-		        context.data('text', 'day');
+		        context.removeClass("night-mode");
+		        context.data("text", "day");
 	        }
 
             book.swapNightMode();
         });
 
 // MENU BUTTONS
-        $('.item-menu').click(function() {
-            let id = $(this).data('id');
+        $(".item-menu").click(function() {
+            let id = $(this).data("id");
 
             book.__int__controllerLeft(id);
         });
 // SLIDER
-        $('#slider').click(function (e) {
-            if ($(e.target).attr('id') == 'slider')
+        $("#slider").click(function (e) {
+            if ($(e.target).attr("id") == "slider")
             {
-                book.scrollSlider(e.clientY - $('#slider').offset().top);
+                book.scrollSlider(e.clientY - $("#slider").offset().top);
             }
             else
             {
@@ -441,48 +441,48 @@ $(document).ready(function() {
 // FILE SYSTEM
         book.getFiles();
 // BUTTONS
-        $('#btnNavDown').click(function () {
+        $("#btnNavDown").click(function () {
             book.scroll();
         });
 
-        $('#btnNavDown2').click(function () {
+        $("#btnNavDown2").click(function () {
             book.scroll(false, 0.5);
         });
 
-        $('#btnNavUp2').click(function () {
+        $("#btnNavUp2").click(function () {
             book.scroll(true, 0.5);
         });
 
-        $('#btnNavUp').click(function () {
+        $("#btnNavUp").click(function () {
             book.scroll(true);
         });
 
-        $('#btnNavUndo').click(function () {
+        $("#btnNavUndo").click(function () {
             if (book.jmpUndo() == false)
             {
-                msg('Can not jump');
+                msg("Can not jump");
             }
         });
 
-        $('#btnNavRedo').click(function () {
+        $("#btnNavRedo").click(function () {
             if (book.jmpRedo() == false)
             {
-                msg('Can not jump');
+                msg("Can not jump");
             }
         });
 
-        $('#save').click(()=>{
+        $("#save").click(()=>{
             book.save();
         });
 
 // RESIZE
-        $(window).on('resize.book', delay_fn(function () {
+        $(window).on("resize.book", delay_fn(function () {
             book.recalc();
             book.jmp();
             cssCenter1Line();
         }, time_resize));
 // MOUSE WHEEL
-        $('#book').on('wheel.book', function(e) {
+        $("#book").on("wheel.book", function(e) {
             let del = e.originalEvent.deltaY;
 
 	        // (del > 0 ? false : true)
@@ -491,7 +491,7 @@ $(document).ready(function() {
             return false;
         });
 
-        $('#slider').on('wheel.book', function(e) {
+        $("#slider").on("wheel.book", function(e) {
             let del = e.originalEvent.deltaY;
 
 	        // (del > 0 ? false : true)
@@ -500,7 +500,7 @@ $(document).ready(function() {
             return false;
         });
 // KEYBOARD
-	    $(document).on('keydown.bookScroll', function(e) {
+	    $(document).on("keydown.bookScroll", function(e) {
 		    if (e.keyCode == BUTTON_ARROW_UP || e.keyCode == BUTTON_ARROW_DOWN)
 		    {
 			    // (e.keyCode == BUTTON_ARROW_DOWN ? false : true)

@@ -1,13 +1,18 @@
 "use strict";
 
-const debug = require('debug')('sniffer:adminFunc');
+const debug = require("debug")("sniffer:adminFunc");
 
-let User = require('./mongo').User;
-let Book = require('./mongo').Book;
+let User = require("./db/User");
+let Book = require("./db/Book");
 
+let assert = require("assert");
+/**
+ * Doesn't work now!
+ */
 function capitalizeUser()
 {
-	let cb = arguments.length == 0 ? () => {} : arguments[arguments.length - 1];
+	assert.fail(`Doesn't work now`);
+	let cb = arguments.length === 0 ? () => {} : arguments[arguments.length - 1];
 
 	User.find().exec(function (err, users) {
 		if (err)
@@ -17,7 +22,7 @@ function capitalizeUser()
 		else
 		{
 			users.forEach(function (user) {
-				debug('capitalizeUser: user.name = ' + user.name);
+				debug("capitalizeUser: user.name = " + user.name);
 
 				User.findOneAndUpdate({
 					_id: user._id
@@ -53,25 +58,25 @@ function capitalizeUser()
 	})
 }
 
-let userStorage = require('./user').userStorage;
-let garbageCollectorForUsers = require('./user').garbageCollectorForUsers;
+let userStorage = require("./user").userStorage;
+let garbageCollectorForUsers = require("./user").garbageCollectorForUsers;
 
 function changeUserStorage(param)
 {
-	let cb = arguments.length == 0 ? () => {} : arguments[arguments.length - 1];
+	let cb = arguments.length === 0 ? () => {} : arguments[arguments.length - 1];
 
 	let length, retainedSize;
 
 	switch(param)
 	{
-		case 'clearOld':
+		case "clearOld":
 							garbageCollectorForUsers();
 
-							changeUserStorage('info', cb);
+							changeUserStorage("info", cb);
 							break;
-		case 'info':
+		case "info":
 							length = Object.keys(userStorage).length;
-							retainedSize = length * 6.4 / 1000 / 1000 + 'MB';
+							retainedSize = length * 6.4 / 1000 / 1000 + "MB";
 
 							cb(undefined, {
 								count: length,
@@ -79,9 +84,9 @@ function changeUserStorage(param)
 							});
 
 							break;
-		case 'fullInfo':
+		case "fullInfo":
 							length = Object.keys(userStorage).length;
-							retainedSize = length * 6.4 / 1000 / 1000 + 'MB';
+							retainedSize = length * 6.4 / 1000 / 1000 + "MB";
 							let users = [];
 
 							for (let i in userStorage)
@@ -100,30 +105,30 @@ function changeUserStorage(param)
 
 							break;
 		default:
-							cb({errmsg:'Wrong params(' + param + ')'});
+							cb({errmsg:"Wrong params(" + param + ")"});
 	}
 }
 
 module.exports = {
 	capitalizeUser: capitalizeUser,
 	__capitalizeUser: {
-		description: 'Update all data connected with userName. Universalize userName.',
+		description: "Update all data connected with userName. Universalize userName.",
 		params: {}
 	},
 	changeUserStorage: changeUserStorage,
 	__changeUserStorage: {
-		description: 'Command for management userStorage.',
+		description: "Command for management userStorage.",
 		params: {
-			clearOld: 'Remove all users from userStorage that expired or were set deleteMode.',
-			info: 'Return info about allocated memory and count of user.',
-			fullInfo: 'Return all users and info about allocated memory and count of user.'
+			clearOld: "Remove all users from userStorage that expired or were set deleteMode.",
+			info: "Return info about allocated memory and count of user.",
+			fullInfo: "Return all users and info about allocated memory and count of user."
 		}
 	},
 	__help: {
-		description: 'Turn on/off helpMode. Autocomplete command and show params.',
+		description: "Turn on/off helpMode. Autocomplete command and show params.",
 		params: {
-			on: 'Turn on helpMode.',
-			off: 'Turn off helpMode.'
+			on: "Turn on helpMode.",
+			off: "Turn off helpMode."
 		}
 	}
 };

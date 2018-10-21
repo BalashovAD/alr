@@ -2,33 +2,33 @@ doctype html
 html(lang="en")
     head
         title= title
-        link(rel='stylesheet', href='/stylesheets/style.css')
-        link(rel='stylesheet', href='/stylesheets/btn.css')
-        link(rel='stylesheet', href='/stylesheets/switch-btn.css')
+        link(rel="stylesheet", href="/stylesheets/style.css")
+        link(rel="stylesheet", href="/stylesheets/btn.css")
+        link(rel="stylesheet", href="/stylesheets/switch-btn.css")
 
     body
         #menu
             div#menuLine1
-                div.item-menu(data-id='navigate')
+                div.item-menu(data-id="navigate")
                     a.btn-menu.css-center-1-line navigate
-                div.item-menu.css-center-1-line(data-id='bookmarks')
+                div.item-menu.css-center-1-line(data-id="bookmarks")
                     a.btn-menu.css-center-1-line bookmarks
-                div.item-menu(data-id='addBookmark')
+                div.item-menu(data-id="addBookmark")
                     a.btn-menu.css-center-1-line  add bookmark
 
             div#menuLine2
-                div.item-menu(data-id='file')
+                div.item-menu(data-id="file")
                     a.btn-menu.css-center-1-line file
-                div.item-menu(data-id='#book')
+                div.item-menu(data-id="#book")
                     a.btn-menu.css-center-1-line add book
-                div.item-menu#btnExit(data-id='file')
+                div.item-menu#btnExit(data-id="file")
                     a.btn-menu.css-center-1-line exit
             #msgCont
                 #msg.css-center-1-line
                 #time.css-center-1-line
                 #loading.css-center-1-line
-                    ='Loading...'
+                    ="Loading..."
         block content
 
 
-        script(src='/js/build/bookReader.js' defer)
+        script(src="/js/build/bookReader.js" defer)

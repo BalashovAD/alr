@@ -58,7 +58,7 @@ hr {
   border-bottom: 1px solid grey;
 }
 #time:before {
-  content: 'Time: ';
+  content: "Time: ";
 }
 #book {
   box-sizing: border-box;
@@ -188,7 +188,7 @@ hr {
   position: relative;
 }
 #slider_btn {
-  content: ' ';
+  content: " ";
   width: 100%;
   height: 20px;
   z-index: 80;
@@ -198,7 +198,7 @@ hr {
   background: red;
 }
 .mark-div {
-  content: ' ';
+  content: " ";
   position: absolute;
   width: 50%;
   height: 4px;
@@ -207,7 +207,7 @@ hr {
   background: #0000CD;
 }
 .mark-user {
-  content: ' ';
+  content: " ";
   position: absolute;
   width: 50%;
   height: 4px;
@@ -264,11 +264,11 @@ hr {
   border-bottom: 0;
 }
 .bookmark-title:before {
-  content: 'Title: ';
+  content: "Title: ";
   font-size: 150%;
 }
 .bookmark-text:before {
-  content: 'Text: ';
+  content: "Text: ";
   font-size: 150%;
 }
 div#btnsUp div {

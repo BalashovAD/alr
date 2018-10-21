@@ -2,11 +2,11 @@ doctype html
 html(lang="en")
     head
         title= title
-        link(rel='stylesheet', href='/stylesheets/btn.css')
-        link(rel='stylesheet', href='/stylesheets/admin-panel.css')
-        link(rel='stylesheet', href='/stylesheets/switch-btn.css')
-        link(rel='stylesheet', href='/stylesheets/jquery-ui.min.css')
-        link(rel='stylesheet', href='/stylesheets/jquery-ui.theme.min.css')
+        link(rel="stylesheet", href="/stylesheets/btn.css")
+        link(rel="stylesheet", href="/stylesheets/admin-panel.css")
+        link(rel="stylesheet", href="/stylesheets/switch-btn.css")
+        link(rel="stylesheet", href="/stylesheets/jquery-ui.min.css")
+        link(rel="stylesheet", href="/stylesheets/jquery-ui.theme.min.css")
     body
         #systemInfo.hidden
             #mainFunc=func
@@ -14,7 +14,7 @@ html(lang="en")
         #cmdLine
             form#cmdForm
                 input#cmd(autocomplete="off", name=salt)
-                input#cmdSubmit(type='submit', value="Send")
+                input#cmdSubmit(type="submit", value="Send")
 
         #left
             .menu
@@ -53,4 +53,4 @@ html(lang="en")
             #rightMainContainer.main.right-side.side(data-side="right")
 
 
-        script(src='/js/build/adminPanel.js' defer)
+        script(src="/js/build/adminPanel.js" defer)

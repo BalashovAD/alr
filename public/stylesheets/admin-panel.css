@@ -79,7 +79,7 @@ input[type=submit] {
   word-wrap: break-word;
 }
 .main-container span.object-value:after {
-  content: ';';
+  content: ";";
 }
 .object-value {
   user-select: contain;
@@ -132,25 +132,25 @@ input[type=submit] {
   text-align: right;
 }
 .open-curly-brace:after {
-  content: '{';
+  content: "{";
 }
 .close-curly-brace:before {
-  content: '}';
+  content: "}";
 }
 .open-square-bracket {
   text-align: right;
 }
 .open-square-bracket:after {
-  content: '[';
+  content: "[";
 }
 .close-square-bracket:before {
-  content: ']';
+  content: "]";
 }
 .elems-of-array::after {
-  content: ',';
+  content: ",";
 }
 .elems-of-array.last-elems-of-array::after {
-  content: '';
+  content: "";
 }
 .hidden-array-elem {
   display: none;
