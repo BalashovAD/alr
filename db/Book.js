@@ -113,7 +113,7 @@ function updateBook(id, ss)
         };
     }
 
-    debug(`saveBook ${id}: ${ss}`);
+    debug(`saveBook ${id}: ${JSON.stringify(ss)}`);
     Book.findOneAndUpdate({_id: id}, nq).exec().then((t) => {
         return User.updateLastBook(t.owner, t.id);
     });
@@ -136,7 +136,7 @@ async function deleteBookmark(bookId, markId)
 function editBookmark(bookId, mark)
 {
     deleteBookmark(bookId, mark.id).then(() => {
-        return Book.saveBook(bookId, {
+        return Book.updateBook(bookId, {
             pos: -1,
             bookmarks: [mark]
         });
