@@ -67,8 +67,8 @@ app.get("/index.pug", function (req, res) {
     res.render("./admin/index.pug", {
         title: "Admin panel",
         schemas: schemas,
-	    hints: Object.keys(allowedFunc).filter((name)=>name[0] != "_"),
-	    func: JSON.stringify(renameObjectProp(filter(allowedFunc, (name) => name[0] == "_"), "__")),
+	    hints: Object.keys(allowedFunc).filter((name) => name[0] !== "_"),
+	    func: JSON.stringify(renameObjectProp(filter(allowedFunc, (name) => name[0] === "_"), "__")),
 	    salt: Date.now()
     });
 });
@@ -143,16 +143,11 @@ app.get("/get/_:col/_:id", (req, res) => {
 
     if (["user", "book", "invite"].indexOf(col) > -1)
     {
-        getById(col, id, function(err, t) {
-            if (err)
-            {
-                res.status(403).end();
-            }
-            else
-            {
-                res.json(t).end();
-            }
-
+        getById(col, id).then((data) => {
+            res.json(data).end();
+        }, (err) => {
+            debug(`cannot get/_${col}/_${id}: ${err}`);
+            res.status(403).end();
         });
     }
     else
@@ -166,16 +161,11 @@ app.get("/get/_:col/all", (req, res) => {
 
     if (["user", "book", "invite"].indexOf(col) > -1)
     {
-        getCol(col, function(err, t) {
-            if (err)
-            {
-                res.status(403).end();
-            }
-            else
-            {
-                res.json(t).end();
-            }
-
+        getCol(col).then((data) => {
+            res.json(data).end();
+        }, (err) => {
+            debug(`cannot get/_${col}/all: ${err}`);
+            res.status(403).end();
         });
     }
     else
