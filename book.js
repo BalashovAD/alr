@@ -242,10 +242,10 @@ app.post("/save/_:id", (req, res, next) => {
 	    }
     }
 
-    debug(`saveBook: user(${req.user.toString()}) try to save book ${id}, ${ss}`);
+    debug(`saveBook: user(${req.user.toString()}) try to save book ${id}`);
     if (req.user.ownBook(id))
     {
-        if (req.user.saveBook(id, ss))
+        if (req.user.updateBooksPosOrBookmarks(id, ss))
         {
             res.status(200).end();
         }

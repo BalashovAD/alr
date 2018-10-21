@@ -97,10 +97,10 @@ RealUser.prototype.toString = function() {
 };
 
 let Book = require("./db/Book").Book;
-RealUser.prototype.saveBook = async function(bookId, book) {
+RealUser.prototype.updateBooksPosOrBookmarks = async function(bookId, book) {
     try {
         assert.strictEqual(this.ownBook(bookId), true);
-        await Book.saveBook(bookId, book);
+        await Book.updateBook(bookId, book);
         return true;
     } catch (e) {
 		debug(`save book user(${this.toString()}) cannot save book: ${e}`);
