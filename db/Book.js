@@ -3,6 +3,7 @@ let mongoose = require("mongoose");
 const assert = require("assert");
 let fs = require("fs");
 let User = require("./User").User;
+let debug = require("debug")("sniffer:db:Book");
 
 let schemaBook = {
     title: String,
