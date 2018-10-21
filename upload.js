@@ -25,7 +25,7 @@ app.get("/", function(req, res, next){
 app.get("/index", function(req, res){
     res.set("Content-Type", "text/html");
 
-    res.render("upload.jade", {
+    res.render("upload.pug", {
         name: req.cookies.userName,
         title: "Upload"
     });
@@ -34,7 +34,7 @@ app.get("/index", function(req, res){
 app.post("/upload/", function(req, res){
     res.set("Content-Type", "text/html");
 
-    res.render("upload.jade", {
+    res.render("upload.pug", {
         name: req.cookies.userName,
         title: req.param.filename
     });

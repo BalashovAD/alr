@@ -1,0 +1,26 @@
+doctype html
+html(lang='en')
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/addBook.css')
+    body
+        div.outer
+            div.inner
+                div.form#login
+                    ul
+                        li
+                            h2
+                                = 'Login'
+                            h5.error
+                        li
+                            label User
+                            input(name='user', type='text')
+                        li
+                            label Password
+                            input(name='psw', type='password')
+                        li
+                            button(type='submit', class='submit', id='btnLogin')
+                                = 'Login'
+
+
+        script(src='/js/build/login.js', defer)

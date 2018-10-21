@@ -1,6 +1,6 @@
 "use strict";
 let mongoose = require("mongoose");
-
+let debug = require("debug")("sniffer:db:User");
 let schemaUser = {
     name: {
         type: String,
@@ -120,7 +120,7 @@ async function deleteUser(id) {
     this.getUserById(id).then((user) => {
         // delete all books
         user.books.forEach(function (id) {
-            let Book = require("Book");
+            let Book = require("./Book").Book;
             Book.deleteBook(id);
         });
         // delete this user
@@ -130,7 +130,7 @@ async function deleteUser(id) {
 
 function addUser(name, psw)
 {
-    let u = new User({
+    let u = new this({
         name: name,
         prop: {
             psw: psw,
@@ -139,17 +139,16 @@ function addUser(name, psw)
         bookmark: []
     });
 
-    User.findOne({name: capitalize(name)}).select("_id").exec().then(function(t) {
+    this.findOne({name: capitalize(name)}).select("_id").exec().then(function(t) {
         if (t && t._id)
         {
-            cb({code: 111, errmsg: "This user name {" + name + "} already exist"});
+            throw ({code: 111, errmsg: "This user name {" + name + "} already exist"});
         }
         else
         {
-            u.save(cb);
+            return u.save();
         }
-    }, cb);
-
+    });
 }
 
 async function checkUserNameAndSecret(name, secret)
@@ -157,14 +156,14 @@ async function checkUserNameAndSecret(name, secret)
     try {
         await User.getUserByName(name).then((user) => {
             if (user && user.name && user._id && user.prop
-                && (user.prop.secret === secret || user.prop.secret === "0")) {
-                if (user.prop.secret === "0") {
+                && (user.prop.secret === secret || user.prop.secret === "0"))
+            {
+                if (user.prop.secret === "0")
+                {
                     this.setSecret(data.name, data.prop.psw);
 
                     user.prop.secret = this.getSecret(name, data.psw);
                 }
-
-                return Promise.resolve();
             }
         });
 
@@ -184,5 +183,5 @@ async function checkUserNameAndPsw(name, psw)
     return await checkUserNameAndSecret(name, getSecret(name, psw));
 }
 
-module.exports = User;
+module.exports.User = User;
 module.exports.schema = schemaUser;

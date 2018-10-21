@@ -9,7 +9,7 @@ let debug = require("debug")("sniffer:book");
 app.use(cookieParser());
 
 let checkAccess = require("./login").checkAccess;
-let Book = require("./db/mongo").Book;
+let Book = require("./db/Book").Book;
 
 /**
  * Check existence of a folder{pp}
@@ -89,7 +89,7 @@ app.all("*", (req, res, next) => {
 app.get("/", (req, res) => {
     res.set("Content-Type", "text/html");
 
-    res.render("addBook.jade", {
+    res.render("addBook.pug", {
         title: "Add book",
         name: req.user.name,
 	    error: (req.query || {})["error"]
@@ -207,6 +207,7 @@ app.post("/add/", getFile, function(req, res) {
         owner: req.user.name,
         lnk: req.lnkBook
     }).then(() => {
+        req.user.sync();
         res.status(200).redirect("/");
     }, (err) => {
         debug(`Cannot add book: ${err}`);
@@ -342,7 +343,8 @@ app.get("/info/_:id", function(req, res) {
         Book.getBook(id).then((t) => {
             res.json(t).end();
         }, (err) => {
-            res.status(500).json(err).end();
+            debug(`Cannot getBook: ${err}`);
+            res.status(500).end();
         });
     }
     else

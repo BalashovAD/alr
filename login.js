@@ -55,7 +55,7 @@ function getLinkFromQuery(link)
 		{
 			for (let i = 0; i < allowed.length; ++i)
 			{
-				if (link.indexOf(allowed[i]) == 0)
+				if (link.indexOf(allowed[i]) === 0)
 				{
 					return link;
 				}
@@ -74,25 +74,30 @@ app.get("/_:user/_(:psw)?", function(req, res){
     let psw = req.params.psw;
 	res.query = res.query || {};
 
-    User.checkUserNameAndPsw(name, psw, function (err, data) {
-        if (!err && data)
-        {
+	if (User.checkUserNameAndPsw(name, psw))
+    {
+        User.getUserByName(name).then(function (data) {
             res.cookie("user", data.prop.secret);
 
             res.status(200).json({
-	            link: getLinkFromQuery(res.query.link)
+                link: getLinkFromQuery(res.query.link)
             }).end();
-        }
-        else
-        {
-            debug("Tried to login (user = " + name + ", ip = " + req.userIp + " )");
-            debug(err);
+        }, (err) => {
+            debug(`login cannot getUserByName: ${err}`);
 
-            res.status(402).json({
-	            link: "error.jade"
+            res.status(500).json({
+                link: "error.pug"
             }).end();
-        }
-    });
+        });
+    }
+    else
+    {
+        debug(`Tried to login (user: ${name}, psw: ${psw}, ip: ${req.userIp})`);
+
+        res.status(403).json({
+            link: "error.pug"
+        }).end();
+    }
 });
 
 // exit
@@ -117,7 +122,7 @@ app.get("/exit/_:user/", function(req, res){
 	    req.user.setDeleteMode();
 
         res.status(200).json({
-	        link: "login.jade"
+	        link: "login.pug"
         }).end();
     }
     else
@@ -215,17 +220,13 @@ app.post("/add/", (req, res, next) => {
 // Get db document
 // :user - only u
 app.get("/info", function (req, res) {
-    if (req.user.name != 0)
+    if (req.user.isLogin())
     {
-        User.getUser(req.user.name, function(err, t) {
-            if (err)
-            {
-                res.status(402).end();
-            }
-            else
-            {
-                res.json(t).end();
-            }
+        User.getUserByName(req.user.name).then((user) => {
+            res.json(user).end();
+        }, (err) => {
+            debug(`Cannot getUserByName: ${err}`);
+            res.status(403).end();
         });
     }
     else

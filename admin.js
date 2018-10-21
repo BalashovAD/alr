@@ -60,11 +60,11 @@ function renameObjectProp(obj)
 	return tmp;
 }
 
-app.get("/index.jade", function (req, res) {
+app.get("/index.pug", function (req, res) {
 
     res.set("Content-Type", "text/html");
 
-    res.render("./admin/index.jade", {
+    res.render("./admin/index.pug", {
         title: "Admin panel",
         schemas: schemas,
 	    hints: Object.keys(allowedFunc).filter((name)=>name[0] != "_"),

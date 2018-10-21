@@ -7,7 +7,7 @@ let session = require("express-session");
 
 const userConstructor = require("./user");
 
-let User = require("./db/User");
+let User = require("./db/User").User;
 
 let routes = require("./routes/index");
 // let users = require("./routes/users");
@@ -65,7 +65,6 @@ app.use(function(req, res, next){
     let nm = (req.cookies.user.split("_"))[0] || 0;
 
 	req.userIp = req.connection.remoteAddress;
-
 	if (req.session.id && userStorage[req.session.id])
 	{
 		if (userStorage[req.session.id].isLogin()
@@ -93,44 +92,51 @@ app.use(function(req, res, next){
 		}
 	}
 
-	User.checkUserNameAndSecret(nm, req.cookies.user).then((data) => {
-		debug(`session id: ${req.session.id}`);
+	if (User.checkUserNameAndSecret(nm, req.cookies.user))
+	{
+        User.getUserByName(nm).then((data) => {
+            debug(`session id: ${req.session.id}`);
 
-        if (data)
-        {
-	        userStorage[req.session.id] = new userConstructor.User(data);
-        }
-        else
-        {
-            debug(`Cannot checkUserNameAndSecret URL: ${req.originalUrl}`);
+            if (data)
+            {
+                userStorage[req.session.id] = new userConstructor.RealUser(data);
+            }
+            else
+			{
+                debug(`User ${nm} doesn't exist`);
 
-	        userStorage[req.session.id] = new userConstructor.Guest();
-        }
+                userStorage[req.session.id] = new userConstructor.Guest();
+            }
 
-        req.user = userStorage[req.session.id];
+            req.user = userStorage[req.session.id];
 
-        next();
-    }, (err) => {
-		debug(`Cannot checkUserNameAndSecret: ${err}, url: ${req.originalUrl}`);
-        userStorage[req.session.id] = new userConstructor.Guest();
+            next();
+        }, (err) => {
+            debug(`Cannot getUserByName name: ${nm}: ${err}, url: ${req.originalUrl}`);
+            userStorage[req.session.id] = new userConstructor.Guest();
 
-        next();
-    });
+            next();
+        });
+    }
+    else
+	{
+		next();
+	}
 });
 
 // Optional since express defaults to CWD/views
 
 app.set("views", __dirname + "/views");
 
-// Set our default template engine to "jade"
+// Set our default template engine to "pug"
 // which prevents the need for extensions
 // (although you can still mix and match)
-app.set("view engine", "jade");
+app.set("view engine", "pug");
 
 app.get("/", function (req, res) {
     if (req.user.isLogin() === false)
     {
-        res.set("Location", "/login.jade");
+        res.set("Location", "/login.pug");
 
         res.status(302).end();
     }
@@ -138,19 +144,19 @@ app.get("/", function (req, res) {
     {
         res.set("Content-Type", "text/html");
 
-        res.render("index.jade", {
-            title: "index.jade"
+        res.render("index.pug", {
+            title: "index.pug"
         });
     }
 });
 
-app.get("/login.jade", function (req, res) {
+app.get("/login.pug", function (req, res) {
 
     if (req.user.isLogin() === false)
     {
         res.set("Content-Type", "text/html");
 
-        res.render("login.jade", {
+        res.render("login.pug", {
             title: "Login"
         });
     }
@@ -162,12 +168,12 @@ app.get("/login.jade", function (req, res) {
     }
 });
 
-app.get("/registration.jade", function (req, res, next) {
+app.get("/registration.pug", function (req, res, next) {
     if (req.user.checkAccess("registration"))
     {
         res.set("Content-Type", "text/html");
 
-        res.render("registration.jade", {
+        res.render("registration.pug", {
             title: "Registration"
         });
     }

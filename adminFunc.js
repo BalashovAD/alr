@@ -2,8 +2,8 @@
 
 const debug = require("debug")("sniffer:adminFunc");
 
-let User = require("./db/User");
-let Book = require("./db/Book");
+let User = require("./db/User").User;
+let Book = require("./db/Book").Book;
 
 let assert = require("assert");
 /**

@@ -28,10 +28,10 @@ setInterval(garbageCollectorForUsers, GARBAGE_COLLECTOR_TIMEOUT);
 /**
  * Create user for store in session
  * @param data - used data._id, data.name, data.prop.lvl, data.prop.secret, data.books
- * @returns {User}
+ * @returns {RealUser}
  * @constructor
  */
-function User(data)
+function RealUser(data)
 {
 	if (typeof data === "undefined" || typeof data.prop === "undefined")
 	{
@@ -52,52 +52,52 @@ function User(data)
 	return this;
 }
 
-User.prototype.checkAccess = function (str) {
+RealUser.prototype.checkAccess = function (str) {
 	return checkAccess(this.lvl, str);
 };
 
-User.prototype.isLogin = function () {
+RealUser.prototype.isLogin = function () {
 	return this._isLogin;
 };
 
-User.prototype.update = function () {
+RealUser.prototype.update = function () {
 	this._date = Date.now();
 };
 
-let UserDb = require("./db/User");
-User.prototype.sync = async function() {
-	let user = await UserDb.getUserByName(this.name);
-	User.apply(this, user);
+let User = require("./db/User").User;
+RealUser.prototype.sync = async function() {
+	let user = await User.getUserByName(this.name);
+    RealUser.apply(this, user);
 };
 
-User.prototype.isExpired = function () {
+RealUser.prototype.isExpired = function () {
 	return ((this._date - this._createDate) > USER_EXPIRED_TIMEOUT
 			|| this._isDeleteMode);
 };
 
-User.prototype.setDeleteMode = function () {
+RealUser.prototype.setDeleteMode = function () {
 	this._isDeleteMode = true;
 };
 
-User.prototype.isSecret = function () {
+RealUser.prototype.isSecret = function () {
 	return this._isSecret;
 };
 
-User.prototype.exit = function () {
+RealUser.prototype.exit = function () {
 	this._isLogin = false;
 	this.setDeleteMode();
 };
 
-User.prototype.ownBook = function(bookId) {
+RealUser.prototype.ownBook = function(bookId) {
 	return this._books.some((id) => id === bookId);
 };
 
-User.prototype.toString = function() {
+RealUser.prototype.toString = function() {
 	return `name: ${this.name}, lvl: ${this.lvl}`;
 };
 
-let Book = require("./db/Book");
-User.prototype.saveBook = async function(bookId, book) {
+let Book = require("./db/Book").Book;
+RealUser.prototype.saveBook = async function(bookId, book) {
     try {
         assert.strictEqual(this.ownBook(bookId), true);
         await Book.saveBook(bookId, book);
@@ -108,32 +108,34 @@ User.prototype.saveBook = async function(bookId, book) {
     }
 };
 
-User.prototype.timeLeft = function () {
+RealUser.prototype.timeLeft = function () {
 	return this._isDeleteMode ? -1 : this._date - this._createDate;
 };
 
 function Guest()
 {
-	return new User({
+	return new RealUser({
 		name: "Guest",
 		prop: {
 			lvl: LVL["GUEST"],
 			secret: "guest_secret"
 		},
 		isLogin: false,
-		isDeleteMode: true
+		isDeleteMode: true,
+        books: []
 	});
 }
 
 function SecretUser()
 {
-	return new User({
+	return new RealUser({
 		name: "SecretUser",
 		isSecret: true,
 		prop: {
 			lvl: LVL["ADMIN"],
 			secret: "secret_secret"
-		}
+		},
+        books: []
 	});
 }
 
@@ -141,20 +143,21 @@ SecretUser.SECRET_KEY_FOR_SIGN_IN = process.env.SECRET_KEY_FOR_SIGN_IN;
 
 function VoidUser()
 {
-	return new User({
+	return new RealUser({
 		isLogin: false,
 		name: "",
 		prop: {
 			secret: "",
 			lvl: LVL["GUEST"]
-		}
+		},
+        books: []
 	})
 }
 
 
 
 module.exports = {
-	User: User,
+    RealUser: RealUser,
 	Guest: Guest,
 	SecretUser: SecretUser,
 	VoidUser: VoidUser

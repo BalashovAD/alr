@@ -2,7 +2,7 @@
 let mongoose = require("mongoose");
 const assert = require("assert");
 let fs = require("fs");
-let User = require("./User");
+let User = require("./User").User;
 
 let schemaBook = {
     title: String,
@@ -142,5 +142,5 @@ function editBookmark(bookId, mark)
     });
 }
 
-module.exports = Book;
+module.exports.Book = Book;
 module.exports.schema = schemaBook;

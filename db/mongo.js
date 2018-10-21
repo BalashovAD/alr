@@ -46,12 +46,7 @@ function initModels()
 {
 	let Invite, COL;
 
-
 	let invite = new mongoose.Schema(schemaInvite, {collection: "invites"});
-
-	// statics
-
-
 
 	invite.statics.findAndModify = function (query, doc, callback) {
 		return this.collection.findAndModify(query, [], doc, true, callback);
@@ -61,11 +56,6 @@ function initModels()
 		Invite.findOne({value: val}).exec(cb);
 	};
 
-	// methods
-
-
-
-
 	invite.methods.checkInvite = function () {
 		return checkInvite(this);
 	};
@@ -73,19 +63,20 @@ function initModels()
 		decInvite(this, user);
 	};
 
-
-
 	Invite = mongoose.model("invite", invite);
 
+	let User = require("./User").User;
+	let Book = require("./Book").Book;
+
 	COL = {
-		"user": require("./User"),
-		"book": require("./Book"),
+		"user": User,
+		"book": Book,
 		"invite": Invite
 	};
 
 	return {
-		User: require("./User"),
-		Book: require("./Book"),
+		User: User,
+		Book: Book,
 		Invite: Invite,
 		COL: COL
 	};
@@ -131,7 +122,7 @@ db.once("open", function() {
 });
 
 
-mongoose.connect(url);
+mongoose.connect(url, {useNewUrlParser: true});
 
 function checkInvite(inv)
 {
