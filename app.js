@@ -62,8 +62,6 @@ let userStorage = require("./user").userStorage;
 
 app.use(function(req, res, next) {
     req.userIp = req.connection.remoteAddress;
-    req.cookies.user = req.cookies.user || "0";
-
 
 	if (req.session.id && userStorage[req.session.id])
 	{
@@ -99,11 +97,12 @@ app.use(function(req, res, next) {
         userStorage[req.session.id] = new userConstructor.Guest();
         req.user = userStorage[req.session.id];
 
+        debug(`User doesn't have cookie ip: ${req.userIp}`);
+
         next();
         return;
     }
 
-    req.cookies.user = req.cookies.user | "";
     let name = (req.cookies.user.split("_"))[0] || 0;
 
     if (User.checkUserNameAndSecret(name, req.cookies.user))
