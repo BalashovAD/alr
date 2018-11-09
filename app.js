@@ -60,41 +60,55 @@ if (app.get("env") === "development")
 
 let userStorage = require("./user").userStorage;
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
+    req.userIp = req.connection.remoteAddress;
     req.cookies.user = req.cookies.user || "0";
-    let nm = (req.cookies.user.split("_"))[0] || 0;
 
-	req.userIp = req.connection.remoteAddress;
+
 	if (req.session.id && userStorage[req.session.id])
 	{
-		if (userStorage[req.session.id].isLogin()
-				&& (req.cookies.user === userStorage[req.session.id].secret
-						|| userStorage[req.session.id].isSecret()))
+		if (userStorage[req.session.id].isLogin())
+		{
+            if (req.cookies.user === userStorage[req.session.id].secret
+				|| userStorage[req.session.id].isSecret())
+			{
+                req.user = userStorage[req.session.id];
+                req.user.update();
+
+                next();
+                return;
+			}
+			else
+			{
+				debug(`SessionId has another user or 
+				wrong secret(user: ${userStorage[req.session.id].toString()})`);
+			}
+		}
+		else
 		{
 			req.user = userStorage[req.session.id];
 			req.user.update();
 
 			next();
-
 			return;
-		}
-		else
-		{
-			if (userStorage[req.session.id].isLogin() === false && req.cookies.user === "0")
-			{
-				req.user = userStorage[req.session.id];
-				req.user.update();
-
-				next();
-
-				return;
-			}
 		}
 	}
 
-	if (User.checkUserNameAndSecret(nm, req.cookies.user))
+	if (typeof req.cookies.user !== "string")
+    {
+        userStorage[req.session.id] = new userConstructor.Guest();
+        req.user = userStorage[req.session.id];
+
+        next();
+        return;
+    }
+
+    req.cookies.user = req.cookies.user | "";
+    let name = (req.cookies.user.split("_"))[0] || 0;
+
+    if (User.checkUserNameAndSecret(name, req.cookies.user))
 	{
-        User.getUserByName(nm).then((data) => {
+        User.getUserByName(name).then((data) => {
             debug(`session id: ${req.session.id}`);
 
             if (data)
@@ -103,7 +117,7 @@ app.use(function(req, res, next){
             }
             else
 			{
-                debug(`User ${nm} doesn't exist`);
+                debug(`User ${name} doesn't exist`);
 
                 userStorage[req.session.id] = new userConstructor.Guest();
             }
@@ -112,7 +126,7 @@ app.use(function(req, res, next){
 
             next();
         }, (err) => {
-            debug(`Cannot getUserByName name: ${nm}: ${err}, url: ${req.originalUrl}`);
+            debug(`Cannot getUserByName name: ${name}: ${err}, url: ${req.originalUrl}`);
             userStorage[req.session.id] = new userConstructor.Guest();
 
             next();
@@ -120,7 +134,10 @@ app.use(function(req, res, next){
     }
     else
 	{
-		next();
+        userStorage[req.session.id] = new userConstructor.Guest();
+        req.user = userStorage[req.session.id];
+
+        next();
 	}
 });
 
