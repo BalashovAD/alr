@@ -73,6 +73,8 @@ app.use(function(req, res, next) {
                 req.user = userStorage[req.session.id];
                 req.user.update();
 
+                debug(`Get login user: ${req.user.toString()} from sessionStorage`);
+
                 next();
                 return;
 			}
@@ -84,10 +86,12 @@ app.use(function(req, res, next) {
 		}
 		else
 		{
-			req.user = userStorage[req.session.id];
+            req.user = userStorage[req.session.id];
 			req.user.update();
 
-			next();
+            debug(`Get no login user: ${req.user.toString()} from sessionStorage`);
+
+            next();
 			return;
 		}
 	}
@@ -107,6 +111,7 @@ app.use(function(req, res, next) {
 
     if (User.checkUserNameAndSecret(name, req.cookies.user))
 	{
+	    debug(`Try to get user: ${name}`);
         User.getUserByName(name).then((data) => {
             debug(`session id: ${req.session.id}`);
 
@@ -133,6 +138,8 @@ app.use(function(req, res, next) {
     }
     else
 	{
+	    debug(`Secret for user: ${name} is wrong, ip: ${req.userIp}`);
+
         userStorage[req.session.id] = new userConstructor.Guest();
         req.user = userStorage[req.session.id];
 
