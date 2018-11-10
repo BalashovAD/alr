@@ -165,8 +165,10 @@ async function checkUserNameAndSecret(name, secret)
                     user.prop.secret = this.getSecret(name, data.psw);
                 }
             }
-        }, (err) => {
-            throw err;
+            else
+            {
+                throw new Error(`Secret is wrong(user: ${name}, secret: ${secret})`);
+            }
         });
 
         debug(`checkUserNameAndSecret(${name}, ${secret}) success`);

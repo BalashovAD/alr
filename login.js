@@ -90,7 +90,11 @@ app.get("/_:user/_(:psw)?", function(req, res){
             }
             else
             {
-                throw new Error(`user: ${name} doesn't exist`);
+                debug(`UserLogin: user: ${name} doesn't exist`);
+
+                res.status(500).json({
+                    link: "error.pug"
+                }).end();
             }
         }, (err) => {
             debug(`login cannot getUserByName: ${err}`);
