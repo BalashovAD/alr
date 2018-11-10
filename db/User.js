@@ -167,7 +167,7 @@ async function checkUserNameAndSecret(name, secret)
             }
             else
             {
-                throw new Error(`Secret is wrong(user: ${name}, secret: ${secret})`);
+                throw new Error(`Secret is wrong`);
             }
         });
 

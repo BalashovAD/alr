@@ -86,13 +86,16 @@ app.use(function(req, res, next) {
 		}
 		else
 		{
-            req.user = userStorage[req.session.id];
-			req.user.update();
+		    if (typeof req.cookies.user !== "string")
+            {
+                req.user = userStorage[req.session.id];
+                req.user.update();
 
-            debug(`Get no login user: ${req.user.toString()} from sessionStorage, ip: ${req.userIp}`);
+                debug(`Get no login user: ${req.user.toString()} from sessionStorage, ip: ${req.userIp}`);
 
-            next();
-			return;
+                next();
+                return;
+            }
 		}
 	}
 

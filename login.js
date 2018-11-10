@@ -74,7 +74,7 @@ app.get("/_:user/_(:psw)?", function(req, res){
     let psw = req.params.psw;
 	res.query = res.query || {};
 
-	debug(`Username ${name} try to login as user: ${req.user.toString()} with psw: ${psw} from ip: ${req.userIp}`);
+	debug(`Username ${name} (now user: ${req.user.toString()}) try to login with psw: ${psw} from ip: ${req.userIp}`);
 
 	if (User.checkUserNameAndPsw(name, psw))
     {
