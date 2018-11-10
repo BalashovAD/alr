@@ -77,11 +77,19 @@ app.get("/_:user/_(:psw)?", function(req, res){
 	if (User.checkUserNameAndPsw(name, psw))
     {
         User.getUserByName(name).then(function (data) {
-            res.cookie("user", data.prop.secret);
+            if (data && data.prop)
+            {
+                debug(`User: ${name} was login. ip: ${req.userIp}`);
+                res.cookie("user", data.prop.secret);
 
-            res.status(200).json({
-                link: getLinkFromQuery(res.query.link)
-            }).end();
+                res.status(200).json({
+                    link: getLinkFromQuery(res.query.link)
+                }).end();
+            }
+            else
+            {
+                throw new Error(`user: ${name} doesn't exist`);
+            }
         }, (err) => {
             debug(`login cannot getUserByName: ${err}`);
 
