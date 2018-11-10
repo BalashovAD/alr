@@ -74,6 +74,8 @@ app.get("/_:user/_(:psw)?", function(req, res){
     let psw = req.params.psw;
 	res.query = res.query || {};
 
+	debug(`Username ${name} try to login as user: ${req.user.toString()} with psw: ${psw} from ip: ${req.userIp}`);
+
 	if (User.checkUserNameAndPsw(name, psw))
     {
         User.getUserByName(name).then(function (data) {
@@ -100,7 +102,7 @@ app.get("/_:user/_(:psw)?", function(req, res){
     }
     else
     {
-        debug(`Tried to login (user: ${name}, psw: ${psw}, ip: ${req.userIp})`);
+        debug(`Wrong psw (user: ${name}, psw: ${psw}, ip: ${req.userIp})`);
 
         res.status(403).json({
             link: "error.pug"
@@ -115,7 +117,7 @@ app.get("/exit/_:user/", function(req, res){
 
     if (req.user.isLogin())
     {
-        debug("Exit (user = " + req.user.name + ")");
+        debug(`Exit (user: ${req.user.toString()}, ip: ${req.userIp})`);
 
         res.clearCookie("user", {
             path: "/"
@@ -230,7 +232,9 @@ app.post("/add/", (req, res, next) => {
 app.get("/info", function (req, res) {
     if (req.user.isLogin())
     {
+        debug(`Try to get info from ${req.user.toString()}`);
         User.getUserByName(req.user.name).then((user) => {
+            debug(`Return info for user: ${req.user.toString()}, data: ${JSON.stringify(user)}`);
             res.json(user).end();
         }, (err) => {
             debug(`Cannot getUserByName: ${err}`);
@@ -239,6 +243,7 @@ app.get("/info", function (req, res) {
     }
     else
     {
+        debug(`User: ${req.user.toString()} cannot get info because he is not login`);
         res.status(401).end();
     }
 });

@@ -273,6 +273,7 @@ app.post("/bookmark/delete/_:id", function(req, res){
 
     if (typeof markId == "undefined")
     {
+        debug(`Delete bookmark must have markId`);
         res.status(400).end();
 
         return;
@@ -281,6 +282,7 @@ app.post("/bookmark/delete/_:id", function(req, res){
     if (req.user.ownBook(id))
     {
         Book.deleteBookmark(id, markId).then(() => {
+            debug(`Delete bookmark, id: ${id}, markId: ${markId}`);
             res.status(200).end();
         }, (err) => {
             debug(`delete bookmark failed! book: ${id}, bookmark: ${markId}, err: ${err}`);

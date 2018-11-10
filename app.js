@@ -73,7 +73,7 @@ app.use(function(req, res, next) {
                 req.user = userStorage[req.session.id];
                 req.user.update();
 
-                debug(`Get login user: ${req.user.toString()} from sessionStorage`);
+                debug(`Get login user: ${req.user.toString()} from sessionStorage, ip: ${req.userIp}`);
 
                 next();
                 return;
@@ -81,7 +81,7 @@ app.use(function(req, res, next) {
 			else
 			{
 				debug(`SessionId has another user or 
-				wrong secret(user: ${userStorage[req.session.id].toString()})`);
+				wrong secret(user: ${userStorage[req.session.id].toString()}), ip: ${req.userIp}`);
 			}
 		}
 		else
@@ -89,7 +89,7 @@ app.use(function(req, res, next) {
             req.user = userStorage[req.session.id];
 			req.user.update();
 
-            debug(`Get no login user: ${req.user.toString()} from sessionStorage`);
+            debug(`Get no login user: ${req.user.toString()} from sessionStorage, ip: ${req.userIp}`);
 
             next();
 			return;
@@ -111,9 +111,9 @@ app.use(function(req, res, next) {
 
     if (User.checkUserNameAndSecret(name, req.cookies.user))
 	{
-	    debug(`Try to get user: ${name}`);
+	    debug(`Try to get user: ${name}, ip: ${req.userIp}`);
         User.getUserByName(name).then((data) => {
-            debug(`session id: ${req.session.id}`);
+            debug(`session id: ${req.session.id}, ip: ${req.userIp}`);
 
             if (data)
             {
@@ -121,7 +121,7 @@ app.use(function(req, res, next) {
             }
             else
 			{
-                debug(`User ${name} doesn't exist`);
+                debug(`User ${name} doesn't exist, ip: ${req.userIp}`);
 
                 userStorage[req.session.id] = new userConstructor.Guest();
             }
@@ -130,7 +130,7 @@ app.use(function(req, res, next) {
 
             next();
         }, (err) => {
-            debug(`Cannot getUserByName name: ${name}: ${err}, url: ${req.originalUrl}`);
+            debug(`Cannot getUserByName name: ${name}: ${err}, url: ${req.originalUrl}, ip: ${req.userIp}`);
             userStorage[req.session.id] = new userConstructor.Guest();
 
             next();
